@@ -2,7 +2,7 @@
 
 CLW 把网页聊天与自己的本地工具连接起来，保留手动网页使用，并提供任务记录、Goal 和长任务接续。软件免费，CLW 自有代码保持闭源。本仓库用于分发 Windows 安装包和使用说明。
 
-从本仓库的 **Releases** 下载完整 Setup EXE；同时下载 `SHA256SUMS.txt` 和 `ACCEPTANCE.md`，核对文件与本次实际验证范围。安装包未签名，SHA256 用于检查完整性，不是发布者数字签名。
+从 [Releases](https://github.com/Patr1ck2005/clw/releases) 下载完整 Setup EXE；同时下载 `SHA256SUMS.txt` 和 `ACCEPTANCE.md`，核对文件与本次实际验证范围。安装包未签名，SHA256 用于检查完整性，不是发布者数字签名。
 
 1. 运行安装包，按当前 Windows 用户安装。
 2. 打开 CLW Preview，选择网络方式并登录自己的网页账号。
