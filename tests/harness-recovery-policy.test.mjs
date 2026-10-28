@@ -1,0 +1,14 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import '../apps/web-recovery-companion/policy.js';
+const p=globalThis.CLWRecoveryPolicy,url='https://chatgpt.com/c/12345678-1234-1234-1234-123456789012';
+const base={url,boundUrl:url,visible:true,controlsKnown:true,terminalMarker:true,errorLabel:'无法思考',assistantTurnId:'a2',userTurnId:'u1'};
+test('confirmed inability to think can recover',()=>assert.equal(p.classify(base),'cannot_think'));
+test('English generation failure is recognized',()=>assert.equal(p.classify({...base,errorLabel:'Something went wrong while generating the response'}),'generation_failed'));
+for(const [field,kind] of [['draft','draft'],['composing','draft'],['generating','generating'],['stopped','user_stopped'],['newUserInput','new_user_input'],['login','login_required'],['limited','rate_limited'],['safety','safety_denied']])test(field+' prevents automatic prompt',()=>assert.equal(p.classify({...base,[field]:true}),kind));
+test('hidden tab cannot dispatch',()=>assert.equal(p.classify({...base,visible:false}),'hidden'));
+test('unknown layout cannot dispatch',()=>assert.equal(p.classify({...base,controlsKnown:false}),'unsupported'));
+test('quoted inability phrase is not failure',()=>assert.equal(p.classify({...base,inQuotedContent:true}),'idle'));
+test('prose or old transcript does not count as terminal error',()=>assert.equal(p.classify({...base,terminalMarker:false}),'idle'));
+test('no turn identity fails closed',()=>assert.equal(p.classify({...base,assistantTurnId:null}),'idle'));
+test('different chat is not retargeted',()=>assert.equal(p.classify({...base,url:url+'x'}),'unsupported'));
+test('slow reasoning silence does not trigger error',()=>assert.equal(p.classify({...base,terminalMarker:false,elapsed:999999}),'idle'));

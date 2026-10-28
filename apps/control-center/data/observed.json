@@ -1,0 +1,297 @@
+{
+  "schema_version": 1,
+  "source": {
+    "kind": "demo",
+    "observed_at": "2026-01-01T00:00:00Z",
+    "scope": "Synthetic offline fixture: invented projects, sessions and event identities; not a live observation.",
+    "live": false
+  },
+  "runtime": {
+    "id": "example-runtime",
+    "version": "0.4.1",
+    "runner_id": "example-runner",
+    "runner_state": "online",
+    "job_capacity": 4
+  },
+  "projects": [
+    {
+      "id": "agent:example-runner:example-project-01",
+      "name": "example-project-01",
+      "path": "C:/CLW-Examples/example-game-alpha/example-project-01",
+      "enabled": true
+    },
+    {
+      "id": "agent:example-runner:example-project-02",
+      "name": "example-project-02",
+      "path": "C:/CLW-Examples/example-game-alpha/example-project-02",
+      "enabled": true
+    },
+    {
+      "id": "agent:example-runner:example-project-03",
+      "name": "example-project-03",
+      "path": "C:/CLW-Examples/example-game-alpha/example-project-03",
+      "enabled": true
+    },
+    {
+      "id": "agent:example-runner:example-game-beta",
+      "name": "example-game-beta",
+      "path": "C:/CLW-Examples/example-game-beta",
+      "enabled": true
+    },
+    {
+      "id": "agent:example-runner:example-game-alpha",
+      "name": "example-game-alpha",
+      "path": "C:/CLW-Examples/example-game-alpha",
+      "enabled": true
+    },
+    {
+      "id": "agent:example-runner:example-game-alpha-parallel",
+      "name": "example-game-alpha-parallel",
+      "path": "C:/CLW-Examples/example-game-alpha-parallel",
+      "enabled": true
+    },
+    {
+      "id": "agent:example-runner:example-project-07",
+      "name": "example-project-07",
+      "path": "C:/CLW-Examples/example-project-07",
+      "enabled": true
+    },
+    {
+      "id": "agent:example-runner:example-project-08",
+      "name": "example-project-08",
+      "path": "C:/CLW-Examples/example-game-alpha/example-project-08",
+      "enabled": true
+    },
+    {
+      "id": "agent:example-runner:example-project-09",
+      "name": "example-project-09",
+      "path": "C:/CLW-Examples/example-project-09",
+      "enabled": true
+    },
+    {
+      "id": "agent:example-runner:example-project-10",
+      "name": "example-project-10",
+      "path": "C:/CLW-Examples/example-game-alpha/example-project-10",
+      "enabled": true
+    },
+    {
+      "id": "agent:example-runner:example-project-11",
+      "name": "example-project-11",
+      "path": "C:/CLW-Examples/example-project-11",
+      "enabled": true
+    },
+    {
+      "id": "agent:example-runner:example-project-12",
+      "name": "example-project-12",
+      "path": "C:/CLW-Examples/example-project-12",
+      "enabled": true
+    },
+    {
+      "id": "agent:example-runner:example-assets",
+      "name": "example-assets",
+      "path": "C:/CLW-Examples/example-assets",
+      "enabled": true
+    }
+  ],
+  "sessions": [
+    {
+      "id": "wc_sess_example_01",
+      "project_id": "agent:example-runner:example-project-07",
+      "title": "Synthetic example session 1",
+      "lifecycle": "active",
+      "counts": {
+        "tool_calls": 10,
+        "succeeded": 10,
+        "failed": 0
+      },
+      "events_total": 30,
+      "events_truncated": true,
+      "events": [
+        {
+          "id": "evt_1979f9a9afaf2453cf78e86e05505dfa",
+          "session_id": "wc_sess_example_01",
+          "logical_id": "wc_inv_e63abc895183bbe523b9db34ca4cb843",
+          "role": "recorder",
+          "kind": "finished",
+          "tool": "apply_text_edits",
+          "timestamp": 1767225600,
+          "status": "succeeded",
+          "duration_ms": 16,
+          "exit_code": null,
+          "job_id": null,
+          "error_class": null
+        },
+        {
+          "id": "evt_8871aacc6478109bb420bcdcadbd6ae2",
+          "session_id": "wc_sess_example_01",
+          "logical_id": "wc_inv_14624cbe1400090e9059829ab328a584",
+          "role": "recorder",
+          "kind": "started",
+          "tool": "apply_text_edits",
+          "timestamp": 1767225601,
+          "status": null,
+          "duration_ms": null,
+          "exit_code": null,
+          "job_id": null,
+          "error_class": null
+        },
+        {
+          "id": "evt_ad66826c10f73581cfaf2c0f2b6fb855",
+          "session_id": "wc_sess_example_01",
+          "logical_id": "wc_inv_14624cbe1400090e9059829ab328a584",
+          "role": "business",
+          "kind": "started",
+          "tool": "apply_text_edits",
+          "timestamp": 1767225602,
+          "status": null,
+          "duration_ms": null,
+          "exit_code": null,
+          "job_id": null,
+          "error_class": null
+        },
+        {
+          "id": "evt_692ca84cab7ad287af173452125b498c",
+          "session_id": "wc_sess_example_01",
+          "logical_id": "wc_inv_14624cbe1400090e9059829ab328a584",
+          "role": "business",
+          "kind": "finished",
+          "tool": "apply_text_edits",
+          "timestamp": 1767225603,
+          "status": "succeeded",
+          "duration_ms": 18,
+          "exit_code": null,
+          "job_id": null,
+          "error_class": null
+        },
+        {
+          "id": "evt_3e877f1c8934119a62db8d11c2d5d2e3",
+          "session_id": "wc_sess_example_01",
+          "logical_id": "wc_inv_14624cbe1400090e9059829ab328a584",
+          "role": "recorder",
+          "kind": "finished",
+          "tool": "apply_text_edits",
+          "timestamp": 1767225604,
+          "status": "succeeded",
+          "duration_ms": 18,
+          "exit_code": null,
+          "job_id": null,
+          "error_class": null
+        },
+        {
+          "id": "evt_bb45a3f8c9296b5fd166c4506a1769d8",
+          "session_id": "wc_sess_example_01",
+          "logical_id": "wc_inv_d3aca1cc195ad9b8c9502b93626c1ab6",
+          "role": "recorder",
+          "kind": "started",
+          "tool": "session_summary",
+          "timestamp": 1767225605,
+          "status": null,
+          "duration_ms": null,
+          "exit_code": null,
+          "job_id": null,
+          "error_class": null
+        }
+      ]
+    },
+    {
+      "id": "wc_sess_example_02",
+      "project_id": "agent:example-runner:example-project-07",
+      "title": "Synthetic example session 2",
+      "lifecycle": "active",
+      "counts": {
+        "tool_calls": 31,
+        "succeeded": 30,
+        "failed": 1
+      },
+      "events_total": 90,
+      "events_truncated": true,
+      "events": [
+        {
+          "id": "evt_cfac36e9ebff9efbccfa1b78076f4411",
+          "session_id": "wc_sess_example_02",
+          "logical_id": "wc_inv_a3482e87cee27452ae616166a5157f5d",
+          "role": "recorder",
+          "kind": "started",
+          "tool": "finish_coding_task",
+          "timestamp": 1767225700,
+          "status": null,
+          "duration_ms": null,
+          "exit_code": null,
+          "job_id": null,
+          "error_class": null
+        },
+        {
+          "id": "evt_1be4cfcb36fb457d03c71693f757ef4c",
+          "session_id": "wc_sess_example_02",
+          "logical_id": null,
+          "role": "unspecified",
+          "kind": "started",
+          "tool": "show_changes",
+          "timestamp": 1767225701,
+          "status": null,
+          "duration_ms": null,
+          "exit_code": null,
+          "job_id": null,
+          "error_class": null
+        },
+        {
+          "id": "evt_761b03257d4aca8c22a7a4a40c93d7dc",
+          "session_id": "wc_sess_example_02",
+          "logical_id": null,
+          "role": "unspecified",
+          "kind": "finished",
+          "tool": "show_changes",
+          "timestamp": 1767225702,
+          "status": "succeeded",
+          "duration_ms": 596,
+          "exit_code": 0,
+          "job_id": null,
+          "error_class": null
+        },
+        {
+          "id": "evt_e7e91e97aa5bbe042f5caafd6d3eda04",
+          "session_id": "wc_sess_example_02",
+          "logical_id": null,
+          "role": "unspecified",
+          "kind": "started",
+          "tool": "workspace_hygiene_check",
+          "timestamp": 1767225703,
+          "status": null,
+          "duration_ms": null,
+          "exit_code": null,
+          "job_id": null,
+          "error_class": null
+        },
+        {
+          "id": "evt_97e0d685e0c99b72c64a469485cf605e",
+          "session_id": "wc_sess_example_02",
+          "logical_id": null,
+          "role": "unspecified",
+          "kind": "finished",
+          "tool": "workspace_hygiene_check",
+          "timestamp": 1767225704,
+          "status": "succeeded",
+          "duration_ms": 238,
+          "exit_code": null,
+          "job_id": null,
+          "error_class": null
+        },
+        {
+          "id": "evt_b4571f06303ac9d0b7e0c4dc4f871781",
+          "session_id": "wc_sess_example_02",
+          "logical_id": "wc_inv_a3482e87cee27452ae616166a5157f5d",
+          "role": "recorder",
+          "kind": "finished",
+          "tool": "finish_coding_task",
+          "timestamp": 1767225705,
+          "status": "succeeded",
+          "duration_ms": 1396,
+          "exit_code": null,
+          "job_id": null,
+          "error_class": null
+        }
+      ]
+    }
+  ],
+  "jobs": []
+}

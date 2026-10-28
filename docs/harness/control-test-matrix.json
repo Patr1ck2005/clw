@@ -1,0 +1,18 @@
+{
+  "format":"clw.control-real-test-matrix.v1",
+  "activation":"operator_manual_model_switch_then_explicit_pair_and_adopt",
+  "real_model_calls_this_development_turn":0,
+  "default_enabled":false,
+  "batch_max_new_model_turns":8,
+  "cases":[
+    {"id":"CW-01","name":"original_A_child_to_B_parent","max_turns":2,"expected":"same_child_and_original_parent_claim_full_reply","state":"pending"},
+    {"id":"CW-02","name":"two_new_noop_scoped_requests","max_turns":2,"expected":"one_Send_and_receive_per_request","state":"pending"},
+    {"id":"CW-03","name":"model_effort_draft_stop_negative_matrix","max_turns":0,"expected":"no_Send_on_unsafe_or_Pro_labels","state":"pending"},
+    {"id":"CW-04","name":"refresh_navigation_pair_generation","max_turns":0,"expected":"old_binding_denied_and_unknown_not_replayed","state":"pending"},
+    {"id":"CW-05","name":"lost_finish_or_receive_response","max_turns":2,"expected":"original_attempt_reconciled_no_second_Send","state":"pending"},
+    {"id":"CW-06","name":"ordinary_terminal_lifecycle_and_stop","max_turns":0,"expected":"own_child_only_bounded_restart_and_no_task_replay","state":"pending"},
+    {"id":"CW-07","name":"naturally_observed_generation_failure","max_turns":2,"expected":"same_claim_bounded_recovery_only_after_explicit_new_error","state":"pending_natural_event_not_faked"}
+  ],
+  "halt_on":["permission_denial","safety_denial","rate_limit","wrong_model","unknown_sender_identity","unreconciled_Send","manual_stop"],
+  "never":["claim_other_Session","create_new_primary_Agent","repeat_original_wait","redelegate_old_request","reroute_blocked_full_suite","touch_math_incumbent"]
+}

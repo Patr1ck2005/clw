@@ -1,0 +1,40 @@
+{
+  "repository": "https://github.com/miuuyy/codex-chatgpt-web",
+  "commit": "757942251222ee0f71953c35636679c6d92dd636",
+  "license": "MIT",
+  "files": [
+    {
+      "path": "LICENSE",
+      "sha256": "d8b06e8d802722749b8f09e4ed1f2439fde0995a09b7e47c65dca3cc54d43d6e"
+    },
+    {
+      "path": "launcher/electron/browser-host.cjs",
+      "sha256": "6191a7f3a471a811cc63b3523b1c61b1cbf0e221ec5b5058c4cef7021fc4823c"
+    },
+    {
+      "path": "launcher/electron/browser-state.cjs",
+      "sha256": "da76e18553ad552a2e9ca9aef2578d9de110ddcec2916116c37ce7d7506341a6"
+    },
+    {
+      "path": "launcher/electron/turn-suspension.cjs",
+      "sha256": "6364570ab9de2d94afda14d18bca7d900b5467cf99cd1250fceeef522c326523"
+    },
+    {
+      "path": "src/adapters/chatgpt-web/model-selection.ts",
+      "sha256": "9498ce50694fdc5d8dd00cb7a44c2707e24b119ee3ee7cec288e101f6ed51579"
+    },
+    {
+      "path": "src/adapters/chatgpt-web/markdown.ts",
+      "sha256": "fa14c43054264f32c3a1abc469a95e72db59ff79e00f6115abdec9b4cf145ce1"
+    },
+    {
+      "path": "src/adapters/chatgpt-web/ui-labels.ts",
+      "sha256": "3ffe3bba94951f7fe7aa98cb686ed8121f3ef5c0cca09c3bcc4fbb5f51ac3346"
+    },
+    {
+      "path": "src/chatgpt-session.ts",
+      "sha256": "2a6e4fcbd93b0876517572ebc4d97f6d3be476d46a841204a015c67cbbca219c"
+    }
+  ],
+  "usage": "Pinned upstream sources for the CLW browser adapter; upstream provider, configuration installer and private APIs are not executed."
+}

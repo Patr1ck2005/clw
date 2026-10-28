@@ -1,0 +1,514 @@
+diff --git a/crates/webcodex-runner-registry/src/jobs.rs b/crates/webcodex-runner-registry/src/jobs.rs
+index 815de72..b71f60c 100644
+--- a/crates/webcodex-runner-registry/src/jobs.rs
++++ b/crates/webcodex-runner-registry/src/jobs.rs
+@@ -517,7 +517,11 @@ pub(super) fn observe_job_terminal(job: &mut ShellJobRecord, now: i64) {
+     if job.lifecycle.is_terminal() && job.observation.terminal_observed_at.is_none() {
+         job.observation.terminal_observed_at = Some(now);
+         if let Some(candidates) = &job.observation.terminal_event_candidates {
+-            candidates.lock().unwrap().insert(job.job_id.clone());
++            candidates
++                .lock()
++                .unwrap()
++                .entry(job.job_id.clone())
++                .or_default();
+         }
+     }
+ }
+diff --git a/crates/webcodex-runner-registry/src/receipts.rs b/crates/webcodex-runner-registry/src/receipts.rs
+index 9fd027a..9634b28 100644
+--- a/crates/webcodex-runner-registry/src/receipts.rs
++++ b/crates/webcodex-runner-registry/src/receipts.rs
+@@ -1,8 +1,9 @@
+-use crate::state::{RunnerRegistryInner, ShellJobRecord, ShellJobVisibility};
++use crate::state::{JobLifecycleState, RunnerRegistryInner, ShellJobRecord, ShellJobVisibility};
+ use crate::{now_ts, RunnerRegistry};
+-use std::collections::HashSet;
++use std::collections::{HashMap, HashSet};
+ use std::ops::{Deref, DerefMut};
+ use std::sync::{Arc, Mutex};
++use std::time::{Duration, Instant};
+ use tokio::sync::{Mutex as AsyncMutex, MutexGuard};
+ pub use webcodex_core::runner_job_receipt::RetainedJobReceipt;
+ use webcodex_core::runner_protocol::{
+@@ -57,7 +58,8 @@ pub trait JobTerminalEventSink: std::fmt::Debug + Send + Sync {
+ }
+ 
+ pub(crate) type ReceiptCandidates = Arc<Mutex<HashSet<String>>>;
+-pub(crate) type TerminalEventCandidates = Arc<Mutex<HashSet<String>>>;
++pub(crate) type TerminalEventCandidates = Arc<Mutex<HashMap<String, Option<Instant>>>>;
++const TERMINAL_EVENT_RETRY_BACKOFF: Duration = Duration::from_secs(30);
+ 
+ /// One unlock boundary for every registry path, including early returns and
+ /// read-triggered lost transitions. Notifications mark only changed terminal
+@@ -137,10 +139,28 @@ impl Drop for ReceiptRegistryGuard<'_> {
+             .iter()
+             .filter_map(|id| self.jobs_by_id.get(id).and_then(capture))
+             .collect();
+-        let terminal_events: Vec<_> = terminal_ids
+-            .iter()
+-            .filter_map(|id| self.jobs_by_id.get(id).and_then(capture_terminal_event))
+-            .collect();
++        let now = now_ts();
++        let retry_now = Instant::now();
++        let mut terminal_events = Vec::new();
++        let mut deferred = HashMap::new();
++        for (id, retry_after) in terminal_ids {
++            let Some(event) = self.jobs_by_id.get(&id).and_then(capture_terminal_event) else {
++                continue;
++            };
++            if event.expires_at <= now {
++                continue;
++            }
++            if retry_after.is_some_and(|deadline| deadline > retry_now) {
++                deferred.insert(id, retry_after);
++            } else {
++                terminal_events.push(event);
++            }
++        }
++        self.state
++            .terminal_event_candidates
++            .lock()
++            .unwrap()
++            .extend(deferred);
+         // Release authority before any storage calls, even if an adapter fails.
+         drop(self.guard.take());
+         if let Some(store) = &self.state.store {
+@@ -161,15 +181,19 @@ impl Drop for ReceiptRegistryGuard<'_> {
+             for event in terminal_events {
+                 if sink.record_terminal_event(&event).is_err() {
+                     failed += 1;
+-                    retry_ids.push(event.job_id);
++                    retry_ids.push((
++                        event.job_id,
++                        Some(Instant::now() + TERMINAL_EVENT_RETRY_BACKOFF),
++                    ));
+                 }
+             }
+             if !retry_ids.is_empty() {
+                 // Terminal attention is durable caller state rather than optional
+                 // historical telemetry. Preserve failed post-lock candidates so a
+-                // later registry unlock can retry matching without changing the
+-                // already-accepted Job verdict. The HashSet keeps retry state
+-                // bounded and deduplicated.
++                // later registry unlock or existing recovery sweep can retry
++                // after backoff without changing the accepted Job verdict. Keep
++                // one deadline per candidate; removed/expired Jobs are discarded
++                // at the next unlock, and fresh Jobs do not share this delay.
+                 self.state
+                     .terminal_event_candidates
+                     .lock()
+@@ -186,11 +210,11 @@ impl Drop for ReceiptRegistryGuard<'_> {
+     }
+ }
+ 
+-fn terminal_outcome(status: &str) -> &'static str {
+-    match status {
+-        "completed" => "succeeded",
+-        "timed_out" => "timed_out",
+-        "stopped" | "cancelled" => "cancelled",
++fn terminal_outcome(lifecycle: JobLifecycleState) -> &'static str {
++    match lifecycle {
++        JobLifecycleState::Completed => "succeeded",
++        lifecycle if lifecycle.is_timed_out() => "timed_out",
++        JobLifecycleState::Stopped | JobLifecycleState::Cancelled => "cancelled",
+         _ => "failed",
+     }
+ }
+@@ -207,7 +231,7 @@ pub(crate) fn capture_terminal_event(job: &ShellJobRecord) -> Option<JobTerminal
+         runner_instance_id: job.runner_instance_id.clone(),
+         auth_group: job.auth_group.clone(),
+         owner_at_admission: job.owner_at_admission.clone(),
+-        outcome: terminal_outcome(&status).to_string(),
++        outcome: terminal_outcome(job.lifecycle).to_string(),
+         status,
+         terminal_observed_at,
+         expires_at: terminal_observed_at.saturating_add(JOB_TERMINAL_RETENTION_SECS),
+diff --git a/crates/webcodex-runner-registry/src/tests/job_receipts.rs b/crates/webcodex-runner-registry/src/tests/job_receipts.rs
+index 195e972..21c5700 100644
+--- a/crates/webcodex-runner-registry/src/tests/job_receipts.rs
++++ b/crates/webcodex-runner-registry/src/tests/job_receipts.rs
+@@ -3,8 +3,9 @@ use crate::{
+     JobReceiptStore, JobTerminalEvent, JobTerminalEventSink, NoopRunnerRegistryTelemetry,
+     RetainedJobReceipt, RunnerAccess, RunnerAccessGroup,
+ };
+-use std::sync::atomic::{AtomicBool, Ordering};
++use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
+ use std::sync::{Arc, Mutex, Weak};
++use std::time::Instant;
+ 
+ #[derive(Debug, Default)]
+ struct MemoryReceipts {
+@@ -67,6 +68,7 @@ async fn durable(store: &Arc<MemoryReceipts>) -> RunnerRegistry {
+ struct MemoryTerminalEvents {
+     rows: Mutex<Vec<JobTerminalEvent>>,
+     fail_next: AtomicBool,
++    calls: AtomicUsize,
+     registry: Mutex<Option<Weak<crate::receipts::ReceiptRegistryState>>>,
+ }
+ 
+@@ -78,6 +80,7 @@ impl MemoryTerminalEvents {
+ 
+ impl JobTerminalEventSink for MemoryTerminalEvents {
+     fn record_terminal_event(&self, event: &JobTerminalEvent) -> Result<(), String> {
++        self.calls.fetch_add(1, Ordering::SeqCst);
+         if let Some(registry) = self
+             .registry
+             .lock()
+@@ -176,9 +179,30 @@ async fn terminal_events_emit_once_only_after_accepted_sequenced_terminal_truth(
+     assert_eq!(events.rows.lock().unwrap().len(), 1);
+ }
+ 
++#[tokio::test]
++async fn terminal_events_preserve_both_timeout_spellings_and_classify_their_outcome() {
++    for status in ["timeout", "timed_out"] {
++        let store = Arc::new(MemoryReceipts::default());
++        let events = Arc::new(MemoryTerminalEvents::default());
++        let registry = durable_with_events(&store, &events).await;
++        register(&registry, INSTANCE_A, empty_inventory()).await;
++        let (job, _) = start_and_take_over(&registry, INSTANCE_A).await;
++
++        let terminal = registry
++            .update_job(update(INSTANCE_A, &job.job_id, 1, status, None, true))
++            .await
++            .unwrap();
++        assert_eq!(terminal.status, status);
++        let rows = events.rows.lock().unwrap();
++        assert_eq!(rows.len(), 1);
++        assert_eq!(rows[0].status, status);
++        assert_eq!(rows[0].outcome, "timed_out");
++        assert_eq!(store.rows.lock().unwrap()[0].snapshot.status, status);
++    }
++}
+ 
+ #[tokio::test]
+-async fn terminal_event_sink_failure_requeues_candidate_until_a_later_registry_unlock() {
++async fn terminal_event_sink_failure_backs_off_per_candidate_until_retry_succeeds() {
+     let store = Arc::new(MemoryReceipts::default());
+     let events = Arc::new(MemoryTerminalEvents::default());
+     let registry = durable_with_events(&store, &events).await;
+@@ -186,21 +210,136 @@ async fn terminal_event_sink_failure_requeues_candidate_until_a_later_registry_u
+     let (job, _) = start_and_take_over(&registry, INSTANCE_A).await;
+ 
+     events.fail_once();
+-    registry
++    let accepted = registry
+         .update_job(update(INSTANCE_A, &job.job_id, 1, "completed", None, true))
+         .await
+         .unwrap();
+     assert!(events.rows.lock().unwrap().is_empty());
++    assert_eq!(events.calls.load(Ordering::SeqCst), 1);
++    let retry_after = registry.inner.terminal_event_candidates.lock().unwrap()[&job.job_id]
++        .expect("failed candidate must retain a retry deadline");
++    assert!(retry_after > Instant::now());
++
++    for _ in 0..16 {
++        assert_eq!(
++            registry.get_job(&job.job_id).await.unwrap().status,
++            "completed"
++        );
++    }
++    assert_eq!(events.calls.load(Ordering::SeqCst), 1);
++    assert_eq!(
++        registry.inner.terminal_event_candidates.lock().unwrap()[&job.job_id],
++        Some(retry_after),
++        "reads must not move the deadline or retry the sink"
++    );
++
++    let (fresh, _) = start_and_take_over(&registry, INSTANCE_A).await;
++    registry
++        .update_job(update(
++            INSTANCE_A,
++            &fresh.job_id,
++            1,
++            "completed",
++            None,
++            true,
++        ))
++        .await
++        .unwrap();
++    assert_eq!(events.calls.load(Ordering::SeqCst), 2);
++    assert_eq!(events.rows.lock().unwrap()[0].job_id, fresh.job_id);
+ 
+-    // Any later registry guard release retries the exact bounded candidate.
+-    assert_eq!(registry.get_job(&job.job_id).await.unwrap().status, "completed");
++    // Advance only the retry deadline; the existing sweep retries the same Job.
++    events.fail_once();
++    *registry
++        .inner
++        .terminal_event_candidates
++        .lock()
++        .unwrap()
++        .get_mut(&job.job_id)
++        .unwrap() = Some(Instant::now());
++    recovery_timeout_sweep(&registry).await;
++    assert_eq!(events.calls.load(Ordering::SeqCst), 3);
++    assert!(
++        registry.inner.terminal_event_candidates.lock().unwrap()[&job.job_id]
++            .is_some_and(|deadline| deadline > Instant::now())
++    );
++    let _ = registry.get_job(&job.job_id).await.unwrap();
++    assert_eq!(events.calls.load(Ordering::SeqCst), 3);
++    *registry
++        .inner
++        .terminal_event_candidates
++        .lock()
++        .unwrap()
++        .get_mut(&job.job_id)
++        .unwrap() = Some(Instant::now());
++    recovery_timeout_sweep(&registry).await;
++    assert_eq!(events.calls.load(Ordering::SeqCst), 4);
++    assert!(registry
++        .inner
++        .terminal_event_candidates
++        .lock()
++        .unwrap()
++        .is_empty());
+     {
+         let rows = events.rows.lock().unwrap();
+-        assert_eq!(rows.len(), 1);
+-        assert_eq!(rows[0].job_id, job.job_id);
++        assert_eq!(rows.len(), 2);
++        assert_eq!(rows[1].job_id, job.job_id);
++        assert_eq!(rows[1].status, "completed");
++        assert_eq!(rows[1].outcome, "succeeded");
++    }
++    let retained = registry.get_job(&job.job_id).await.unwrap();
++    assert_eq!(retained.status, accepted.status);
++    assert_eq!(retained.ended_at, accepted.ended_at);
++    assert_eq!(retained.exit_code, accepted.exit_code);
++    assert_eq!(events.calls.load(Ordering::SeqCst), 4);
++    assert_eq!(store.rows.lock().unwrap().len(), 2);
++}
++
++#[tokio::test]
++async fn terminal_event_retry_state_is_discarded_for_removed_or_expired_jobs() {
++    for remove in [true, false] {
++        let store = Arc::new(MemoryReceipts::default());
++        let events = Arc::new(MemoryTerminalEvents::default());
++        let registry = durable_with_events(&store, &events).await;
++        register(&registry, INSTANCE_A, empty_inventory()).await;
++        let (job, _) = start_and_take_over(&registry, INSTANCE_A).await;
++        events.fail_once();
++        registry
++            .update_job(update(INSTANCE_A, &job.job_id, 1, "completed", None, true))
++            .await
++            .unwrap();
++        assert_eq!(
++            registry
++                .inner
++                .terminal_event_candidates
++                .lock()
++                .unwrap()
++                .len(),
++            1
++        );
++        {
++            let mut inner = registry.inner.lock().await;
++            if remove {
++                inner.jobs_by_id.remove(&job.job_id);
++            } else {
++                inner
++                    .jobs_by_id
++                    .get_mut(&job.job_id)
++                    .unwrap()
++                    .observation
++                    .terminal_observed_at = Some(now_ts() - JOB_TERMINAL_RETENTION_SECS);
++            }
++        }
++        assert!(registry
++            .inner
++            .terminal_event_candidates
++            .lock()
++            .unwrap()
++            .is_empty());
++        recovery_timeout_sweep(&registry).await;
++        assert_eq!(events.calls.load(Ordering::SeqCst), 1);
++        assert!(events.rows.lock().unwrap().is_empty());
+     }
+-    let _ = registry.get_job(&job.job_id).await.unwrap();
+-    assert_eq!(events.rows.lock().unwrap().len(), 1);
+ }
+ 
+ #[tokio::test]
+@@ -231,7 +370,10 @@ async fn same_instance_reconciliation_preserves_exact_job_identity_for_terminal_
+         },
+     )
+     .await;
+-    assert_eq!(registry.get_job(&job.job_id).await.unwrap().job_id, job.job_id);
++    assert_eq!(
++        registry.get_job(&job.job_id).await.unwrap().job_id,
++        job.job_id
++    );
+     assert!(events.rows.lock().unwrap().is_empty());
+ 
+     registry
+@@ -272,7 +414,14 @@ async fn terminal_events_share_protocol_violation_lost_and_stopped_classificatio
+ 
+     let (stopped, _) = start_and_take_over(&registry, INSTANCE_A).await;
+     registry
+-        .update_job(update(INSTANCE_A, &stopped.job_id, 1, "running", None, false))
++        .update_job(update(
++            INSTANCE_A,
++            &stopped.job_id,
++            1,
++            "running",
++            None,
++            false,
++        ))
+         .await
+         .unwrap();
+     registry
+@@ -280,15 +429,40 @@ async fn terminal_events_share_protocol_violation_lost_and_stopped_classificatio
+         .await
+         .unwrap();
+     registry
+-        .update_job(update(INSTANCE_A, &stopped.job_id, 2, "stopped", None, true))
++        .update_job(update(
++            INSTANCE_A,
++            &stopped.job_id,
++            2,
++            "stopped",
++            None,
++            true,
++        ))
+         .await
+         .unwrap();
+ 
+     let rows = events.rows.lock().unwrap();
+     let event = |job_id: &str| rows.iter().find(|event| event.job_id == job_id).unwrap();
+-    assert_eq!((event(&protocol.job_id).status.as_str(), event(&protocol.job_id).outcome.as_str()), ("failed", "failed"));
+-    assert_eq!((event(&lost.job_id).status.as_str(), event(&lost.job_id).outcome.as_str()), ("lost", "failed"));
+-    assert_eq!((event(&stopped.job_id).status.as_str(), event(&stopped.job_id).outcome.as_str()), ("stopped", "cancelled"));
++    assert_eq!(
++        (
++            event(&protocol.job_id).status.as_str(),
++            event(&protocol.job_id).outcome.as_str()
++        ),
++        ("failed", "failed")
++    );
++    assert_eq!(
++        (
++            event(&lost.job_id).status.as_str(),
++            event(&lost.job_id).outcome.as_str()
++        ),
++        ("lost", "failed")
++    );
++    assert_eq!(
++        (
++            event(&stopped.job_id).status.as_str(),
++            event(&stopped.job_id).outcome.as_str()
++        ),
++        ("stopped", "cancelled")
++    );
+ }
+ 
+ #[tokio::test]
+diff --git a/crates/webcodex-store/src/db_tests.rs b/crates/webcodex-store/src/db_tests.rs
+index 6005b3a..9d1eaa3 100644
+--- a/crates/webcodex-store/src/db_tests.rs
++++ b/crates/webcodex-store/src/db_tests.rs
+@@ -215,7 +215,9 @@ fn production_store_connection_locks_use_the_observed_boundary() {
+ 
+     let helper = std::fs::read_to_string(src.join("connection_observation.rs")).unwrap();
+     assert_eq!(helper.matches("connection.lock().unwrap()").count(), 1);
+-    let root = std::fs::read_to_string(src.join("lib.rs")).unwrap();
++    let root = std::fs::read_to_string(src.join("lib.rs"))
++        .unwrap()
++        .replace("\r\n", "\n");
+     assert!(root.contains(
+         "pub fn conn_for_tests(&self) -> std::sync::MutexGuard<'_, Connection> {\n        self.conn.lock().unwrap()"
+     ));
+diff --git a/crates/webcodex-store/src/job_terminal_wait.rs b/crates/webcodex-store/src/job_terminal_wait.rs
+index c406e98..f3ec581 100644
+--- a/crates/webcodex-store/src/job_terminal_wait.rs
++++ b/crates/webcodex-store/src/job_terminal_wait.rs
+@@ -4,6 +4,7 @@ use rusqlite::{params, Connection, OptionalExtension, TransactionBehavior};
+ use serde::{Deserialize, Serialize};
+ use serde_json::json;
+ use std::fmt;
++use webcodex_core::runner_job_lifecycle::RunnerJobLifecycle;
+ 
+ pub const JOB_TERMINAL_WAIT_ID_PREFIX: &str = "wc_job_wait_";
+ pub const JOB_TERMINAL_DELIVERY_ATTEMPT_ID_PREFIX: &str = "wc_job_delivery_";
+@@ -578,10 +579,7 @@ fn validate_terminal_fields(
+     observed: Option<i64>,
+ ) -> Result<(), JobTerminalWaitStoreError> {
+     let a = status.is_some_and(|v| {
+-        matches!(
+-            v,
+-            "completed" | "failed" | "timed_out" | "stopped" | "cancelled" | "lost"
+-        )
++        RunnerJobLifecycle::from_wire(v).is_ok_and(RunnerJobLifecycle::is_terminal)
+     });
+     let b =
+         outcome.is_some_and(|v| matches!(v, "succeeded" | "failed" | "timed_out" | "cancelled"));
+diff --git a/crates/webcodex-store/src/job_terminal_wait_tests.rs b/crates/webcodex-store/src/job_terminal_wait_tests.rs
+index 86b5a67..27667f6 100644
+--- a/crates/webcodex-store/src/job_terminal_wait_tests.rs
++++ b/crates/webcodex-store/src/job_terminal_wait_tests.rs
+@@ -38,6 +38,64 @@ fn waiting(job_id: &str, key: &str, expires_at: i64) -> NewJobTerminalWait {
+     }
+ }
+ 
++#[test]
++fn terminal_waits_preserve_both_timeout_spellings_when_matched_or_already_terminal() {
++    let temp = tempdir().unwrap();
++    let db = Database::open(&temp.path().join("job-terminal-timeouts.db")).unwrap();
++    let owner = principal('a');
++    for status in ["timeout", "timed_out"] {
++        let mut terminal = fact(status, T0 + 20);
++        terminal.status = status.into();
++        terminal.outcome = "timed_out".into();
++        let created = db
++            .create_job_terminal_wait(&owner, waiting(status, status, T0 + 8_100), T0)
++            .unwrap();
++        let matched = db.match_job_terminal_fact(&terminal, T0 + 20).unwrap();
++        assert_eq!(matched.matched_count, 1);
++        let stored = db
++            .read_job_terminal_wait(&owner, &created.wait.wait_id, T0 + 21)
++            .unwrap();
++        assert_eq!(stored.terminal_status.as_deref(), Some(status));
++        assert_eq!(stored.terminal_outcome.as_deref(), Some("timed_out"));
++
++        let immediate = db
++            .create_job_terminal_wait(
++                &owner,
++                NewJobTerminalWait {
++                    idempotency_key: format!("immediate-{status}"),
++                    already_terminal: Some(terminal),
++                    ..waiting(status, status, T0 + 8_100)
++                },
++                T0 + 22,
++            )
++            .unwrap();
++        assert_eq!(immediate.wait.terminal_status.as_deref(), Some(status));
++        assert_eq!(
++            immediate.wait.terminal_outcome.as_deref(),
++            Some("timed_out")
++        );
++    }
++}
++
++#[test]
++fn terminal_waits_reject_nonterminal_or_unknown_lifecycle_values() {
++    let temp = tempdir().unwrap();
++    let db = Database::open(&temp.path().join("job-terminal-invalid-status.db")).unwrap();
++    for status in [
++        "queued",
++        "agent_queued",
++        "started",
++        "running",
++        "stop_requested",
++        "recovering",
++        "unknown",
++    ] {
++        let mut terminal = fact("invalid-status", T0 + 20);
++        terminal.status = status.into();
++        assert!(db.match_job_terminal_fact(&terminal, T0 + 20).is_err());
++    }
++}
++
+ #[test]
+ fn keyed_registration_matching_and_owner_partition_are_one_shot() {
+     let temp = tempdir().unwrap();

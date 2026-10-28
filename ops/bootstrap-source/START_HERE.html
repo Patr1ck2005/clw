@@ -1,0 +1,67 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; form-action 'none'; base-uri 'none'"><title>WebCodex · 首次使用</title><style>body{margin:0;background:#10171c;color:#dce8eb;font:16px/1.7 "Segoe UI","Microsoft YaHei",sans-serif}main{max-width:1060px;margin:auto;padding:40px 28px}h1{font-size:38px;line-height:1.25;color:#fff}h2{color:#b4e3d9;margin-top:28px}a{color:#a3e5dc}.notice{border-left:4px solid #ffc878;padding:12px 18px;background:#222c31}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#0b1115;border:1px solid #32434a;padding:20px;border-radius:10px;font:14px/1.65 Consolas,monospace}summary{cursor:pointer}small{color:#9eb0b7}code{overflow-wrap:anywhere}@media(max-width:700px){main{padding:24px 16px}h1{font-size:28px}}</style></head><body><main>
+<small>一次本机安装与账号授权 · 后续开发不必反复批准</small><h1>先打开原版 WebCodex，<br>不再手动拼装服务。</h1>
+<p class="notice">安装文件已准备并核对发布者校验和，但未执行。安装包未数字签名；安全策略拦截时不要关闭防护。账号连接仍待实际验证。</p>
+<h2>1 · 安装并选择项目</h2><p>在资源管理器打开本指南同目录的downloads文件夹，运行你审核确认的原版安装文件：</p><pre>webcodex-desktop-v0.4.1-win32-x64-setup.exe</pre>
+<p>打开后选择 <strong>Local Full Runtime / Use WebCodex on this computer</strong>，项目选择：</p><pre>D:\Dev\Projects\Personal\clw-webcodex</pre>
+<p>不选Quick Share，不同时运行旧START脚本。由原版Desktop管理通用Server/Runner；无需先初始化CLI的workspace配置。</p>
+<h2>2 · 在本机完成当前账号授权</h2><p>到OpenAI Platform的Tunnel设置创建或选择Tunnel并关联目标ChatGPT工作区。把Tunnel ID和有相应权限的Restricted Key填入原版WebCodex的Settings → OpenAI Tunnel network。</p>
+<p>密钥只填本机，不发聊天或截图。上游此版本会把Key保存在未加密的本地secrets配置中，不要共享该目录。Tunnel就绪之后再在ChatGPT新增Tunnel连接；不能把本地绿色状态当成已经接通。</p>
+<p><a href="https://platform.openai.com/settings/organization/tunnels" rel="noopener">OpenAI Tunnel设置</a> · <a href="https://developers.openai.com/api/docs/guides/secure-mcp-tunnels" rel="noopener">官方权限说明</a></p>
+<h2>接通后继续完整任务</h2><p>先用当前账号真实读取项目、核对一次写入与后台Job，然后复用到第二账号。账号不限定用途；检查点保存后继续原任务，不按时长切断工作。</p>
+<p>math-research的目录更名尚被Windows拒绝，但不阻塞先连接以上已存在的产品项目。</p>
+<p><a href="DESKTOP_FIRST_RUN.md">详细首次使用说明</a> · <a href="../clw-webcodex/prompts/START_TASK.md">通用开工模板</a> · <a href="GENERAL_SETUP.md">高级CLI备选（现在不必执行）</a></p>
+<details><summary>展开详细字段、事实与来源</summary><pre># 现在需要你做什么
+
+先在本机完成原版WebCodex Desktop的安装与账号授权；代码开发和检查继续由助手完成。无需再次批准Git，不必手工运行前轮的Server/Runner/配对脚本。
+
+## 现在先做：安装并打开原版窗口
+
+已准备匹配现有固定版本的安装包：
+
+```text
+D:\Dev\Projects\Personal\webcodex-workflow\downloads\webcodex-desktop-v0.4.1-win32-x64-setup.exe
+```
+
+文件SHA-256为177f450120a618be32e20fdb0fdc1b9b1bd0d55c3060146555d931b6d2627b4a，与发布者SHA256SUMS一致。这是来源完整性核对，不是安全审计。Windows Authenticode检查为NotSigned；安装包未数字签名。本轮没有启动安装程序。若Windows或本机政策拦截，不关闭防护、不绕过拦截，先检查发布者与本机允许的安装方式。
+
+安装完成后打开WebCodex，选择Local Full Runtime / Use WebCodex on this computer，并选择真实项目：
+
+```text
+D:\Dev\Projects\Personal\clw-webcodex
+```
+
+这是上游普通多项目运行模式，不是临时Quick Share，也不是专用代码版。后续从Projects添加其他已授权目录；第二账号用途不受限制。math-research实际目录更名暂时被Windows拒绝，不阻塞先连接这个已存在项目。
+桌面使用其自己的本地数据目录，不读取或迁移前轮未启动的CLI profiles/code、profiles/math，也不需要先创建profiles/workspace。不同时运行旧START脚本和Desktop来提供同一服务。
+
+## 然后做：当前账号的一次正常Tunnel授权
+
+在浏览器中登录当前账号，打开OpenAI Platform的Settings → Organization → Tunnels。创建或选择可用Tunnel，并关联目标ChatGPT工作区。
+创建/编辑需要Tunnels Read + Manage；运行和使用需要Read + Use。使用Restricted Key，只给予本次所需的Tunnel权限。实际可用性以当前账号权限为准，不以已购买ChatGPT订阅推定拥有全部Platform权限。
+
+在WebCodex的Settings → OpenAI Tunnel network填写Tunnel ID和Tunnel API key，点击Save configuration。密钥只填本机密码输入框，不发送到聊天、Git或截图。
+该固定版本将Tunnel Key保存在用户应用数据目录下的未加密配置文件中；不要共享或自动打包该secrets目录。本流程不修改系统环境变量，不使用额外的模型推理API。
+
+等Service、Runner、Project就绪后，在Connection选择OpenAI Secure Tunnel并点击Start secure tunnel。出现“Tunnel ready; waiting for ChatGPT”只表示本地准备完成。
+在ChatGPT开发连接中选择Tunnel、填写对应Tunnel ID、Authentication选None/No authentication。这里由本机Tunnel注入WebCodex认证，不是把本地服务改成匿名开放。不要把API Key误填为Tunnel ID。
+
+## 接通之后由助手执行
+
+发现真实WebCodex工具与项目，读取本项目一个小文件，做一次可回查的写入和一个后台Job，核对原回执及恢复行为。随后开始用WebCodex开发本产品，并接入第二账号；不要求第二账号也先完成才能用第一个账号工作。
+不要仅凭桌面绿色状态标记端到端成功。当前对话尚只有ShunCode MCP可用于本机准备，不应声称已经转到WebCodex执行。
+任务仍按完整目标持续推进。重要变化保存检查点后继续，不因为一小时或任意分钟数主动拆任务、降档或结束回合。
+
+## 本次准备边界
+
+本轮只下载/核对上游安装文件、读取状态和改进非秘密指南。此前代理启动/配对操作曾被平台拦截，未换入口重试；本机所有者需按普通安装和账户授权界面操作。没有执行安装、启动服务、登录账号、读写凭据或重试目录改名。
+GENERAL_SETUP.md是高级CLI备选，不是现在的必读操作单；旧Code/Math流程继续停用。
+
+## 核验来源
+
+- WebCodex固定Windows安装流程：https://raw.githubusercontent.com/yyjeqhc/webcodex/v0.4.1/docs/desktop-install.md
+- WebCodex普通多项目流程：https://raw.githubusercontent.com/yyjeqhc/webcodex/v0.4.1/docs/PERSONAL_SETUP.md
+- 发布文件：https://github.com/yyjeqhc/webcodex/releases/tag/v0.4.1
+- 当前OpenAI Tunnel权限及关联：https://developers.openai.com/api/docs/guides/secure-mcp-tunnels
+
+以上是各来源的安装/权限说明；本机是否已运行以实际状态与回执为准。
+</pre></details>
+<small>本页无脚本、登录表单或自动安装功能，不收集凭据，不执行命令，也不是实时状态面板。</small></main></body></html>

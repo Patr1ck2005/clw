@@ -1,0 +1,38 @@
+[
+  {
+    "code": "platform_safety_block_reported",
+    "pattern": "因\\s*OpenAI\\s*无法确定请求的安全状态.{0,20}拦截此工具调用|This tool call was blocked by OpenAI['’]s safety checks|This tool call was blocked by OpenAI because we could(?:n['’]t| not) determine the safety status of the request|(?:blocked|rejected)[^\\n]{0,100}safety status (?:unknown|could not be determined)",
+    "label": "回复报告平台安全拒绝",
+    "note": "请在原 Codex 核对拒绝与已完成工作；不自动重试被拒操作。"
+  },
+  {
+    "code": "local_path_denied_reported",
+    "pattern": "\\bpath_outside_allowed_roots\\b",
+    "label": "回复报告目录访问被拒",
+    "note": "保留原任务并核对工具路径与授权范围；不自动换目录、工具身份或扩大权限重试。"
+  },
+  {
+    "code": "duplicate_active_request_reported",
+    "pattern": "\\b409\\s+Duplicate active request ID\\b",
+    "label": "回复报告请求冲突",
+    "note": "先核对原请求和命令回执，避免重复执行。"
+  },
+  {
+    "code": "native_turn_authority_ended_reported",
+    "pattern": "\\bturn token is invalid, expired, or revoked\\b|This turn_token was issued for [^\\n]{1,160}, which has already finished\\.",
+    "label": "回复报告回合授权结束",
+    "note": "需要从原 Codex 任务接续；在旧网页发送继续不能恢复工具授权。"
+  },
+  {
+    "code": "connector_endpoint_offline_reported",
+    "pattern": "\\bERR_NGROK_3200\\b|(?:MCP endpoint|MCP端点|MCP 端点)[^\\n]{0,40}(?:offline|离线)",
+    "label": "回复报告连接器离线",
+    "note": "先核对实际调用的连接器与原工具回执；本机连接正常不代表其他连接器在线。"
+  },
+  {
+    "code": "tool_discovery_unavailable_reported",
+    "pattern": "unknown model-visible runtime tool ['\"]codex_[a-z_]+['\"]|unknown tool_manifest tool_name ['\"]codex_[a-z_]+['\"]|No tool was defined under the given paths",
+    "label": "回复报告工具查询不可用",
+    "note": "先修复并核验本机工具服务，保留原任务，避免再次消耗模型回合。"
+  }
+]

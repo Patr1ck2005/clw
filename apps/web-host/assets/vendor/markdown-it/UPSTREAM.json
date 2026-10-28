@@ -1,0 +1,23 @@
+{
+  "name": "markdown-it",
+  "version": "15.0.2",
+  "license": "MIT",
+  "source": "https://registry.npmjs.org/markdown-it/-/markdown-it-15.0.2.tgz",
+  "dist_integrity": "sha512-q4IGxMv56jCqT4OCRCADBoDP3LO4MhmTXjFbphHPXs4g3j9Xg5RDnxqN8IF/3vIWEU+VCnUq+7JUg/cfy2E6Qw==",
+  "archive_sha256": "3237f5ecac432f99453e6d8d345b6e4764a22f1781c96e02dc9e89777b9c23c1",
+  "selection": "Official browser distribution and original license; only browser UMD filename normalized, no npm installation or source transformation.",
+  "selected_archive_paths": {
+    "package/dist/browser/markdown-it.umd.min.js": "markdown-it.min.js",
+    "package/LICENSE": "LICENSE"
+  },
+  "files": {
+    "LICENSE": {
+      "bytes": 1073,
+      "sha256": "792c48c5a849a15fdf9e37e8bcf9e6d1dd13b32b46c642a748a0a46a9919d473"
+    },
+    "markdown-it.min.js": {
+      "bytes": 115080,
+      "sha256": "635972b985228e8af9f0143647c68616b7a3bb09f6946e7e4a52e43dcf5e7be5"
+    }
+  }
+}

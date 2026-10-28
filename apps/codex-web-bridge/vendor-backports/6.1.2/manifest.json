@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "baseline_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+  "patch": "clw.patch",
+  "files": [
+    {
+      "path": "launcher/electron/browser-host.cjs",
+      "base_sha256": "17a8dbd63bf157305d1aef1003af9630e0dfc8ace7dfef85fe424c86ff964f3c",
+      "sha256": "07569cd5f9c8d3ada6c4a4401f5cf97720a325347e23aaa5d2ec5d8e91665b25",
+      "reason": "Fixed 6.1.2 backport. Preserve CLW receipt/EOF/error-frame behavior, diagnostic-only failed tabs and explicit A/B production partitions (development remains separate). Upstream five-tab policy excluded; existing CLW resource-admission tests cover unbounded pages."
+    },
+    {
+      "path": "launcher/tests/browser-host.test.cjs",
+      "base_sha256": "35febe8ade087343c8f57cde40f49371e28ffb474b9430dfad58d0a54db19298",
+      "sha256": "1e7f2e9cd7ae053bb6aecfbbed8a1f06ff3925b4bdb8bf6801c323c0e5b0977f",
+      "reason": "Fixed 6.1.2 backport. Preserve CLW receipt/EOF/error-frame behavior, diagnostic-only failed tabs and explicit account B partition. Upstream five-tab policy excluded; existing CLW resource-admission tests cover unbounded pages."
+    },
+    {
+      "path": "src/adapters/chatgpt-web/browser-worker.ts",
+      "base_sha256": "4724889e4379406fa93d8f887238e27cdd04bb6abe7d52e14c5e9038813f9617",
+      "sha256": "a36de7d014c8ecb8a791358ec8b1229bd602d5d69fee92a5cbf2fa4e450e6693",
+      "reason": "Fixed 6.1.2 backport. Preserve CLW receipt/EOF/error-frame behavior, diagnostic-only failed tabs and explicit account B partition. Upstream five-tab policy excluded; existing CLW resource-admission tests cover unbounded pages. CLW 2026-09-28: launcher-owned background editor uses existing native text insertion, exact connector row activation and verified draft clearing without dropped keyboard events; managed Chrome keyboard behavior preserved. DEMO-02: verify recorded connector padding and structurally decode captured rich user fallback escapes; preserve exact body comparison and reject competing turns."
+    },
+    {
+      "path": "src/adapters/chatgpt-web/markdown.ts",
+      "base_sha256": "7f8654c009d39af27ace89b0c88cb5c5559fe00d448cc4d1239ecd838c899db8",
+      "sha256": "e4fab56369603464d62d77ee02cbb87162ce2b7742f303d38f02830a66ffe84c",
+      "reason": "Fixed 6.1.2 backport. Preserve CLW receipt/EOF/error-frame behavior, diagnostic-only failed tabs and explicit account B partition. Upstream five-tab policy excluded; existing CLW resource-admission tests cover unbounded pages."
+    },
+    {
+      "path": "src/adapters/chatgpt-web/mcp-server.ts",
+      "base_sha256": "7941b607d344e00378b2bc4a86027c1a3559364919354f3b9e5f318591e024d9",
+      "sha256": "a3cfcf65aa43da39f13c71f076fa184bccbe1bb3b799a08b4f9a1749ad7a8d55",
+      "reason": "Fixed 6.1.2 backport. Preserve CLW receipt/EOF/error-frame behavior, diagnostic-only failed tabs and explicit account B partition. Upstream five-tab policy excluded; existing CLW resource-admission tests cover unbounded pages."
+    },
+    {
+      "path": "src/adapters/chatgpt-web/turn-broker.ts",
+      "base_sha256": "d2a44a2a193edcf9a12630d42246ffb320a62ef85acca64844bd1bebc6cbea40",
+      "sha256": "3014039bdd55321a3afef8427029af8a43237ac544e2901ca9a5baf6dd7274b7",
+      "reason": "Fixed 6.1.2 backport. Preserve CLW receipt/EOF/error-frame behavior, diagnostic-only failed tabs and explicit account B partition. Upstream five-tab policy excluded; existing CLW resource-admission tests cover unbounded pages."
+    },
+    {
+      "path": "src/launcher-browser-host.ts",
+      "base_sha256": "749df9464e66e14de05d1946e65f055c290cea81a9b91ee6fee6376cd761b8d5",
+      "sha256": "0b4f6791abfaa07e32025bf088e088b79930b149c317e3b86f46b0c50fe515da",
+      "reason": "Fixed 6.1.2 backport. Preserve CLW receipt/EOF/error-frame behavior, diagnostic-only failed tabs and explicit account B partition. Upstream five-tab policy excluded; existing CLW resource-admission tests cover unbounded pages. Explicit A/B production partitions; development remains separate."
+    },
+    {
+      "path": "tests/browser-response-dom.test.ts",
+      "base_sha256": "a013a08340a7d01c2a41a9f4fa1abebd2890cdc8be96c4ce78120b02b96fbbbb",
+      "sha256": "2e8c14aaf2d10d37cc7bb89be32456146a04e8a9046e53899ca880bbee87d81e",
+      "reason": "Fixed 6.1.2 backport. Preserve CLW receipt/EOF/error-frame behavior, diagnostic-only failed tabs and explicit account B partition. Upstream five-tab policy excluded; existing CLW resource-admission tests cover unbounded pages."
+    },
+    {
+      "path": "tests/browser-turn-binding.test.ts",
+      "base_sha256": "41a7b4d3825c74b4c173deab0bbb19108c2968084e38184e785ba0a14036dce0",
+      "sha256": "ade83597f0d9d62c31ed7697e403982e51a07414a4628606829dbba89f42df50",
+      "reason": "CLW rich user turn identity regression coverage. DEMO-02: verify recorded connector padding and structurally decode captured rich user fallback escapes; preserve exact body comparison and reject competing turns."
+    },
+    {
+      "path": "tests/browser-worker-contract.test.ts",
+      "base_sha256": "7fc3f0e3701e94d7f5f13d02cdd23c086e0f08902ba60044641021f5e7b638bb",
+      "sha256": "e69efbc61f3039430a3fc8971b94019e4993b792ee8cf27a7a71dfeb9c84933b",
+      "reason": "CLW connector input contract regression coverage. CLW 2026-09-28: launcher-owned background editor uses existing native text insertion, exact connector row activation and verified draft clearing without dropped keyboard events; managed Chrome keyboard behavior preserved."
+    },
+    {
+      "path": "tests/launcher-browser-host.test.ts",
+      "base_sha256": "063b2c6b4af28f0b59375e50825bfb2bd5f8b3ec8d63559ea3e0a5a37ba59faa",
+      "sha256": "b9fbcc7efdabf6a47ce7e4c3cc43f0d74aada26496339d39bf666c692d20291d",
+      "reason": "Fixed 6.1.2 backport. Preserve CLW receipt/EOF/error-frame behavior, diagnostic-only failed tabs and explicit account B partition. Upstream five-tab policy excluded; existing CLW resource-admission tests cover unbounded pages."
+    },
+    {
+      "path": "tests/turn-broker-lifecycle.test.ts",
+      "base_sha256": "9853b94cad813277c6e6af68704ed3f9b23dc0466ba4ccec2d8e5b2e861ad74b",
+      "sha256": "0b8f0df0a53d1e73e01fa95a3d479ef59cb507ef202320f4b2c8ed27f6992564",
+      "reason": "Fixed 6.1.2 backport. Preserve CLW receipt/EOF/error-frame behavior, diagnostic-only failed tabs and explicit account B partition. Upstream five-tab policy excluded; existing CLW resource-admission tests cover unbounded pages."
+    }
+  ],
+  "source_commit": "2d73f626290a5062825bb595dabb89aaf88d16c5",
+  "source_release": "6.1.2"
+}

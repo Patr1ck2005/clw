@@ -1,0 +1,139 @@
+{
+  "version": 1,
+  "baseline_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+  "patch": "clw.patch",
+  "files": [
+    {
+      "path": "src/adapters/chatgpt-web/browser-worker.ts",
+      "base_sha256": "d0bbc7cf95b79d2b8ab87d9f54ce972ac6cc69fae25f8e345996f0a5681b7da8",
+      "sha256": "4724889e4379406fa93d8f887238e27cdd04bb6abe7d52e14c5e9038813f9617",
+      "reason": "CLW task provenance clarification with semantic and role preservation tests. Bounded one-time navigation followed by public composer readiness, preserving pre-send failure and no replay."
+    },
+    {
+      "path": "src/adapters/chatgpt-web/clw-user-authorization.ts",
+      "base_sha256": null,
+      "sha256": "9bf833138fa09fa54f23e184a7b0f170d10e517208bc011a443133e4584cdf6b",
+      "reason": "User-authorized CLW task consent; preserve tool permissions and omit compaction"
+    },
+    {
+      "path": "src/adapters/chatgpt-web/compaction-handoff.ts",
+      "base_sha256": "25d25b1c58d41b13309db12a5b2bfc781f6b92a5a71f0af3ebea3c5d9964c01f",
+      "sha256": "95978c038a012b0f6c794ce24cc06b59a20766baac2c47baf127f33ecd6cff22",
+      "reason": "Preserve selected effort and original source/tool identity; independent retained checkpoint phase budget with a bounded Pro window. Prior call-id reconnect accounting retained."
+    },
+    {
+      "path": "src/adapters/chatgpt-web/index.ts",
+      "base_sha256": "20801eaa7b1fd1b458a5f3cd0a39b91f9893635d273be3624721c2bbeb26d3e7",
+      "sha256": "83476f66afa5cf4535d23ebdb2b8c1ab81b9cdb367c98f76a458352633ebb1d2",
+      "reason": "Preserve selected effort and original source/tool identity; independent retained checkpoint phase budget with a bounded Pro window. Prior call-id reconnect accounting retained."
+    },
+    {
+      "path": "src/adapters/chatgpt-web/native-tool-activity.ts",
+      "base_sha256": null,
+      "sha256": "98f58531a6057cc6593527f7088898fae4c7a9d17ad41afdf5dfc65d099b9afd",
+      "reason": "CLW adaptation preserved from the active checkout and verified by hash"
+    },
+    {
+      "path": "src/adapters/chatgpt-web/prompt.ts",
+      "base_sha256": "b635277c57f525b82fd5995a258d22f7448b6ded042aabb6b6cb31ca5910f401",
+      "sha256": "8745916e2ecfd911dafc746f828149908a8397a79a5c7e3e177548399cb093a0",
+      "reason": "User-authorized CLW task consent; preserve tool permissions and omit compaction"
+    },
+    {
+      "path": "src/adapters/chatgpt-web/turn-broker.ts",
+      "base_sha256": "bb93caa438a5aba6b69752edd85b2c36d56e56cfd810b914a05581c3e6d0882a",
+      "sha256": "d2a44a2a193edcf9a12630d42246ffb320a62ef85acca64844bd1bebc6cbea40",
+      "reason": "CLW adaptation preserved from the active checkout and verified by hash"
+    },
+    {
+      "path": "src/adapters/chatgpt-web/turn-execution.ts",
+      "base_sha256": "096fe05425289e25125a29fd02f1e6d6e52391f071ca459e74f89634b2493b85",
+      "sha256": "c404289babf880423dd8d40099551fb2c439c2a9bfef8a8b20723c37ec225bfc",
+      "reason": "CLW adaptation preserved from the active checkout and verified by hash"
+    },
+    {
+      "path": "src/adapters/chatgpt-web/turn-progress.ts",
+      "base_sha256": "906e63e3e9cbb85478a02c7605babc14a166b617b8f97e660109c8f8ece5263e",
+      "sha256": "2a1bbfd8f4e057b5734bdb2ddfccccbf152b79bd5d1db790f6c4ff8011e854a0",
+      "reason": "Call-id based progress preserves original tool boundaries across listener reconnect, with adapter/broker regression and original result accounting."
+    },
+    {
+      "path": "src/bridge.ts",
+      "base_sha256": "720408cb98557ddd430bbdbe28af8f70afbdbf700b60746d839b8a205c6dba1e",
+      "sha256": "207570bdaf034a75d700be824f438609e96c73c533690ca20d1deb77d2256cd6",
+      "reason": "CLW adaptation preserved from the active checkout and verified by hash"
+    },
+    {
+      "path": "src/server.ts",
+      "base_sha256": "8a4eff11d646cdc05db69342e51c7938e49c6991a1df861b36dfee8997a834d2",
+      "sha256": "25fd89b0fb7f35f6903449de01e2708ee06eb83a48b9f81ded4c82da0ef28eac",
+      "reason": "CLW adaptation preserved from the active checkout and verified by hash"
+    },
+    {
+      "path": "tests/browser-worker-contract.test.ts",
+      "base_sha256": "4914e21d2916c1390c1541abd2794db03c5fbb7c87fdcc5367d2fecf7e83b782",
+      "sha256": "7fc3f0e3701e94d7f5f13d02cdd23c086e0f08902ba60044641021f5e7b638bb",
+      "reason": "Call-id based progress preserves original tool boundaries across listener reconnect, with adapter/broker regression and original result accounting."
+    },
+    {
+      "path": "tests/chatgpt-web-harness.test.ts",
+      "base_sha256": "558a52ebc515c205790ce30a7886899991e25c5c061edc6ce1be62bcc59c18f3",
+      "sha256": "b54b1c0d5ff15e5de53511e505d462216005e192bab5aa4c909bd0a0acc4bc79",
+      "reason": "Call-id based progress preserves original tool boundaries across listener reconnect, with adapter/broker regression and original result accounting."
+    },
+    {
+      "path": "tests/clw-latex-preservation.test.ts",
+      "base_sha256": null,
+      "sha256": "1cd9bce0f5a80c9ce45589acf0c25b923f10f9c235e496ba398ca0cb94871c69",
+      "reason": "CLW adaptation preserved from the active checkout and verified by hash"
+    },
+    {
+      "path": "tests/native-tool-activity.test.ts",
+      "base_sha256": null,
+      "sha256": "27201ca2ee92fcb1be562462a5dd2dccaa0fecd2032c009b4f313c870e1f6c77",
+      "reason": "CLW adaptation preserved from the active checkout and verified by hash"
+    },
+    {
+      "path": "tests/prompt-contract.test.ts",
+      "base_sha256": "813cc9cadcc2fa6d5fc3b0a79692b5f919ab05b51bfa72f376ffda2a393baa1f",
+      "sha256": "1dcaa76aa159c6e073e958fe0962167df20a7b493ea64eee265eb84e6cb689b3",
+      "reason": "User-authorized CLW task consent; preserve tool permissions and omit compaction"
+    },
+    {
+      "path": "tests/retained-compaction.test.ts",
+      "base_sha256": "d4feda4438fe4b698f39e57530e447ec0f2d49d1103b8df8cd561bd9e293574a",
+      "sha256": "3da9bf7d8707d57ae0ec87326891259d18ebf660d3714da9632ca80ab7ea6808",
+      "reason": "Preserve selected effort and original source/tool identity; independent retained checkpoint phase budget with a bounded Pro window. Prior call-id reconnect accounting retained."
+    },
+    {
+      "path": "tests/server-native-tool-activity.test.ts",
+      "base_sha256": null,
+      "sha256": "4b1536a673bd82e886b57c8b613ee778b9af93a46333924ed3ee7b431a51820b",
+      "reason": "CLW adaptation preserved from the active checkout and verified by hash"
+    },
+    {
+      "path": "tests/tool-boundary-reconnect.test.ts",
+      "base_sha256": null,
+      "sha256": "e036c962efebf1199d0415b298eaf273eb32e668b95472ee9d71786c2963b0c7",
+      "reason": "Call-id based progress preserves original tool boundaries across listener reconnect, with adapter/broker regression and original result accounting."
+    },
+    {
+      "path": "tests/turn-broker-atomic-completion-pause.test.ts",
+      "base_sha256": null,
+      "sha256": "98b0a80344857478cf55b5139dc3c6beec164a5a6aab4a4939ea1b4f6ea82c63",
+      "reason": "CLW adaptation preserved from the active checkout and verified by hash"
+    },
+    {
+      "path": "tests/turn-broker-durable-receipt.test.ts",
+      "base_sha256": null,
+      "sha256": "d165b0ec6d9d9ffac5a016fb43cfe592b8bf88a4f2c7e08c210c3b6d7d9b36de",
+      "reason": "CLW adaptation preserved from the active checkout and verified by hash"
+    },
+    {
+      "path": "tests/turn-broker-lifecycle.test.ts",
+      "base_sha256": "a886d32803a8f61e4405ea28ccc0e39194aee61a590ba9536cdf9323b3aa5f9c",
+      "sha256": "9853b94cad813277c6e6af68704ed3f9b23dc0466ba4ccec2d8e5b2e861ad74b",
+      "reason": "CLW adaptation preserved from the active checkout and verified by hash"
+    }
+  ]
+}

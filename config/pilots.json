@@ -1,0 +1,254 @@
+{
+  "schema_version": 2,
+  "purpose": "rollout_readiness_only_not_execution_authority",
+  "dispatch_enabled": false,
+  "execution_owner": "existing_task_contract_and_native_executor",
+  "source_baseline": "0000000000000000000000000000000000000000",
+  "rollout_document": "docs/SOURCE.md",
+  "common": {
+    "task_time_splitting": false,
+    "shared_execution_kernel": "existing_webcodex",
+    "model_fallback_allowed": false,
+    "paid_api_calls_enabled": false,
+    "unknown_outcome_policy": "reconcile_original_identity_never_blind_replay",
+    "host_acceptance_is_resume_proof": false,
+    "ordinary_idle_is_failure": false,
+    "human_stop_precedes_autoresume": true,
+    "snapshots_prove_live_readiness": false,
+    "recovery_progress": "new_task_evidence_not_observer_heartbeat",
+    "default_controller": "reuse_incumbent_after_explicit_handover",
+    "data_ownership": "one_authority_per_fact_no_parallel_truth_store"
+  },
+  "gates": [
+    {
+      "id": "G0",
+      "name": "运行版本清晰与自举隔离",
+      "status": "in_progress",
+      "depends_on": [],
+      "evidence": [],
+      "first_use": "现有工作台在固定运行版中日常使用；不是自动托管",
+      "acceptance": [
+        "源码/运行进程/已验收版本可区分",
+        "稳定版、开发工作区、候选版隔离",
+        "候选只用隔离任务库并通过实际接口检查",
+        "一次受控产品升级及回退不重启稳定WebCodex或A/B隧道",
+        "未决回执在产品切换后仍可核对"
+      ]
+    },
+    {
+      "id": "G1",
+      "name": "真实任务自动回收与协作闭环",
+      "status": "planned",
+      "depends_on": [
+        "G0"
+      ],
+      "evidence": [],
+      "first_use": "你启动已绑定的网页角色，之后不再复制最终报告回M",
+      "acceptance": [
+        "先在产品自身的一个完整任务上验证1M加2个独立工作者",
+        "原始任务和回执映射到精确Project/Session/需求版本",
+        "M可由回执定位并核验实际文件而非复制聊天",
+        "至少一项真实返工和一项用户中途意见到达最终验收",
+        "同一职责无第二个在任写者"
+      ]
+    },
+    {
+      "id": "G2",
+      "name": "真实宿主唤醒与故障恢复",
+      "status": "planned",
+      "depends_on": [
+        "G0"
+      ],
+      "evidence": [],
+      "first_use": "支持实际验收过的宿主和页面条件下的自动续接",
+      "acceptance": [
+        "固定候选上游版本，不用生产0.4.1假定具有main新功能",
+        "真实网页至少三次连续事件到唤醒到新回合消费回执",
+        "分别验证正常后台完成续接与错误/疑似停滞恢复，不互相代替",
+        "M和工作者恢复均查询原操作，丢回包不重复派发",
+        "人工暂停、草稿和需求变更不会被恢复机制覆盖",
+        "隐藏/丢弃/关闭标签页的能力边界实际记录",
+        "失败达到约定上限后暂停并集中通知而非切账号/模型"
+      ]
+    },
+    {
+      "id": "G3",
+      "name": "数学持续Goal托管试用",
+      "status": "planned",
+      "depends_on": [
+        "G1",
+        "G2"
+      ],
+      "evidence": [],
+      "first_use": "初次绑定并授权后，目标范围内持续计划、分发、审查和下一轮推进",
+      "acceptance": [
+        "当前M和manual-dispatch实际交接完成，旧被拒执行不重启",
+        "至少三个真实工作循环，正常回收/返工/续接无需用户复制或发送继续",
+        "一次自然长时间试用与中断恢复；观察窗口不切割任务",
+        "没有发现结果时给出真实失败路线和下一步，不以日志量刷进展",
+        "证明、计算、独立复核、形式化和外部受理严格分层",
+        "无公共提交、身份或付款的隐式动作"
+      ]
+    },
+    {
+      "id": "G4",
+      "name": "共享资源调度、输入冻结与中途验收",
+      "status": "planned",
+      "depends_on": [
+        "G1"
+      ],
+      "evidence": [],
+      "first_use": "保留现任M和并行角色，自动收件、安排独占窗口并保留用户品质裁决",
+      "acceptance": [
+        "接入项目现有合同和状态来源，不新建竞争权威",
+        "两个独立角色并行完成一个真实完整任务",
+        "共享资源以声明容量调度，仅冻结使用该资源所需的相关输入",
+        "不相关的独立任务继续运行",
+        "占用结果未知不因租期到点就释放",
+        "中途反馈绑定需求版本、产物版本和输入收据，旧认可不能批准新成果",
+        "实际执行、失败修复、用户暂停均保留原执行与停写证据",
+        "至少验证两种不同领域配置，核心不得按项目名选择逻辑"
+      ]
+    }
+  ],
+  "pilots": [
+    {
+      "id": "example-pilot-1",
+      "root": "C:/CLW-Examples/pilot-1",
+      "project_id": "agent:example-runner:pilot-1",
+      "desired_mode": "goal_autopilot",
+      "initial_mode": "observe_only",
+      "activation_state": "not_activated",
+      "required_gates": [
+        "G3"
+      ],
+      "handover": {
+        "required": true,
+        "completed": false,
+        "incumbent_role": "M",
+        "entry": "docs/SOURCE.md",
+        "note": "Synthetic example; explicit handover required."
+      },
+      "resources": [
+        {
+          "id": "compute-pool",
+          "capacity": 2,
+          "available_capacity": 0,
+          "owner": "M",
+          "availability": "blocked",
+          "scope": "Synthetic resource declaration for metadata validation only",
+          "requires_frozen_inputs": false,
+          "unknown_occupancy": "retain_and_reconcile_original_execution"
+        },
+        {
+          "id": "proof-compiler",
+          "capacity": 1,
+          "available_capacity": 0,
+          "owner": "V",
+          "availability": "blocked",
+          "scope": "Synthetic resource declaration for metadata validation only",
+          "requires_frozen_inputs": true,
+          "unknown_occupancy": "retain_and_reconcile_original_execution"
+        },
+        {
+          "id": "repository-index",
+          "capacity": 1,
+          "available_capacity": 1,
+          "owner": "M",
+          "availability": "available",
+          "scope": "Synthetic resource declaration for metadata validation only",
+          "requires_frozen_inputs": true,
+          "unknown_occupancy": "retain_and_reconcile_original_execution"
+        }
+      ],
+      "quality": [
+        "goal_and_original_statement_versioned",
+        "bounded_role_write_scopes",
+        "independent_review",
+        "no_finite_search_as_general_proof",
+        "no_sorry_admit_or_new_axioms_as_completion"
+      ],
+      "external_actions_require_separate_authorization": [
+        "public_submission",
+        "identity",
+        "payment",
+        "new_paid_provider"
+      ],
+      "sources": [
+        {
+          "path": "docs/SOURCE.md",
+          "sha256": "342b7616c2a435b1f1cf6e48239b5f205fcbf50c329a193366d7b7931859160f"
+        }
+      ]
+    },
+    {
+      "id": "example-pilot-2",
+      "root": "C:/CLW-Examples/pilot-2",
+      "project_id": "agent:example-runner:pilot-2",
+      "desired_mode": "supervised_parallel",
+      "initial_mode": "observe_only",
+      "activation_state": "not_activated",
+      "required_gates": [
+        "G4"
+      ],
+      "handover": {
+        "required": true,
+        "completed": false,
+        "incumbent_role": "M",
+        "entry": "docs/SOURCE.md",
+        "note": "Synthetic example; explicit handover required."
+      },
+      "resources": [
+        {
+          "id": "application-build-window",
+          "capacity": 1,
+          "available_capacity": 0,
+          "owner": "M",
+          "availability": "unknown",
+          "scope": "Synthetic resource declaration for metadata validation only",
+          "requires_frozen_inputs": true,
+          "unknown_occupancy": "retain_and_reconcile_original_execution"
+        },
+        {
+          "id": "gpu-measurement",
+          "capacity": 1,
+          "available_capacity": 0,
+          "owner": "M",
+          "availability": "unknown",
+          "scope": "Synthetic resource declaration for metadata validation only",
+          "requires_frozen_inputs": true,
+          "unknown_occupancy": "retain_and_reconcile_original_execution"
+        },
+        {
+          "id": "repository-index",
+          "capacity": 1,
+          "available_capacity": 1,
+          "owner": "M",
+          "availability": "available",
+          "scope": "Synthetic resource declaration for metadata validation only",
+          "requires_frozen_inputs": true,
+          "unknown_occupancy": "retain_and_reconcile_original_execution"
+        }
+      ],
+      "quality": [
+        "actual_guard_preflight",
+        "original_job_reconciliation",
+        "build_input_receipt",
+        "module_revision_and_build_guid",
+        "human_quality_gate_not_test_exit_code"
+      ],
+      "external_actions_require_separate_authorization": [
+        "new_paid_provider",
+        "public_release",
+        "production_backend_restart"
+      ],
+      "sources": [
+        {
+          "path": "docs/SOURCE.md",
+          "sha256": "18df5bedda2816e5dd88a696389286f4a04dfbe786a2baac3df3d930520e7d73"
+        }
+      ]
+    }
+  ],
+  "source": "Synthetic metadata for schema tests only; no real project, authorization or observed source."
+}

@@ -1,0 +1,236 @@
+{
+  "version": 1,
+  "baseline_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+  "patch": "clw.patch",
+  "files": [
+    {
+      "path": "launcher/electron/browser-helper-verifier.cjs",
+      "base_sha256": "ff508b5773cc0f093f2d7a3a8f37fdab39d1af52b3f24a2a1c583dcbd1997a0c",
+      "sha256": "03b10a15a26b3acb3ec31633334647341a00dc4a6d97170ec2eab0b36b9fb267",
+      "reason": "CLW owned editor focus and verified cleanup, bounded 30s cleanup and 180s local inspection; retain connector identity, abort and readback protections."
+    },
+    {
+      "path": "src/adapters/chatgpt-web/browser-worker.ts",
+      "base_sha256": "a36de7d014c8ecb8a791358ec8b1229bd602d5d69fee92a5cbf2fa4e450e6693",
+      "sha256": "8596a1f5fd263f7c14e862784aaf618de47331e597683d9d6de37feb249d65f2",
+      "reason": "Use composer-owned public DOM transactions for model selection, exact connector menu activation, full prompt attachment, independent rollback, Send, acknowledgement and the exact bound assistant response. Ordinary and retained summary turns share the same model and effort selection, persisted range and lock checks, and family announcement verification; carry the original model family into retained compaction. The current mention portal is proved by its composer marker, the unique editor, exact inserted query, focus and unique row; ambiguous or changed owners never activate a connector. Keep Temporary Chat personalization proof and rollback. Avoid background Locator handle resolution without changing account, connector, request, prompt, model or effort. Genuine observation timeouts enter bounded same-page recovery, while missing and duplicate identities, actual availability failures, explicit cancellation and unknown submissions retain their guards. Never resend an unknown submission. Restore the existing 70s initial selection readiness budget for a newly mounted saved-chat composer using its same public DOM owner. Wait only for an absent effort control, recheck account failures and original editor/form identity, and immediately reject duplicates; pre-send verification does not wait or weaken model, effort, draft or Send guards. Wait for the same owned menu container or slider to mount within the existing one-second availability budget; reject ambiguous, changed owner/menu and public account failures without Send. Read-only ui-state inspects public account alerts independently of editor availability. Before the first launcher attachment mutation, wait through the existing activeComposer readiness path so an unmounted composer cannot trigger an editor transaction or rollback. Mutating/readback/Send operations still require the same unique connected visible editor and retain original connector, model, effort and submission guards; no selector, retry budget, account or original request changes. Wait for the exact post-navigation operational viewport before activating its owned model/effort picker; a mounted composer at zero viewport is not ready. Preserve Pro, account, same original page and no-Send failure boundaries. CLW Full access handles the unique configured MCP app confirmation through its public DOM, including Chinese alerts with a sibling approval form and keyboard hints. Prefer persistent approval when offered, retain one-shot fallback, abort and changed-card checks; manual timeout never denies a pending card. Resolve a first native MCP confirmation before submission acknowledgement or assistant DOM mounting can wait on that same approval. Full-access matching tolerates punctuation, app aliases and common positive consent labels; multiple cards advance in order, changed cards resnapshot, duplicate pending clicks are suppressed."
+    },
+    {
+      "path": "src/adapters/chatgpt-web/clw-user-authorization.ts",
+      "base_sha256": "9bf833138fa09fa54f23e184a7b0f170d10e517208bc011a443133e4584cdf6b",
+      "sha256": "13b803e1d937ea1e3e03339e9899c6fcd5e57f840bd9ae35eff65f3d757fd78e",
+      "reason": "Fresh approved policy supports routine tool confirmations alongside file confirmations; malformed or unreadable policies remain explicit errors."
+    },
+    {
+      "path": "src/adapters/chatgpt-web/clw-work-package.ts",
+      "base_sha256": null,
+      "sha256": "c308d2a539243435b0995d4ffaab752bcd738424b93ff606c30c8c084a44b82d",
+      "reason": "Load the user-selected substantial development workload from the shared CLW policy file; preserve transport and original execution authority."
+    },
+    {
+      "path": "src/adapters/chatgpt-web/compaction-handoff.ts",
+      "base_sha256": "95978c038a012b0f6c794ce24cc06b59a20766baac2c47baf127f33ecd6cff22",
+      "sha256": "abdfee2dbccdbfa79b888893e00ba01effcb625bdf184ea444c5136d380ef90f",
+      "reason": "Use composer-owned public DOM transactions for model selection, exact connector menu activation, full prompt attachment, independent rollback, Send, acknowledgement and the exact bound assistant response. Ordinary and retained summary turns share the same model and effort selection, persisted range and lock checks, and family announcement verification; carry the original model family into retained compaction. The current mention portal is proved by its composer marker, the unique editor, exact inserted query, focus and unique row; ambiguous or changed owners never activate a connector. Keep Temporary Chat personalization proof and rollback. Avoid background Locator handle resolution without changing account, connector, request, prompt, model or effort. Genuine observation timeouts enter bounded same-page recovery, while missing and duplicate identities, actual availability failures, explicit cancellation and unknown submissions retain their guards. Never resend an unknown submission. Retain structured compaction and delegated physical settlement promises until actual cleanup settles, independently from returned summary/failure and preserving original source/tool identity."
+    },
+    {
+      "path": "src/adapters/chatgpt-web/conversation-key.ts",
+      "base_sha256": "536c5de53852e4073ad7ddffc31b3cbf28bbfd292967154495a8812d8b978ca0",
+      "sha256": "cd782069220f526751f14c4f0a28bfcd1d61f50f60997dbc7d9f0c90173e9b3c",
+      "reason": "Keep native conversation identity stable when the first full system context is replaced by the approved short incremental context on later turns."
+    },
+    {
+      "path": "src/adapters/chatgpt-web/index.ts",
+      "base_sha256": "83476f66afa5cf4535d23ebdb2b8c1ab81b9cdb367c98f76a458352633ebb1d2",
+      "sha256": "be7a359275a9479f9efde7cf5177ecfc430f88f557084d57a859ec3fb47219dc",
+      "reason": "Cache a native conversation's fixed system context only after successful completion, with a bounded 64-entry lifetime; retries and failed turns retain full original context and native execution identity."
+    },
+    {
+      "path": "src/adapters/chatgpt-web/limits.ts",
+      "base_sha256": "db1a44b9cf3d17a4715cace34157ee2207010b6e15fc0422932822643a1bf45c",
+      "sha256": "4c30abb94f510fad66334fd83a3bb281ed4f6ee25b7074485200d251fb54b210",
+      "reason": "Use composer-owned public DOM transactions for model selection, exact connector menu activation, full prompt attachment, independent rollback, Send, acknowledgement and the exact bound assistant response. Ordinary and retained summary turns share the same model and effort selection, persisted range and lock checks, and family announcement verification; carry the original model family into retained compaction. The current mention portal is proved by its composer marker, the unique editor, exact inserted query, focus and unique row; ambiguous or changed owners never activate a connector. Keep Temporary Chat personalization proof and rollback. Avoid background Locator handle resolution without changing account, connector, request, prompt, model or effort. Genuine observation timeouts enter bounded same-page recovery, while missing and duplicate identities, actual availability failures, explicit cancellation and unknown submissions retain their guards. Never resend an unknown submission."
+    },
+    {
+      "path": "src/adapters/chatgpt-web/model-selection.ts",
+      "base_sha256": "f1680c15a1fbefc74b8df761f283251a62ead4e0de3223f46e93912a67000048",
+      "sha256": "a98580069b74bb86528202084b4d3e674b2345f9173e7a3376c09cbf315a6cae",
+      "reason": "Use composer-owned public DOM transactions for model selection, exact connector menu activation, full prompt attachment, independent rollback, Send, acknowledgement and the exact bound assistant response. Ordinary and retained summary turns share the same model and effort selection, persisted range and lock checks, and family announcement verification; carry the original model family into retained compaction. The current mention portal is proved by its composer marker, the unique editor, exact inserted query, focus and unique row; ambiguous or changed owners never activate a connector. Keep Temporary Chat personalization proof and rollback. Avoid background Locator handle resolution without changing account, connector, request, prompt, model or effort. Genuine observation timeouts enter bounded same-page recovery, while missing and duplicate identities, actual availability failures, explicit cancellation and unknown submissions retain their guards. Never resend an unknown submission."
+    },
+    {
+      "path": "src/adapters/chatgpt-web/native-compaction-control.ts",
+      "base_sha256": "3cdbf2502c105f3c036fa4e927446fc108a0632be6592e619f499d1813b178c9",
+      "sha256": "8bdea3eb45b72fd97187334f470b783d184948ce88d8334e889fefdf8a8ed59a",
+      "reason": "CLW retained compaction returns an exact fully settled public text checkpoint, with no execution capability, tool call, fallback replay, or change to original errors, identity, stop and permission fences."
+    },
+    {
+      "path": "src/adapters/chatgpt-web/prompt.ts",
+      "base_sha256": "8745916e2ecfd911dafc746f828149908a8397a79a5c7e3e177548399cb093a0",
+      "sha256": "520c9cefd67cf9461117f8f805ea10dfbcc73322c35888ec896f37a51ac3979a",
+      "reason": "Append the exact short common working agreement once; first-turn pointers and native tools retain authority while subsequent turns carry only relevant incremental context instead of repeated long management and authorization text."
+    },
+    {
+      "path": "src/adapters/chatgpt-web/turn-broker.ts",
+      "base_sha256": "3014039bdd55321a3afef8427029af8a43237ac544e2901ca9a5baf6dd7274b7",
+      "sha256": "1e0fb1ef53ae5228dafc82fa389352ef86085aff23c4563f5fb112462dfbe154",
+      "reason": "Maintain actual pending invocation/activity and external-owner counts; caller fence refuses new work without pruning existing execution or replacing canonical completion receipts."
+    },
+    {
+      "path": "src/adapters/chatgpt-web/turn-execution.ts",
+      "base_sha256": "c404289babf880423dd8d40099551fb2c439c2a9bfef8a8b20723c37ec225bfc",
+      "sha256": "f4f3c1d4f278ddc4921b387adc1e4333222a5c41acae500f5781c230edd6fe29",
+      "reason": "Keep current and retired browser physical-settlement promises visible to current-owner maintenance after a browser final; retained cleanup cannot disappear through retirement or cancellation."
+    },
+    {
+      "path": "src/chatgpt-session.ts",
+      "base_sha256": "a4b731178ddcc20efeba3f59829d492d4f4599ddff2b403c44cf62e62fc552ba",
+      "sha256": "9ebd31b7723663d6e232c6d638c84b20bcc4a3c71f97112206a96497dd4e480b",
+      "reason": "Use composer-owned public DOM transactions for model selection, exact connector menu activation, full prompt attachment, independent rollback, Send, acknowledgement and the exact bound assistant response. Ordinary and retained summary turns share the same model and effort selection, persisted range and lock checks, and family announcement verification; carry the original model family into retained compaction. The current mention portal is proved by its composer marker, the unique editor, exact inserted query, focus and unique row; ambiguous or changed owners never activate a connector. Keep Temporary Chat personalization proof and rollback. Avoid background Locator handle resolution without changing account, connector, request, prompt, model or effort. Genuine observation timeouts enter bounded same-page recovery, while missing and duplicate identities, actual availability failures, explicit cancellation and unknown submissions retain their guards. Never resend an unknown submission."
+    },
+    {
+      "path": "src/launcher-browser-host.ts",
+      "base_sha256": "0b4f6791abfaa07e32025bf088e088b79930b149c317e3b86f46b0c50fe515da",
+      "sha256": "b80f25a467fd0c127d4f50e4eff452031c16e6bdae16ca4812a4e04a5c0031bc",
+      "reason": "Use composer-owned public DOM transactions for model selection, exact connector menu activation, full prompt attachment, independent rollback, Send, acknowledgement and the exact bound assistant response. Ordinary and retained summary turns share the same model and effort selection, persisted range and lock checks, and family announcement verification; carry the original model family into retained compaction. The current mention portal is proved by its composer marker, the unique editor, exact inserted query, focus and unique row; ambiguous or changed owners never activate a connector. Keep Temporary Chat personalization proof and rollback. Avoid background Locator handle resolution without changing account, connector, request, prompt, model or effort. Genuine observation timeouts enter bounded same-page recovery, while missing and duplicate identities, actual availability failures, explicit cancellation and unknown submissions retain their guards. Never resend an unknown submission. Retry the owned read-only CDP handshake at most three times within the original connection deadline; preserve descriptor identity and caller cancellation; no retry on HTTP denials or invalid metadata and no browser Send or navigation."
+    },
+    {
+      "path": "src/native-maintenance-history.ts",
+      "base_sha256": null,
+      "sha256": "5601d852f2a3c5e790a2a0de05add5e259a092f40d152b7eb1779b739112c5c2",
+      "reason": "Keep only the current caller fence resident; archive released/refused original owner/operation keys with stable exact reads and write-before-release. Historical maintenance cycles impose no lifetime count limit; failed archives retain the original fence/drain. Same-key tombstones remain durable and snapshots never load terminal history."
+    },
+    {
+      "path": "src/native-maintenance.ts",
+      "base_sha256": null,
+      "sha256": "d6be93e71a55dedb37cfc99498ff45fbe1fbc66538de371a111d4d6e63eac709",
+      "reason": "Keep only the current caller fence resident; archive released/refused original owner/operation keys with stable exact reads and write-before-release. Historical maintenance cycles impose no lifetime count limit; failed archives retain the original fence/drain. Same-key tombstones remain durable and snapshots never load terminal history."
+    },
+    {
+      "path": "src/server.ts",
+      "base_sha256": "25fd89b0fb7f35f6903449de01e2708ee06eb83a48b9f81ded4c82da0ef28eac",
+      "sha256": "a8f2e32d88267b212bdded655f89a2be8420ad20b280740d1dbb57ad761c07ab",
+      "reason": "Authenticated maintenance endpoints freeze original owner/caller admission and full Session baseline before shutdown; fresh final CAS, retained cleanup promises and exact normal settlement callback preserve unknown and rejected exits."
+    },
+    {
+      "path": "tests/browser-turn-binding.test.ts",
+      "base_sha256": "ade83597f0d9d62c31ed7697e403982e51a07414a4628606829dbba89f42df50",
+      "sha256": "a8f8e0049c8c55eeae87fda0fbe728338619cf37444328ab9fb84584b5b5bc7a",
+      "reason": "Use composer-owned public DOM transactions for model selection, exact connector menu activation, full prompt attachment, independent rollback, Send, acknowledgement and the exact bound assistant response. Ordinary and retained summary turns share the same model and effort selection, persisted range and lock checks, and family announcement verification; carry the original model family into retained compaction. The current mention portal is proved by its composer marker, the unique editor, exact inserted query, focus and unique row; ambiguous or changed owners never activate a connector. Keep Temporary Chat personalization proof and rollback. Avoid background Locator handle resolution without changing account, connector, request, prompt, model or effort. Genuine observation timeouts enter bounded same-page recovery, while missing and duplicate identities, actual availability failures, explicit cancellation and unknown submissions retain their guards. Never resend an unknown submission."
+    },
+    {
+      "path": "tests/browser-worker-contract.test.ts",
+      "base_sha256": "e69efbc61f3039430a3fc8971b94019e4993b792ee8cf27a7a71dfeb9c84933b",
+      "sha256": "e38dec099185e63dc4a83f32f0ef506ef929dc876bd1b9577f888ec9b53781e5",
+      "reason": "Use composer-owned public DOM transactions for model selection, exact connector menu activation, full prompt attachment, independent rollback, Send, acknowledgement and the exact bound assistant response. Ordinary and retained summary turns share the same model and effort selection, persisted range and lock checks, and family announcement verification; carry the original model family into retained compaction. The current mention portal is proved by its composer marker, the unique editor, exact inserted query, focus and unique row; ambiguous or changed owners never activate a connector. Keep Temporary Chat personalization proof and rollback. Avoid background Locator handle resolution without changing account, connector, request, prompt, model or effort. Genuine observation timeouts enter bounded same-page recovery, while missing and duplicate identities, actual availability failures, explicit cancellation and unknown submissions retain their guards. Never resend an unknown submission."
+    },
+    {
+      "path": "tests/chatgpt-effort-browser.test.ts",
+      "base_sha256": "d68db010c65e72a8782cdb005032081713a55d8f6beab4b88cac79608bbd510e",
+      "sha256": "e1e3e9b98bdc2d19455fbcf7eff1c77b1d7a0e988b3af14a212eb00ba6e8d074",
+      "reason": "Use composer-owned public DOM transactions for model selection, exact connector menu activation, full prompt attachment, independent rollback, Send, acknowledgement and the exact bound assistant response. Ordinary and retained summary turns share the same model and effort selection, persisted range and lock checks, and family announcement verification; carry the original model family into retained compaction. The current mention portal is proved by its composer marker, the unique editor, exact inserted query, focus and unique row; ambiguous or changed owners never activate a connector. Keep Temporary Chat personalization proof and rollback. Avoid background Locator handle resolution without changing account, connector, request, prompt, model or effort. Genuine observation timeouts enter bounded same-page recovery, while missing and duplicate identities, actual availability failures, explicit cancellation and unknown submissions retain their guards. Never resend an unknown submission. Restore the existing 70s initial selection readiness budget for a newly mounted saved-chat composer using its same public DOM owner. Wait only for an absent effort control, recheck account failures and original editor/form identity, and immediately reject duplicates; pre-send verification does not wait or weaken model, effort, draft or Send guards. Wait for the exact post-navigation operational viewport before activating its owned model/effort picker; a mounted composer at zero viewport is not ready. Preserve Pro, account, same original page and no-Send failure boundaries. CLW Full access handles the unique configured MCP app confirmation through its public DOM, including Chinese alerts with a sibling approval form and keyboard hints. Prefer persistent approval when offered, retain one-shot fallback, abort and changed-card checks; manual timeout never denies a pending card. Resolve a first native MCP confirmation before submission acknowledgement or assistant DOM mounting can wait on that same approval. Full-access matching tolerates punctuation, app aliases and common positive consent labels; multiple cards advance in order, changed cards resnapshot, duplicate pending clicks are suppressed."
+    },
+    {
+      "path": "tests/chatgpt-limits.test.ts",
+      "base_sha256": "4655f78ea7af401b6f25e03463d820c27511d78be1dc4c837639b84666a353a2",
+      "sha256": "269d2ba328ae651f8d365e70271a0b70a1574cd00c62b16f95e597e3979a89e3",
+      "reason": "Use composer-owned public DOM transactions for model selection, exact connector menu activation, full prompt attachment, independent rollback, Send, acknowledgement and the exact bound assistant response. Ordinary and retained summary turns share the same model and effort selection, persisted range and lock checks, and family announcement verification; carry the original model family into retained compaction. The current mention portal is proved by its composer marker, the unique editor, exact inserted query, focus and unique row; ambiguous or changed owners never activate a connector. Keep Temporary Chat personalization proof and rollback. Avoid background Locator handle resolution without changing account, connector, request, prompt, model or effort. Genuine observation timeouts enter bounded same-page recovery, while missing and duplicate identities, actual availability failures, explicit cancellation and unknown submissions retain their guards. Never resend an unknown submission."
+    },
+    {
+      "path": "tests/chatgpt-session.test.ts",
+      "base_sha256": "8342f56a1e4b94d1f9fd07102005c5e269947e87fca03ba3965515780ccef0d9",
+      "sha256": "004a4e65ec3eb6973bf4c0a3d023d59b0dee9ed7705bdb9b208170228a4a95df",
+      "reason": "Use composer-owned public DOM transactions for model selection, exact connector menu activation, full prompt attachment, independent rollback, Send, acknowledgement and the exact bound assistant response. Ordinary and retained summary turns share the same model and effort selection, persisted range and lock checks, and family announcement verification; carry the original model family into retained compaction. The current mention portal is proved by its composer marker, the unique editor, exact inserted query, focus and unique row; ambiguous or changed owners never activate a connector. Keep Temporary Chat personalization proof and rollback. Avoid background Locator handle resolution without changing account, connector, request, prompt, model or effort. Genuine observation timeouts enter bounded same-page recovery, while missing and duplicate identities, actual availability failures, explicit cancellation and unknown submissions retain their guards. Never resend an unknown submission."
+    },
+    {
+      "path": "tests/chatgpt-web-harness.test.ts",
+      "base_sha256": "b54b1c0d5ff15e5de53511e505d462216005e192bab5aa4c909bd0a0acc4bc79",
+      "sha256": "cc13881264f3d177951f6f7a8b47c01b0cfd9a6b6f6d4a57449d7a7c11203267",
+      "reason": "Verify compact working prompts and the original native tool/task contract without repeated long fixed instructions."
+    },
+    {
+      "path": "tests/clw-user-authorization.test.ts",
+      "base_sha256": null,
+      "sha256": "4218eb7658a522946ad4041a3cdb66df6d2b473539cee78a22bbc2673c4a4934",
+      "reason": "Fresh user-selected consent reference: genuinely absent file is empty; malformed/unreadable existing policy retains error. No implicit consent or permission changes."
+    },
+    {
+      "path": "tests/launcher-attachment-browser.test.ts",
+      "base_sha256": null,
+      "sha256": "dcb69c7e4e86ee1ff3c602ed5e75b7b0a6d2118d389330c712bbe1dfa28a6f02",
+      "reason": "Use composer-owned public DOM transactions for model selection, exact connector menu activation, full prompt attachment, independent rollback, Send, acknowledgement and the exact bound assistant response. Ordinary and retained summary turns share the same model and effort selection, persisted range and lock checks, and family announcement verification; carry the original model family into retained compaction. The current mention portal is proved by its composer marker, the unique editor, exact inserted query, focus and unique row; ambiguous or changed owners never activate a connector. Keep Temporary Chat personalization proof and rollback. Avoid background Locator handle resolution without changing account, connector, request, prompt, model or effort. Genuine observation timeouts enter bounded same-page recovery, while missing and duplicate identities, actual availability failures, explicit cancellation and unknown submissions retain their guards. Never resend an unknown submission. Use the real activeComposer readiness implementation in the attachment harness instead of substituting it with a stub; only the duplicate fixture bounds its existing readiness timeout. Existing connector, retained prompt and guarded attachment assertions remain intact."
+    },
+    {
+      "path": "tests/launcher-browser-host.test.ts",
+      "base_sha256": "b9fbcc7efdabf6a47ce7e4c3cc43f0d74aada26496339d39bf666c692d20291d",
+      "sha256": "f35885de6ac4bd06da44a2217bdc55958ba5a7ca312a29e0928838fb3300e2a6",
+      "reason": "Use composer-owned public DOM transactions for model selection, exact connector menu activation, full prompt attachment, independent rollback, Send, acknowledgement and the exact bound assistant response. Ordinary and retained summary turns share the same model and effort selection, persisted range and lock checks, and family announcement verification; carry the original model family into retained compaction. The current mention portal is proved by its composer marker, the unique editor, exact inserted query, focus and unique row; ambiguous or changed owners never activate a connector. Keep Temporary Chat personalization proof and rollback. Avoid background Locator handle resolution without changing account, connector, request, prompt, model or effort. Genuine observation timeouts enter bounded same-page recovery, while missing and duplicate identities, actual availability failures, explicit cancellation and unknown submissions retain their guards. Never resend an unknown submission."
+    },
+    {
+      "path": "tests/launcher-cdp-acquisition.test.ts",
+      "base_sha256": null,
+      "sha256": "70dcb416e9c4f09a702538407dd335671f1b0773ddc6300404edb9083e35f791",
+      "reason": "Owned CDP acquisition regressions for a real five-second stall, transient handshake, same-owner heartbeat, denials, metadata, changed ownership, bounded attempts, deadline and cancellation."
+    },
+    {
+      "path": "tests/launcher-composer-readiness-browser.test.ts",
+      "base_sha256": null,
+      "sha256": "b227e07ada673cb6383165d5b817f5c6809f1132b79988a7ae3b81bc09cd1748",
+      "reason": "Exercise ui-state with zero or two composers and public alerts; preserve unique-editor guards for every mutation/readback operation; prove existing activeComposer waits for composer hydration before the first clear; abort and timeout leave the original draft and attachment state unchanged without Send or rollback."
+    },
+    {
+      "path": "tests/native-maintenance.test.ts",
+      "base_sha256": null,
+      "sha256": "7f9750f66f0fab2d1af8ee194d001875c5e168b33736ae7dd32a05b4a2084c4c",
+      "reason": "Keep only the current caller fence resident; archive released/refused original owner/operation keys with stable exact reads and write-before-release. Historical maintenance cycles impose no lifetime count limit; failed archives retain the original fence/drain. Same-key tombstones remain durable and snapshots never load terminal history."
+    },
+    {
+      "path": "tests/owned-composer-cleanup.test.ts",
+      "base_sha256": null,
+      "sha256": "e1a726311298bb95b5c87687037e443722dd569e3af9924f0dea2290c3f8d8f4",
+      "reason": "Use composer-owned public DOM transactions for model selection, exact connector menu activation, full prompt attachment, independent rollback, Send, acknowledgement and the exact bound assistant response. Ordinary and retained summary turns share the same model and effort selection, persisted range and lock checks, and family announcement verification; carry the original model family into retained compaction. The current mention portal is proved by its composer marker, the unique editor, exact inserted query, focus and unique row; ambiguous or changed owners never activate a connector. Keep Temporary Chat personalization proof and rollback. Avoid background Locator handle resolution without changing account, connector, request, prompt, model or effort. Genuine observation timeouts enter bounded same-page recovery, while missing and duplicate identities, actual availability failures, explicit cancellation and unknown submissions retain their guards. Never resend an unknown submission."
+    },
+    {
+      "path": "tests/prompt-contract.test.ts",
+      "base_sha256": "1dcaa76aa159c6e073e958fe0962167df20a7b493ea64eee265eb84e6cb689b3",
+      "sha256": "ade5fc15d6a005a8f345e4405a8c68c7202469433a5b55f89883574afbf1e4b5",
+      "reason": "Verify the short shared working agreement, original native tool protocol, and distinct full versus incremental context behavior."
+    },
+    {
+      "path": "tests/retained-compaction.test.ts",
+      "base_sha256": "3da9bf7d8707d57ae0ec87326891259d18ebf660d3714da9632ca80ab7ea6808",
+      "sha256": "b03d7fd3dc9369055f32226aae93cc133ba3fabb525e0ea269838480b780d8ff",
+      "reason": "Use composer-owned public DOM transactions for model selection, exact connector menu activation, full prompt attachment, independent rollback, Send, acknowledgement and the exact bound assistant response. Ordinary and retained summary turns share the same model and effort selection, persisted range and lock checks, and family announcement verification; carry the original model family into retained compaction. The current mention portal is proved by its composer marker, the unique editor, exact inserted query, focus and unique row; ambiguous or changed owners never activate a connector. Keep Temporary Chat personalization proof and rollback. Avoid background Locator handle resolution without changing account, connector, request, prompt, model or effort. Genuine observation timeouts enter bounded same-page recovery, while missing and duplicate identities, actual availability failures, explicit cancellation and unknown submissions retain their guards. Never resend an unknown submission."
+    },
+    {
+      "path": "tests/retained-prompt-context.test.ts",
+      "base_sha256": null,
+      "sha256": "c938021d287b7f20d9e132c419da670331a7718e39ca6254e61c00031ac492a3",
+      "reason": "CLW adaptation preserved from the active checkout and verified by hash"
+    },
+    {
+      "path": "tests/zero-risk-adapter.test.ts",
+      "base_sha256": "1dbfa2127dea1ddacc571f53c754bcf530151b6fb493342fce999bff0eec055e",
+      "sha256": "4308b625d42b0041dc743dd81b6ba4b5dd53b9bb7c85cb2d3cbfab4ea9c47013",
+      "reason": "Verify completed-only fixed-context caching, failed-turn retention, and stable original native conversation identity."
+    },
+    {
+      "path": "tests/zero-risk-prompt-contract.test.ts",
+      "base_sha256": "3d14ef0882c7591a0675a41e3ab2f41f1c68b40417c80fc3e014d37df6f24443",
+      "sha256": "fa3650fc5ead1e796fac8f5a4b66e5fae324c8020e481ff2fce5327306b49d04",
+      "reason": "Separate manual safe request_id from automatic native turn_token tools; preserve MCP lifecycle metadata, compaction, permissions and original execution identity. Regression covers both contracts."
+    },
+    {
+      "path": "launcher/electron/browser-host.cjs",
+      "base_sha256": "07569cd5f9c8d3ada6c4a4401f5cf97720a325347e23aaa5d2ec5d8e91665b25",
+      "sha256": "3af8e4af5f171fac4537226ef077601e24b65f25329be2c07fb297aa99c8b741",
+      "reason": "Restore this exact hidden turn viewport at full navigation completion even when its DOM-ready emulation dimensions are still cached. No focus change, account change, navigation retry or model Send."
+    },
+    {
+      "path": "launcher/tests/browser-host.test.cjs",
+      "base_sha256": "1e7f2e9cd7ae053bb6aecfbbed8a1f06ff3925b4bdb8bf6801c323c0e5b0977f",
+      "sha256": "5386ae5148ce1df6ddbacef2083cb211948e66635ce8c8a2cc5eaed6d17d0943",
+      "reason": "Restore this exact hidden turn viewport at full navigation completion even when its DOM-ready emulation dimensions are still cached. No focus change, account change, navigation retry or model Send."
+    }
+  ],
+  "scope": "CLW changes applied after the existing reviewed 6.1.2 backports, not represented as upstream-only code."
+}

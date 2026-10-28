@@ -1,0 +1,23 @@
+{
+  "name": "markdown-it-texmath",
+  "version": "1.0.0",
+  "license": "MIT",
+  "source": "https://registry.npmjs.org/markdown-it-texmath/-/markdown-it-texmath-1.0.0.tgz",
+  "dist_integrity": "sha512-4hhkiX8/gus+6e53PLCUmUrsa6ZWGgJW2XCW6O0ASvZUiezIK900ZicinTDtG3kAO2kon7oUA/ReWmpW2FByxg==",
+  "archive_sha256": "afca1f328047ecd9a121ed3148232b91166c374766011c8f85372a7a0d18c2b3",
+  "selection": "Official browser distribution and original license; only browser UMD filename normalized, no npm installation or source transformation.",
+  "selected_archive_paths": {
+    "package/texmath.js": "texmath.js",
+    "package/license.txt": "LICENSE"
+  },
+  "files": {
+    "texmath.js": {
+      "bytes": 14071,
+      "sha256": "926e075a1745e1019813b8418b90183feea0c7b3782c85dceb4f246da999edc6"
+    },
+    "LICENSE": {
+      "bytes": 1096,
+      "sha256": "655a4d5721dabe668d3ef640d5587d44534d370e7dc256d4f33740278dc710d5"
+    }
+  }
+}

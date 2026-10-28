@@ -1,0 +1,1057 @@
+From 9ae45a2a0ad7e0de170d35075cc7ff12c4b64d98 Mon Sep 17 00:00:00 2001
+From: Wang Keren <144989952+Patr1ck2005@users.noreply.github.com>
+Date: Sun, 11 Oct 2026 03:56:02 -0700
+Subject: [PATCH 1/3] fix: bound runner websocket silence and clarify transport
+ status
+
+Expire native WebSocket sessions after 90 seconds without valid inbound
+activity and bound sends to 30 seconds, using the existing reconnect and
+JobManager continuation path. Distinguish stale heartbeat without recorded
+close from observed transport disconnect; keep the 60-second readiness gate.
+
+Validated the exact five-file candidate with fmt, Runner/Server check,
+7 liveness tests, 103 transport tests, 4 diagnostic tests, 19 reconnect tests
+and 1 stale-metadata test. Original upstream baseline is
+37098d4624f0000bfab54ad102ecb0df619d7dc6; this origin record applies to this
+candidate commit and does not infer provenance for historical commits.
+
+Origin: ai-assisted:gpt-6.1-sol-codex
+---
+ .../src/webcodex_runner/transport.rs          | 206 ++++++--
+ .../src/webcodex_runner/transport_tests.rs    | 460 ++++++++++++++++++
+ src/tool_runtime/runtime_info.rs              |  34 +-
+ src/tool_runtime/tests/metadata.rs            |   7 +-
+ src/tool_runtime/tests/reconnect.rs           | 126 +++++
+ 5 files changed, 776 insertions(+), 57 deletions(-)
+
+diff --git a/crates/webcodex-runner/src/webcodex_runner/transport.rs b/crates/webcodex-runner/src/webcodex_runner/transport.rs
+index e951029b2a5ff4b74146aa97deaea4424e9e6e25..238ac73aadcbb29b1cd35052f11653fdf619d3df 100644
+--- a/crates/webcodex-runner/src/webcodex_runner/transport.rs
++++ b/crates/webcodex-runner/src/webcodex_runner/transport.rs
+@@ -80,6 +80,23 @@ use websocket_connect::{
+ pub(crate) const WS_OUTGOING_CAPACITY: usize = 64;
+ /// WebSocket ping interval.
+ const WS_PING_INTERVAL: Duration = Duration::from_secs(30);
++/// Allow several keepalive opportunities: a busy Server may drop one Pong.
++const WS_INBOUND_IDLE_TIMEOUT: Duration = Duration::from_secs(90);
++/// A stuck writer must release the old socket so the existing supervisor can reconnect.
++const WS_SEND_TIMEOUT: Duration = Duration::from_secs(30);
++
++#[derive(Clone, Copy)]
++struct WebSocketLiveness {
++    ping_interval: Duration,
++    inbound_idle_timeout: Duration,
++    send_timeout: Duration,
++}
++
++const WS_LIVENESS: WebSocketLiveness = WebSocketLiveness {
++    ping_interval: WS_PING_INTERVAL,
++    inbound_idle_timeout: WS_INBOUND_IDLE_TIMEOUT,
++    send_timeout: WS_SEND_TIMEOUT,
++};
+ /// Bounded reconnect backoff after a transport disconnect or transient error.
+ const RECONNECT_BACKOFF_STEPS: [Duration; 5] = [
+     Duration::from_secs(1),
+@@ -2126,6 +2143,8 @@ type RunnerWebSocket =
+ 
+ enum StreamRead {
+     Envelope(RunnerEnvelope),
++    Activity,
++    Ignored,
+     Closed,
+ }
+ 
+@@ -2156,7 +2175,7 @@ impl RegisteredStream {
+         use futures_util::StreamExt;
+ 
+         match self {
+-            Self::WebSocket { reader, .. } => loop {
++            Self::WebSocket { reader, .. } => {
+                 let message = match reader.next().await {
+                     Some(Ok(message)) => message,
+                     Some(Err(error)) => {
+@@ -2191,17 +2210,27 @@ impl RegisteredStream {
+                     }
+                     return Ok(StreamRead::Closed);
+                 }
++                if matches!(
++                    message,
++                    tokio_tungstenite::tungstenite::Message::Ping(_)
++                        | tokio_tungstenite::tungstenite::Message::Pong(_)
++                ) {
++                    return Ok(StreamRead::Activity);
++                }
+                 let text = match message.into_text() {
+                     Ok(text) => text,
+-                    Err(_) => continue,
++                    Err(_) => return Ok(StreamRead::Ignored),
+                 };
+                 match RunnerEnvelope::from_slice(text.as_bytes()) {
+-                    Ok(envelope) => return Ok(StreamRead::Envelope(envelope)),
++                    Ok(envelope) => Ok(StreamRead::Envelope(envelope)),
+                     Err(error) => {
+                         eprintln!("webcodex-runner websocket malformed envelope: {}", error);
++                        // Return after each invalid frame so an always-ready
++                        // peer cannot hide the outer liveness/shutdown timers.
++                        Ok(StreamRead::Ignored)
+                     }
+                 }
+-            },
++            }
+             Self::Quic { reader, .. } => match read_quic_frame(reader).await {
+                 Ok(envelope) => Ok(StreamRead::Envelope(envelope)),
+                 Err(QuicFrameError::EmptyStream) => {
+@@ -2455,6 +2484,7 @@ async fn serve_registered_stream<F>(
+     mut writer_task: tokio::task::JoinHandle<StreamWriterExit>,
+     project_inventory_sync: Option<ProjectInventorySync>,
+     runtime: &RunnerRuntimeState,
++    websocket_liveness: Option<WebSocketLiveness>,
+     shutdown: F,
+ ) -> Result<RunnerSessionExit, String>
+ where
+@@ -2475,8 +2505,14 @@ where
+     let jobs = runtime.jobs.clone();
+     jobs.install_sink(sink.clone());
+     jobs.replay_snapshots_since(registered_jobs);
+-    let mut ping_interval = tokio::time::interval(transport.ping_interval());
++    let mut ping_interval = tokio::time::interval(
++        websocket_liveness.map_or(transport.ping_interval(), |limits| limits.ping_interval),
++    );
+     ping_interval.tick().await;
++    let mut inbound_deadline = tokio::time::Instant::now()
++        + websocket_liveness.map_or(WS_INBOUND_IDLE_TIMEOUT, |limits| {
++            limits.inbound_idle_timeout
++        });
+     let mut project_inventory = StreamingProjectInventoryCoordinator::new(project_inventory_sync);
+     let (project_inventory_refresh_tx, mut project_inventory_refresh_rx) =
+         tokio::sync::mpsc::channel::<()>(1);
+@@ -2490,6 +2526,14 @@ where
+         let project_inventory_retry_deadline =
+             project_inventory_retry_at.unwrap_or_else(tokio::time::Instant::now);
+         tokio::select! {
++            _ = tokio::time::sleep_until(inbound_deadline), if websocket_liveness.is_some() => {
++                tracing::warn!(
++                    transport = transport.name(),
++                    reason_code = "inbound_idle_timeout",
++                    "webcodex-runner websocket inbound activity timed out; reconnecting"
++                );
++                break;
++            }
+             _ = tokio::time::sleep_until(project_inventory_retry_deadline), if project_inventory_retry_at.is_some() => {
+                 project_inventory.retry_pending_now(transport, &out_tx);
+             }
+@@ -2528,6 +2572,9 @@ where
+             read = stream.receive() => {
+                 match read {
+                     Ok(StreamRead::Envelope(envelope)) => {
++                        if let Some(limits) = websocket_liveness {
++                            inbound_deadline = tokio::time::Instant::now() + limits.inbound_idle_timeout;
++                        }
+                         if let Some(error) = handle_stream_envelope(
+                             transport,
+                             envelope,
+@@ -2542,6 +2589,12 @@ where
+                             break;
+                         }
+                     }
++                    Ok(StreamRead::Activity) => {
++                        if let Some(limits) = websocket_liveness {
++                            inbound_deadline = tokio::time::Instant::now() + limits.inbound_idle_timeout;
++                        }
++                    }
++                    Ok(StreamRead::Ignored) => {}
+                     Ok(StreamRead::Closed) => break,
+                     Err(error) => {
+                         session_error = Some(error);
+@@ -3016,6 +3069,7 @@ async fn quic_session(
+         writer_task,
+         project_inventory_sync,
+         runtime,
++        None,
+         runtime.wait_for_shutdown(),
+     )
+     .await
+@@ -3083,6 +3137,95 @@ async fn websocket_session_with_shutdown<F>(
+     runtime: &RunnerRuntimeState,
+     shutdown: F,
+ ) -> Result<RunnerSessionExit, RunnerTransportError>
++where
++    F: std::future::Future<Output = ()>,
++{
++    websocket_session_with_liveness(
++        cfg,
++        projects,
++        runner_instance_id,
++        runtime,
++        WS_LIVENESS,
++        shutdown,
++    )
++    .await
++}
++
++async fn write_websocket_envelopes<S>(
++    mut sink: S,
++    mut out_rx: tokio::sync::mpsc::Receiver<RunnerEnvelope>,
++    liveness: WebSocketLiveness,
++) -> StreamWriterExit
++where
++    S: futures_util::Sink<tokio_tungstenite::tungstenite::Message> + Unpin,
++{
++    use futures_util::SinkExt;
++    use tokio_tungstenite::tungstenite::Message as WsMessage;
++
++    while let Some(env) = out_rx.recv().await {
++        let envelope_kind = env.kind();
++        let is_goodbye = matches!(env, RunnerEnvelope::Goodbye { .. });
++        let send_started = Instant::now();
++        let Ok(json) = serde_json::to_string(&env) else {
++            observe_runner_stream_writer_send(
++                StreamTransport::WebSocket,
++                envelope_kind,
++                None,
++                RunnerStreamMetricOutcome::TransportError,
++            );
++            return StreamWriterExit::TransportFailed;
++        };
++        match tokio::time::timeout(
++            liveness.send_timeout,
++            sink.send(WsMessage::Text(json.into())),
++        )
++        .await
++        {
++            Ok(Ok(())) => {}
++            result => {
++                observe_runner_stream_writer_send(
++                    StreamTransport::WebSocket,
++                    envelope_kind,
++                    None,
++                    if result.is_err() {
++                        RunnerStreamMetricOutcome::Timeout
++                    } else {
++                        RunnerStreamMetricOutcome::TransportError
++                    },
++                );
++                // A cancelled send may have partially flushed. Drop this
++                // socket; never retry the envelope on the same writer.
++                return StreamWriterExit::TransportFailed;
++            }
++        }
++        observe_runner_stream_writer_send(
++            StreamTransport::WebSocket,
++            envelope_kind,
++            Some(send_started.elapsed()),
++            RunnerStreamMetricOutcome::Success,
++        );
++        if is_goodbye {
++            // The session loop continues polling the split read half while
++            // awaiting this task, allowing tungstenite's close handshake to
++            // progress without turning this into an unbounded wait.
++            return if sink.close().await.is_ok() {
++                StreamWriterExit::GracefulClose
++            } else {
++                StreamWriterExit::TransportFailed
++            };
++        }
++    }
++    StreamWriterExit::ChannelClosed
++}
++
++async fn websocket_session_with_liveness<F>(
++    cfg: &RunnerConfig,
++    projects: Vec<RunnerProjectSummary>,
++    runner_instance_id: &str,
++    runtime: &RunnerRuntimeState,
++    liveness: WebSocketLiveness,
++    shutdown: F,
++) -> Result<RunnerSessionExit, RunnerTransportError>
+ where
+     F: std::future::Future<Output = ()>,
+ {
+@@ -3128,7 +3271,10 @@ where
+     let reg_json =
+         serde_json::to_string(&reg_env).map_err(|e| format!("failed to encode register: {}", e))?;
+     tokio::select! {
+-        result = ws_stream.send(WsMessage::Text(reg_json.into())) => result,
++        result = tokio::time::timeout(
++            liveness.send_timeout,
++            ws_stream.send(WsMessage::Text(reg_json.into())),
++        ) => result.map_err(|_| "websocket register send timed out".to_string())?,
+         _ = &mut shutdown => {
+             runtime.request_shutdown_signal();
+             return Ok(RunnerSessionExit::Shutdown);
+@@ -3162,55 +3308,14 @@ where
+     );
+ 
+     // Split socket into writer (drains outgoing envelopes) and reader.
+-    let (mut sink, stream) = ws_stream.split();
+-    let (out_tx, mut out_rx) = tokio::sync::mpsc::channel::<RunnerEnvelope>(WS_OUTGOING_CAPACITY);
++    let (sink, stream) = ws_stream.split();
++    let (out_tx, out_rx) = tokio::sync::mpsc::channel::<RunnerEnvelope>(WS_OUTGOING_CAPACITY);
+     try_queue_project_inventory_page(
+         StreamTransport::WebSocket,
+         &mut project_inventory_sync,
+         &out_tx,
+     );
+-    let writer_task = tokio::spawn(async move {
+-        while let Some(env) = out_rx.recv().await {
+-            let envelope_kind = env.kind();
+-            let is_goodbye = matches!(env, RunnerEnvelope::Goodbye { .. });
+-            let send_started = Instant::now();
+-            let Ok(json) = serde_json::to_string(&env) else {
+-                observe_runner_stream_writer_send(
+-                    StreamTransport::WebSocket,
+-                    envelope_kind,
+-                    None,
+-                    RunnerStreamMetricOutcome::TransportError,
+-                );
+-                return StreamWriterExit::TransportFailed;
+-            };
+-            if sink.send(WsMessage::Text(json.into())).await.is_err() {
+-                observe_runner_stream_writer_send(
+-                    StreamTransport::WebSocket,
+-                    envelope_kind,
+-                    None,
+-                    RunnerStreamMetricOutcome::TransportError,
+-                );
+-                return StreamWriterExit::TransportFailed;
+-            }
+-            observe_runner_stream_writer_send(
+-                StreamTransport::WebSocket,
+-                envelope_kind,
+-                Some(send_started.elapsed()),
+-                RunnerStreamMetricOutcome::Success,
+-            );
+-            if is_goodbye {
+-                // The session loop continues polling the split read half while
+-                // awaiting this task, allowing tungstenite's close handshake to
+-                // progress without turning this into an unbounded wait.
+-                return if sink.close().await.is_ok() {
+-                    StreamWriterExit::GracefulClose
+-                } else {
+-                    StreamWriterExit::TransportFailed
+-                };
+-            }
+-        }
+-        StreamWriterExit::ChannelClosed
+-    });
++    let writer_task = tokio::spawn(write_websocket_envelopes(sink, out_rx, liveness));
+     serve_registered_stream(
+         StreamTransport::WebSocket,
+         cfg,
+@@ -3221,6 +3326,7 @@ where
+         writer_task,
+         project_inventory_sync,
+         runtime,
++        Some(liveness),
+         shutdown,
+     )
+     .await
+diff --git a/crates/webcodex-runner/src/webcodex_runner/transport_tests.rs b/crates/webcodex-runner/src/webcodex_runner/transport_tests.rs
+index db34839719ba66ffeb05daa82f82033dc5c73a50..0f2f7d83a90ae2534e4ab1ffd6eaebf6c9287752 100644
+--- a/crates/webcodex-runner/src/webcodex_runner/transport_tests.rs
++++ b/crates/webcodex-runner/src/webcodex_runner/transport_tests.rs
+@@ -5491,6 +5491,7 @@ async fn streaming_writer_failure_terminates_pending_reader_for_ws_and_quic() {
+                 writer_task,
+                 None,
+                 &runtime,
++                Some(WS_LIVENESS).filter(|_| transport == StreamTransport::WebSocket),
+                 std::future::pending::<()>(),
+             ),
+         )
+@@ -5531,6 +5532,7 @@ async fn streaming_graceful_writer_completion_is_not_a_failure_signal() {
+         writer_task,
+         None,
+         &runtime,
++        Some(WS_LIVENESS),
+         async {},
+     )
+     .await
+@@ -5579,6 +5581,464 @@ async fn websocket_close_returns_transport_disconnect_not_shutdown() {
+     server.await.unwrap();
+ }
+ 
++fn short_websocket_liveness() -> WebSocketLiveness {
++    // The production entry always passes WS_LIVENESS (30s/90s/30s).
++    // Private durations accelerate the identical socket/dispatch loop without
++    // a new protocol, runtime setting, or Tokio test-util dependency.
++    WebSocketLiveness {
++        ping_interval: Duration::from_millis(50),
++        inbound_idle_timeout: Duration::from_millis(450),
++        send_timeout: Duration::from_secs(2),
++    }
++}
++
++async fn read_loopback_envelope(
++    ws: &mut tokio_tungstenite::WebSocketStream<tokio::net::TcpStream>,
++) -> RunnerEnvelope {
++    loop {
++        let message = ws.next().await.unwrap().unwrap();
++        if message.is_text() {
++            return RunnerEnvelope::from_slice(message.into_text().unwrap().as_bytes()).unwrap();
++        }
++    }
++}
++
++#[tokio::test]
++async fn websocket_liveness_stuck_writer_times_out_and_drops_without_retry() {
++    struct SendDrop(Arc<AtomicBool>);
++    impl Drop for SendDrop {
++        fn drop(&mut self) {
++            self.0.store(true, Ordering::SeqCst);
++        }
++    }
++    let dropped = Arc::new(AtomicBool::new(false));
++    let calls = Arc::new(AtomicUsize::new(0));
++    let send_dropped = dropped.clone();
++    let send_calls = calls.clone();
++    // A deterministic stalled flush tests the production writer, without
++    // depending on operating-system TCP buffer size to force backpressure.
++    let sink = Box::pin(futures_util::sink::unfold((), move |(), _: WsMessage| {
++        let send_dropped = send_dropped.clone();
++        let send_calls = send_calls.clone();
++        async move {
++            send_calls.fetch_add(1, Ordering::SeqCst);
++            let _drop = SendDrop(send_dropped);
++            std::future::pending::<Result<(), std::convert::Infallible>>().await
++        }
++    }));
++    let (tx, rx) = mpsc::channel(1);
++    tx.send(RunnerEnvelope::Ping { ts: 1 }).await.unwrap();
++    let mut liveness = short_websocket_liveness();
++    liveness.send_timeout = Duration::from_millis(50);
++    let exit = tokio::time::timeout(
++        Duration::from_secs(1),
++        write_websocket_envelopes(sink, rx, liveness),
++    )
++    .await
++    .expect("stalled writer did not release its sink");
++    assert_eq!(exit, StreamWriterExit::TransportFailed);
++    assert_eq!(calls.load(Ordering::SeqCst), 1);
++    assert!(
++        dropped.load(Ordering::SeqCst),
++        "cancelled send/sink was retained"
++    );
++    assert!(tx.send(RunnerEnvelope::Ping { ts: 2 }).await.is_err());
++}
++
++#[tokio::test]
++async fn websocket_liveness_no_pong_disconnects_without_shutdown_or_goodbye() {
++    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
++    let addr = listener.local_addr().unwrap();
++    let server = tokio::spawn(async move {
++        let (stream, _) = listener.accept().await.unwrap();
++        let mut ws = tokio_tungstenite::accept_async(stream).await.unwrap();
++        read_register(&mut ws).await;
++        send_registered_ack(&mut ws).await;
++        let mut pings = 0;
++        // Keep reading the real TCP socket so writes succeed, but deliberately
++        // withhold application Pongs while retaining the connected socket.
++        while let Some(Ok(message)) = ws.next().await {
++            if message.is_text() {
++                match RunnerEnvelope::from_slice(message.into_text().unwrap().as_bytes()).unwrap() {
++                    RunnerEnvelope::Ping { .. } => pings += 1,
++                    RunnerEnvelope::Goodbye { .. } => {
++                        panic!("idle disconnect sent process Goodbye")
++                    }
++                    _ => {}
++                }
++            }
++        }
++        pings
++    });
++    let cfg = test_runner_config(format!("http://{addr}"));
++    let runtime = test_runtime(&cfg);
++    let started = Instant::now();
++    let exit = tokio::time::timeout(
++        Duration::from_secs(5),
++        websocket_session_with_liveness(
++            &cfg,
++            vec![test_project("idle")],
++            "inst-idle",
++            &runtime,
++            short_websocket_liveness(),
++            std::future::pending::<()>(),
++        ),
++    )
++    .await
++    .expect("open socket with no inbound activity did not time out")
++    .unwrap();
++    assert_eq!(exit, RunnerSessionExit::TransportDisconnected);
++    assert!(started.elapsed() >= Duration::from_millis(400));
++    assert!(!runtime.shutdown_requested());
++    assert_eq!(runtime.coordinator.run_count(), 0);
++    assert!(
++        server.await.unwrap() >= 3,
++        "outgoing Pings must not extend the inbound deadline"
++    );
++}
++
++#[tokio::test]
++async fn websocket_liveness_pongs_keep_real_socket_alive() {
++    for native_control_pong in [false, true] {
++        let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
++        let addr = listener.local_addr().unwrap();
++        let server = tokio::spawn(async move {
++            let (stream, _) = listener.accept().await.unwrap();
++            let mut ws = tokio_tungstenite::accept_async(stream).await.unwrap();
++            read_register(&mut ws).await;
++            send_registered_ack(&mut ws).await;
++            let mut pings = 0;
++            while pings < 14 {
++                if let RunnerEnvelope::Ping { ts } = read_loopback_envelope(&mut ws).await {
++                    pings += 1;
++                    // Drop one reply, as permitted when the Server is busy.
++                    if pings != 4 {
++                        let pong = if native_control_pong {
++                            WsMessage::Pong(vec![1].into())
++                        } else {
++                            WsMessage::Text(RunnerEnvelope::Pong { ts }.to_json().unwrap().into())
++                        };
++                        ws.send(pong).await.unwrap();
++                    }
++                }
++            }
++            ws.send(WsMessage::Close(None)).await.unwrap();
++            pings
++        });
++        let cfg = test_runner_config(format!("http://{addr}"));
++        let runtime = test_runtime(&cfg);
++        let started = Instant::now();
++        let exit = tokio::time::timeout(
++            Duration::from_secs(5),
++            websocket_session_with_liveness(
++                &cfg,
++                vec![test_project("pongs")],
++                "inst-pongs",
++                &runtime,
++                short_websocket_liveness(),
++                std::future::pending::<()>(),
++            ),
++        )
++        .await
++        .expect("Pong loopback did not complete")
++        .unwrap();
++        assert_eq!(exit, RunnerSessionExit::TransportDisconnected);
++        assert!(started.elapsed() > short_websocket_liveness().inbound_idle_timeout);
++        assert_eq!(server.await.unwrap(), 14);
++        assert!(!runtime.shutdown_requested());
++    }
++}
++#[tokio::test]
++async fn websocket_liveness_other_inbound_activity_extends_until_last_frame() {
++    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
++    let addr = listener.local_addr().unwrap();
++    let (last_activity_tx, last_activity_rx) = oneshot::channel();
++    let server = tokio::spawn(async move {
++        let (stream, _) = listener.accept().await.unwrap();
++        let mut ws = tokio_tungstenite::accept_async(stream).await.unwrap();
++        read_register(&mut ws).await;
++        send_registered_ack(&mut ws).await;
++        for ts in 0..10 {
++            tokio::time::sleep(Duration::from_millis(80)).await;
++            ws.send(WsMessage::Text(
++                RunnerEnvelope::Ping { ts }.to_json().unwrap().into(),
++            ))
++            .await
++            .unwrap();
++            loop {
++                match read_loopback_envelope(&mut ws).await {
++                    RunnerEnvelope::Pong { ts: reply } if reply == ts => break,
++                    RunnerEnvelope::Goodbye { .. } => panic!("inbound activity requested shutdown"),
++                    _ => {}
++                }
++            }
++        }
++        // Runner Pong is a processing barrier for the last inbound Ping.
++        last_activity_tx.send(Instant::now()).unwrap();
++        while let Some(Ok(message)) = ws.next().await {
++            if message.is_text() {
++                assert!(!matches!(
++                    RunnerEnvelope::from_slice(message.into_text().unwrap().as_bytes()).unwrap(),
++                    RunnerEnvelope::Goodbye { .. }
++                ));
++            }
++        }
++    });
++    let cfg = test_runner_config(format!("http://{addr}"));
++    let runtime = test_runtime(&cfg);
++    let exit = tokio::time::timeout(
++        Duration::from_secs(5),
++        websocket_session_with_liveness(
++            &cfg,
++            vec![test_project("activity")],
++            "inst-activity",
++            &runtime,
++            short_websocket_liveness(),
++            std::future::pending::<()>(),
++        ),
++    )
++    .await
++    .expect("active inbound peer did not finish after becoming silent")
++    .unwrap();
++    assert_eq!(exit, RunnerSessionExit::TransportDisconnected);
++    let silence = last_activity_rx.await.unwrap().elapsed();
++    assert!(
++        silence >= Duration::from_millis(350),
++        "deadline was not renewed by inbound activity"
++    );
++    assert!(!runtime.shutdown_requested());
++    server.await.unwrap();
++}
++
++#[tokio::test]
++async fn websocket_liveness_malformed_frames_cannot_hide_idle_deadline() {
++    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
++    let addr = listener.local_addr().unwrap();
++    let server = tokio::spawn(async move {
++        let (stream, _) = listener.accept().await.unwrap();
++        let mut ws = tokio_tungstenite::accept_async(stream).await.unwrap();
++        read_register(&mut ws).await;
++        send_registered_ack(&mut ws).await;
++        let until = tokio::time::Instant::now() + Duration::from_secs(3);
++        let mut sent = 0;
++        while tokio::time::Instant::now() < until {
++            // Invalid UTF-8 binary frames exercise the discard path without
++            // flooding captured test logs with malformed-JSON diagnostics.
++            if ws.send(WsMessage::Binary(vec![0xff].into())).await.is_err() {
++                break;
++            }
++            sent += 1;
++            tokio::task::yield_now().await;
++        }
++        sent
++    });
++    let cfg = test_runner_config(format!("http://{addr}"));
++    let runtime = test_runtime(&cfg);
++    let exit = tokio::time::timeout(
++        Duration::from_secs(2),
++        websocket_session_with_liveness(
++            &cfg,
++            vec![test_project("malformed")],
++            "inst-malformed",
++            &runtime,
++            short_websocket_liveness(),
++            std::future::pending::<()>(),
++        ),
++    )
++    .await
++    .expect("invalid ready frames starved the inbound deadline")
++    .unwrap();
++    assert_eq!(exit, RunnerSessionExit::TransportDisconnected);
++    assert!(!runtime.shutdown_requested());
++    assert!(server.await.unwrap() > 10);
++}
++
++#[tokio::test]
++async fn websocket_liveness_long_silent_job_survives_with_pongs() {
++    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
++    let addr = listener.local_addr().unwrap();
++    let cwd = tempfile::tempdir().unwrap();
++    let command = if cfg!(windows) {
++        "Start-Sleep -Milliseconds 1400; [Console]::Out.Write('job-complete')"
++    } else {
++        "sleep 1.4; printf job-complete"
++    };
++    let mut request = start_job_request(cwd.path(), command);
++    request.timeout_secs = 10;
++    let server = tokio::spawn(async move {
++        let (stream, _) = listener.accept().await.unwrap();
++        let mut ws = tokio_tungstenite::accept_async(stream).await.unwrap();
++        read_register(&mut ws).await;
++        send_registered_ack(&mut ws).await;
++        ws.send(WsMessage::Text(
++            RunnerEnvelope::Request { request }
++                .to_json()
++                .unwrap()
++                .into(),
++        ))
++        .await
++        .unwrap();
++        let mut saw_running = false;
++        let mut pings = 0;
++        loop {
++            match read_loopback_envelope(&mut ws).await {
++                RunnerEnvelope::Ping { ts } => {
++                    pings += 1;
++                    ws.send(WsMessage::Text(
++                        RunnerEnvelope::Pong { ts }.to_json().unwrap().into(),
++                    ))
++                    .await
++                    .unwrap();
++                }
++                RunnerEnvelope::JobUpdate { payload } if payload.job_id == "job-active" => {
++                    saw_running |= payload.status == "running";
++                    if payload.finished {
++                        assert_eq!(payload.exit_code, Some(0));
++                        assert!(saw_running);
++                        break;
++                    }
++                }
++                RunnerEnvelope::Goodbye { .. } => panic!("long Job requested process shutdown"),
++                _ => {}
++            }
++        }
++        ws.send(WsMessage::Close(None)).await.unwrap();
++        pings
++    });
++    let cfg = test_runner_config(format!("http://{addr}"));
++    let runtime = test_runtime(&cfg);
++    let exit = tokio::time::timeout(
++        Duration::from_secs(12),
++        websocket_session_with_liveness(
++            &cfg,
++            vec![test_project("long-job")],
++            "inst-long-job",
++            &runtime,
++            short_websocket_liveness(),
++            std::future::pending::<()>(),
++        ),
++    )
++    .await
++    .expect("long Job socket was interrupted or failed to deliver terminal update")
++    .unwrap();
++    assert_eq!(exit, RunnerSessionExit::TransportDisconnected);
++    assert!(server.await.unwrap() >= 12);
++    assert!(!runtime.shutdown_requested());
++    assert!(!runtime.jobs.has_work());
++}
++
++#[tokio::test]
++async fn websocket_liveness_normal_reconnect_recovers_original_job_once() {
++    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
++    let addr = listener.local_addr().unwrap();
++    let cwd = tempfile::tempdir().unwrap();
++    let command = if cfg!(windows) {
++        "Add-Content -LiteralPath executions.txt -Value once; while (-not (Test-Path -LiteralPath release)) { Start-Sleep -Milliseconds 20 }; [Console]::Out.Write('recovered')"
++    } else {
++        "printf 'once\\n' >> executions.txt; while [ ! -f release ]; do sleep 0.02; done; printf recovered"
++    };
++    let mut request = start_job_request(cwd.path(), command);
++    request.timeout_secs = 10;
++    let mut cfg = test_runner_config(format!("http://{addr}"));
++    let registry = cwd.path().join("projects");
++    std::fs::create_dir_all(&registry).unwrap();
++    cfg.project_registry_dir = Some(registry);
++    let runtime = test_runtime(&cfg);
++    let server_runtime = runtime.clone();
++    let release = cwd.path().join("release");
++    let server = tokio::spawn(async move {
++        let (stream, _) = listener.accept().await.unwrap();
++        let mut ws = tokio_tungstenite::accept_async(stream).await.unwrap();
++        let first = read_register(&mut ws).await;
++        send_registered_ack(&mut ws).await;
++        ws.send(WsMessage::Text(
++            RunnerEnvelope::Request { request }
++                .to_json()
++                .unwrap()
++                .into(),
++        ))
++        .await
++        .unwrap();
++        let running_seq = loop {
++            if let RunnerEnvelope::JobUpdate { payload } = read_loopback_envelope(&mut ws).await {
++                if payload.job_id == "job-active"
++                    && payload.status == "running"
++                    && !payload.finished
++                {
++                    break payload.update_seq.expect("sequenced running update");
++                }
++            }
++        };
++        ws.send(WsMessage::Close(None)).await.unwrap();
++        drop(ws);
++
++        // Exercise the real supervisor/backoff and registration on the same
++        // RunnerRuntimeState. The Job request is sent exactly once above.
++        let (stream, _) = listener.accept().await.unwrap();
++        let mut ws = tokio_tungstenite::accept_async(stream).await.unwrap();
++        let second = read_register(&mut ws).await;
++        assert_eq!(second.runner_instance_id, first.runner_instance_id);
++        let inventory = second.job_inventory.unwrap();
++        assert!(inventory.active_complete);
++        let original = inventory
++            .jobs
++            .iter()
++            .find(|job| job.job_id == "job-active")
++            .unwrap();
++        assert_eq!(original.request_id, "req-active-job");
++        assert_eq!(original.status, "running");
++        assert!(original.update_seq >= running_seq);
++        assert!(!server_runtime.shutdown_requested());
++        assert_eq!(server_runtime.coordinator.run_count(), 0);
++        send_registered_ack(&mut ws).await;
++        std::fs::write(release, b"finish the original Job").unwrap();
++        loop {
++            if let RunnerEnvelope::JobUpdate { payload } = read_loopback_envelope(&mut ws).await {
++                if payload.job_id == "job-active" && payload.finished {
++                    assert_eq!(payload.exit_code, Some(0));
++                    assert!(payload.update_seq.expect("sequenced terminal update") > running_seq);
++                    break;
++                }
++            }
++        }
++        assert!(!server_runtime.shutdown_requested());
++        // Explicit process shutdown is the sole shutdown trigger in this test.
++        server_runtime.request_shutdown_signal();
++        loop {
++            if matches!(
++                read_loopback_envelope(&mut ws).await,
++                RunnerEnvelope::Goodbye { .. }
++            ) {
++                break;
++            }
++        }
++        ws.send(WsMessage::Close(None)).await.unwrap();
++    });
++    let exit = tokio::time::timeout(
++        Duration::from_secs(12),
++        supervise_stream_transports(
++            &cfg,
++            false,
++            "inst-original-job",
++            &runtime,
++            StreamSupervisorMode::Strict(StreamTransport::WebSocket),
++        ),
++    )
++    .await
++    .expect("real supervisor failed to reconnect and collect original Job")
++    .unwrap();
++    assert_eq!(exit, StreamSupervisorExit::Completed);
++    server.await.unwrap();
++    assert_eq!(
++        std::fs::read_to_string(cwd.path().join("executions.txt"))
++            .unwrap()
++            .lines()
++            .count(),
++        1
++    );
++    assert_eq!(runtime.coordinator.run_count(), 1);
++}
++
+ #[tokio::test]
+ async fn websocket_disconnect_with_active_job_returns_without_waiting_for_job() {
+     let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+diff --git a/src/tool_runtime/runtime_info.rs b/src/tool_runtime/runtime_info.rs
+index 57075ee65396ee018f270cde0a95b3d81a8bd3b8..181e345bafc776626bba1a440cdc33a95335934b 100644
+--- a/src/tool_runtime/runtime_info.rs
++++ b/src/tool_runtime/runtime_info.rs
+@@ -904,6 +904,12 @@ fn connection_layers(
+     let freshest = clients.iter().max_by_key(|c| c.last_seen);
+     let online: Vec<&RunnerView> = clients.iter().filter(|c| c.connected).collect();
+     let freshest_online = online.iter().max_by_key(|c| c.last_seen).copied();
++    // `connected` is a heartbeat freshness gate, not a socket lifecycle flag.
++    // A stale client without a recorded close leaves the transport unconfirmed.
++    let freshest_unconfirmed = clients
++        .iter()
++        .filter(|c| !c.connected && c.disconnected_at.is_none())
++        .max_by_key(|c| c.last_seen);
+ 
+     // -- runner_process: process observation, distinct from transport --------
+     let runner_process = match (freshest_online, freshest) {
+@@ -954,8 +960,8 @@ fn connection_layers(
+     };
+ 
+     // -- server_transport: real connection lifecycle --------------------------
+-    let server_transport = match (freshest_online, freshest) {
+-        (Some(client), _) => layer_observation(
++    let server_transport = match (freshest_online, freshest_unconfirmed, freshest) {
++        (Some(client), _, _) => layer_observation(
+             "connected",
+             Some(client.last_seen),
+             "server_transport_lifecycle",
+@@ -970,12 +976,28 @@ fn connection_layers(
+                 "last_heartbeat_at": client.last_seen,
+             }),
+         ),
+-        (None, Some(client)) => layer_observation(
++        (None, Some(client), _) => layer_observation(
++            "unconfirmed",
++            Some(client.last_seen),
++            "server_heartbeat_window",
++            Some(RUNNER_STALE_AFTER_SECS),
++            Some("heartbeat_expired"),
++            now,
++            json!({
++                "connected_clients": 0,
++                "transport": client.transport,
++                "connection_instance": client.runner_instance_id,
++                "connected_at": client.connected_at,
++                "last_heartbeat_at": client.last_seen,
++                "disconnected_at": client.disconnected_at,
++            }),
++        ),
++        (None, None, Some(client)) => layer_observation(
+             "disconnected",
+-            client.disconnected_at.or(Some(client.last_seen)),
++            client.disconnected_at,
+             "server_transport_lifecycle",
+             None,
+-            Some("transport_closed_or_heartbeat_expired"),
++            Some("transport_closed"),
+             now,
+             json!({
+                 "connected_clients": 0,
+@@ -985,7 +1007,7 @@ fn connection_layers(
+                 "disconnected_at": client.disconnected_at,
+             }),
+         ),
+-        (None, None) => layer_observation(
++        (None, None, None) => layer_observation(
+             "not_observed",
+             None,
+             "server_transport_lifecycle",
+diff --git a/src/tool_runtime/tests/metadata.rs b/src/tool_runtime/tests/metadata.rs
+index 435c2ad08ed70bee9f67897ec244528bed371ff8..b836a818ea7e24e3c9ae5c3dcbbff1804326c275 100644
+--- a/src/tool_runtime/tests/metadata.rs
++++ b/src/tool_runtime/tests/metadata.rs
+@@ -3340,7 +3340,12 @@ async fn runtime_status_distinguishes_stale_registration_from_transport_connecti
+     let layers = &result.output["connection_layers"];
+     assert_eq!(layers["runner_process"]["status"], "stale");
+     assert_eq!(layers["runner_process"]["reason_code"], "heartbeat_expired");
+-    assert_eq!(layers["server_transport"]["status"], "disconnected");
++    assert_eq!(layers["server_transport"]["status"], "unconfirmed");
++    assert_eq!(
++        layers["server_transport"]["reason_code"],
++        "heartbeat_expired"
++    );
++    assert!(layers["server_transport"]["disconnected_at"].is_null());
+     assert_eq!(layers["server_registration"]["status"], "stale");
+     assert_eq!(
+         layers["server_registration"]["reason_code"],
+diff --git a/src/tool_runtime/tests/reconnect.rs b/src/tool_runtime/tests/reconnect.rs
+index 55debcf3e0d64204d45dbb6305698c1826de27ff..64e124a4a6600ecb147f8b8f6424ee8cc4f31023 100644
+--- a/src/tool_runtime/tests/reconnect.rs
++++ b/src/tool_runtime/tests/reconnect.rs
+@@ -251,6 +251,132 @@ async fn stale_heartbeat_without_disconnect_is_not_ready() {
+     assert_ne!(stale["server_transport"]["status"], "connected");
+ }
+ 
++#[tokio::test]
++async fn connection_layers_fresh_heartbeat_reports_connected() {
++    let runtime = test_runtime();
++    register_with_project(&runtime, "fresh-agent", "fresh-instance", Some(1_000), None).await;
++    let observed = layers(&runtime).await;
++    assert_eq!(observed["server_transport"]["status"], "connected");
++    assert_eq!(observed["server_transport"]["connected_clients"], 1);
++    assert!(observed["server_transport"]["reason_code"].is_null());
++    assert_eq!(observed["runner_process"]["status"], "ready");
++    assert_eq!(observed["project_registry"]["status"], "registered");
++}
++
++#[tokio::test]
++async fn connection_layers_stale_heartbeat_without_close_is_unconfirmed() {
++    let runtime = test_runtime();
++    register_with_project(&runtime, "stale-agent", "same-instance", Some(1_000), None).await;
++    let before = layers(&runtime).await;
++    let last_seen = chrono::Utc::now().timestamp() - 61;
++    runtime
++        .runner_registry
++        .set_last_seen_for_test("stale-agent", last_seen)
++        .await;
++    let observed = layers(&runtime).await;
++    assert_layer_contract(&observed["server_transport"], "stale transport");
++    assert_eq!(observed["server_transport"]["status"], "unconfirmed");
++    assert_eq!(
++        observed["server_transport"]["reason_code"],
++        "heartbeat_expired"
++    );
++    assert_eq!(observed["server_transport"]["observed_at"], last_seen);
++    assert_eq!(observed["server_transport"]["stale_after_secs"], 60);
++    assert_eq!(observed["server_transport"]["connected_clients"], 0);
++    assert!(observed["server_transport"]["disconnected_at"].is_null());
++    assert_eq!(
++        observed["server_transport"]["connected_at"],
++        before["server_transport"]["connected_at"]
++    );
++    assert_eq!(
++        observed["server_transport"]["connection_instance"],
++        "same-instance"
++    );
++    assert_eq!(observed["runner_process"]["status"], "stale");
++    assert_eq!(observed["project_registry"]["status"], "stale");
++}
++
++#[tokio::test]
++async fn connection_layers_recorded_close_reports_disconnected() {
++    let runtime = test_runtime();
++    register_with_project(
++        &runtime,
++        "closed-agent",
++        "closed-instance",
++        Some(1_000),
++        None,
++    )
++    .await;
++    runtime
++        .runner_registry
++        .reconcile_disconnect("closed-agent", "closed-instance")
++        .await;
++    let observed = layers(&runtime).await;
++    assert_eq!(observed["server_transport"]["status"], "disconnected");
++    assert_eq!(
++        observed["server_transport"]["reason_code"],
++        "transport_closed"
++    );
++    assert!(observed["server_transport"]["disconnected_at"].is_i64());
++    assert_eq!(
++        observed["server_transport"]["observed_at"],
++        observed["server_transport"]["disconnected_at"]
++    );
++    assert_eq!(observed["server_transport"]["connected_clients"], 0);
++}
++
++#[tokio::test]
++async fn connection_layers_multiple_clients_preserve_unconfirmed_transport() {
++    let runtime = test_runtime();
++    register_with_project(&runtime, "stale-agent", "stale-instance", Some(1_000), None).await;
++    runtime
++        .runner_registry
++        .set_last_seen_for_test("stale-agent", chrono::Utc::now().timestamp() - 120)
++        .await;
++    register_with_project(
++        &runtime,
++        "closed-agent",
++        "closed-instance",
++        Some(2_000),
++        None,
++    )
++    .await;
++    runtime
++        .runner_registry
++        .reconcile_disconnect("closed-agent", "closed-instance")
++        .await;
++    let mixed = layers(&runtime).await;
++    // A newer recorded close must not hide another client's missing close evidence.
++    assert_eq!(mixed["server_transport"]["status"], "unconfirmed");
++    assert_eq!(
++        mixed["server_transport"]["connection_instance"],
++        "stale-instance"
++    );
++    assert!(mixed["server_transport"]["disconnected_at"].is_null());
++    assert_eq!(mixed["server_transport"]["connected_clients"], 0);
++
++    register_with_project(&runtime, "fresh-agent", "fresh-instance", Some(3_000), None).await;
++    let fresh = layers(&runtime).await;
++    assert_eq!(fresh["server_transport"]["status"], "connected");
++    assert_eq!(
++        fresh["server_transport"]["connection_instance"],
++        "fresh-instance"
++    );
++    assert_eq!(fresh["server_transport"]["connected_clients"], 1);
++
++    runtime
++        .runner_registry
++        .reconcile_disconnect("fresh-agent", "fresh-instance")
++        .await;
++    runtime
++        .runner_registry
++        .reconcile_disconnect("stale-agent", "stale-instance")
++        .await;
++    let closed = layers(&runtime).await;
++    assert_eq!(closed["server_transport"]["status"], "disconnected");
++    assert!(closed["server_transport"]["disconnected_at"].is_i64());
++}
++
+ #[tokio::test]
+ async fn no_runner_layers_are_not_observed_with_reason_codes() {
+     let runtime = test_runtime();

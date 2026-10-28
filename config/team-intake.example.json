@@ -1,0 +1,24 @@
+{
+  "format": "clw.team-intake.v1",
+  "active": false,
+  "purpose": "Copy as an operator-approved intake, not an automatic activation.",
+  "controller": {
+    "target": "project-m",
+    "existing_native_goal_ref": "REPLACE_WITH_ACTUAL_GOAL_OR_USER_REQUEST",
+    "snapshot_source": "controller-authored public export, not cross-account hidden context"
+  },
+  "workers": [],
+  "run_limits": {
+    "duration_seconds": 21600,
+    "max_dispatches": 8,
+    "max_parallel": 4,
+    "includes_one_reserved_final_summary": true
+  },
+  "requirements": [
+    "Each existing/new real ChatGPT page accepts its own one-time enrollment invitation.",
+    "Register exact Runtime Project and workspace root/access/resources before assigning work.",
+    "Read incumbent project AGENTS/current handoff and preserve freezes and integration ownership.",
+    "No automatic model switches, provider fallback, new API billing, or unknown-send replay.",
+    "The example neither authorizes a run nor starts a model."
+  ]
+}

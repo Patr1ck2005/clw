@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "CLW Web Control Companion (deprecated split build)",
+  "version": "0.1.0",
+  "minimum_chrome_version": "114",
+  "description": "已合并到 apps/web-recovery-companion 的 CLW Web Companion 0.2.0；不要再单独安装此拆分版本。",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "host_permissions": ["http://127.0.0.1/*"],
+  "action": {"default_popup": "popup.html", "default_title": "CLW 原请求接管（单独选择启用）"},
+  "background": {"service_worker": "worker.js"}
+}

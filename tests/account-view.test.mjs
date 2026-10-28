@@ -1,0 +1,15 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {healthLabel,healthTone,age,profileMatches,createSelectionGate,activityOutcome} from '../apps/control-center/account-view.mjs';
+import {createJournalClient} from '../apps/control-center/journal-client.mjs';
+test('polling labels ingress only, not model or account online',()=>{assert.equal(healthLabel({state:'polling'}),'云端轮询正常');assert.equal(healthTone({state:'polling'}),'ok');});
+test('ready without successful poll never green',()=>{assert.equal(healthTone({state:'poll_not_seen'}),'warn');assert.match(healthLabel({state:'poll_not_seen'}),/尚无/);});
+test('identity and freshness failures explicit',()=>{assert.match(healthLabel({state:'identity_unverified'}),/身份未核验/);assert.match(healthLabel({state:'poll_stale'}),/过期/);});
+test('unknown state never fabricated',()=>{assert.equal(healthLabel({}), '尚未观察');assert.notEqual(healthTone({}), 'ok');});
+test('unknown age is not zero',()=>{assert.equal(age(null),'未知');assert.equal(age(undefined),'未知');assert.equal(age(0),'0 秒前');});
+test('profile filtering does not change actual attribution',()=>{const a={name:'账号 A',browser_hint:'Edge',notes:'',tunnel_id:'tunnel_1'};assert.ok(profileMatches(a,'edge'));assert.equal(a.name,'账号 A');});
+test('late selection data cannot overwrite new account',()=>{const g=createSelectionGate(),a=g.select('a');g.select('b');assert.equal(g.valid(a),false);});
+test('returning to same account does not revive prior request',()=>{const g=createSelectionGate(),a=g.select('a');g.select('b');g.select('a');assert.equal(g.valid(a),false);});
+test('job handoff is not completion',()=>assert.match(activityOutcome({job_handoff:true,exit_code:null}),/另查终态/));
+test('nonzero program exit is distinct',()=>assert.equal(activityOutcome({exit_code:1}),'程序非零退出'));
+test('accounts uses existing same-ID journal, no automatic startup POST',async()=>{let posts=0;const m=new Map();const c=createJournalClient('./api/accounts/',{storage:{getItem:k=>m.get(k)||null,setItem:(k,v)=>m.set(k,v),removeItem:k=>m.delete(k)},fetcher:async(u,o)=>{if(o.method==='POST')posts++;return {ok:true,text:async()=>JSON.stringify({success:true,store_id:'x',intent:'local'})};}});await c.init();assert.equal(posts,0);});

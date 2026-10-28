@@ -1,0 +1,23 @@
+# Keep application/test bytes identical in Windows checkouts and Git release archives.
+# Binary artifacts and immutable historical evidence are not normalized here.
+/apps/control-center/** text=auto eol=lf
+/scripts/*.py text eol=lf
+/tests/*.py text eol=lf
+/tests/*.mjs text eol=lf
+/config/*.json text eol=lf
+/package.json text eol=lf
+/*.cmd text eol=lf
+# Preserve exact real harness receipts and artifact hashes on Windows checkout.
+/evidence/HARNESS-MVP-20260922/** -text
+
+# Keep managed browser sources and pinned vendor hashes reproducible on Windows.
+/apps/web-host/** text=auto eol=lf
+/apps/codex-web-bridge/** text=auto eol=lf
+
+# Unified patch context contains significant leading spaces on blank lines.
+/apps/codex-web-bridge/vendor-overlays/*.patch -whitespace
+/apps/codex-web-bridge/vendor-overlays/post-backport/*.patch -whitespace
+/apps/codex-web-bridge/vendor-backports/6.1.2/*.patch -whitespace
+
+# Pinned offline libraries retain upstream bytes, including whitespace.
+/apps/web-host/assets/vendor/** -text -whitespace

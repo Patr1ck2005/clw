@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "date": "2026-10-28",
+  "source_commit": "22480823a91484d2bd5a911ef5ca565aaeebd87c",
+  "scope": "Source publication; no installed runtime or live-model acceptance",
+  "public_copy_checks": [
+    {
+      "suite": "control-center/live/task/journal/account/asset/product Node",
+      "passed": 143
+    },
+    {
+      "suite": "send-preparation-recovery Node",
+      "passed": 20
+    },
+    {
+      "suite": "source-export Python",
+      "passed": 10
+    },
+    {
+      "suite": "pilot schema Python",
+      "passed": 38
+    },
+    {
+      "suite": "managed send preparation Python",
+      "passed": 14
+    },
+    {
+      "suite": "preview installer Python",
+      "passed": 40
+    },
+    {
+      "suite": "web workspace release Python",
+      "passed": 76,
+      "skipped": 2,
+      "skip_reason": "Real-payload audit requires generated browser-helper, installed dependencies/Electron and pinned Bun runtime"
+    }
+  ],
+  "passed_total": 341,
+  "skipped_total": 2,
+  "not_completed": [
+    {
+      "suite": "working-note-composer-ui Node",
+      "reason": "The browser UI test module could not load because playwright-core is not installed in the clean source copy; no browser was started."
+    }
+  ],
+  "development_workspace_checks": {
+    "release_passed": 78,
+    "installer_passed": 40,
+    "source_export_passed": 10
+  },
+  "initial_export_failure": {
+    "preserved": true,
+    "cause": "Two texmath files in the old Git archive had LF instead of pinned upstream CRLF bytes; development working bytes were already correct.",
+    "correction": "Restore exact upstream bytes in Git; retain original vendor hashes and live files. Add explicit prerequisites for real-payload integration tests."
+  },
+  "publication_audit": {
+    "exported_files": 1146,
+    "transformed_files": 17,
+    "credential_pattern_scan": "No matches in exported text files for the checked GitHub/OpenAI token, private-key and JWT patterns; not a proof against all secret formats.",
+    "native_archive": "Current Apache-2.0 Git source archive inspected separately; no runtime/config/reflog files included."
+  },
+  "model_messages": 0,
+  "live_browser_actions": 0,
+  "service_restarts": 0,
+  "new_installer": false,
+  "old_release_assets_changed": false
+}

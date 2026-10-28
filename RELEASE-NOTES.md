@@ -1,3 +1,13 @@
+# 2026-10-28: CLW source is now open under MIT
+
+The complete application source, native source archive, tests and build entrypoints are now available here. See [the engineering retrospective](docs/ARCHITECTURE_REVIEW.md), [source instructions](docs/SOURCE.md) and [source delivery](docs/OPEN_SOURCE_RELEASE.md).
+
+The source snapshot is `22480823a91484d2bd5a911ef5ca565aaeebd87c`; per-file provenance is in `SOURCE_EXPORT.json`. Private operational history remains outside this public repository. Public fixtures are synthetic; third-party licenses are preserved.
+
+This is a source publication, not a new installer. Existing preview.2 binary assets, their hashes and original bundled notices remain unchanged. They do not automatically include subsequent source fixes. Actual publication checks are recorded in `SOURCE_VALIDATION.json`.
+
+---
+
 # CLW 0.8.0-preview.2
 
 本次更新修复原生任务完成通知对 `timeout` 终态的处理，并为失败通知加入每候选 30 秒退避。Job 的原始结果和执行身份继续保留，不因此重放已受理任务。

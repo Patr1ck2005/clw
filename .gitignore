@@ -1,0 +1,14 @@
+.local/
+# Raw conversation, runtime, screenshot and backup evidence stays local.
+# Existing tracked evidence remains tracked; source snapshots are documented separately.
+/evidence/
+.venv/
+node_modules/
+dist/
+__pycache__/
+*.pyc
+*.env
+*-token
+*.sqlite*
+.webcodex/
+/NUL

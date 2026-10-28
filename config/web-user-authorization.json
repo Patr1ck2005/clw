@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "enabled": false,
+  "auto_approve_tools": false,
+  "auto_approve_returned_files": false,
+  "recover_ended_turns": false,
+  "text": "",
+  "source": "Public default: configure consent for your own tasks."
+}

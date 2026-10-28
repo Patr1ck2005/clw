@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "observed_date": "2026-10-24",
+  "reviewed_date": "2026-10-28",
+  "source_summary_sha256": "85d3a102be9e879f4b7b012d5a258ccb16c596da683462acfdb0de13195fed87",
+  "evidence_scope": "Existing observation re-read; not a new stress test. Private instance IDs, paths and conversations excluded.",
+  "duration_seconds": 28800.014822,
+  "samples": 1920,
+  "maximum_sample_gap_seconds": 15.013851881027222,
+  "runtime_probes": 475,
+  "runtime_failed": 0,
+  "active_probes": 125,
+  "full_16_probes": 4,
+  "running_peak": 16,
+  "queued_peak": 7,
+  "queue_observations": 4,
+  "queue_episodes": 3,
+  "reported_web_conversations": 12,
+  "reported_workload_not_continuously_measured": true,
+  "poll_error_delta": {
+    "A": 1.0,
+    "B": 0.0
+  },
+  "watch_unhealthy_samples": 0,
+  "runner_heartbeat_age_max_seconds": 30,
+  "runtime_probe_ms": {
+    "p95": 32.0,
+    "max": 1234.0
+  },
+  "resources": {
+    "Runner": {
+      "cpu_percent_of_whole_machine_peak": 2.51,
+      "private_bytes": {
+        "first": 10305536,
+        "last": 11100160,
+        "max": 17678336
+      }
+    },
+    "Server": {
+      "cpu_percent_of_whole_machine_peak": 2.075,
+      "private_bytes": {
+        "first": 78020608,
+        "last": 132005888,
+        "max": 132075520
+      }
+    },
+    "Union": {
+      "cpu_percent_of_whole_machine_peak": 0.416,
+      "private_bytes": {
+        "first": 477802496,
+        "last": 478035968,
+        "max": 645410816
+      }
+    }
+  },
+  "model_sends": 0,
+  "service_actions": 0,
+  "limitations": [
+    "Not proof of continuous twelve-way saturation.",
+    "Not a browser-per-conversation success or model-latency measurement.",
+    "Polling cannot exclude all transient faults between samples."
+  ]
+}

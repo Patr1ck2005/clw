@@ -1,0 +1,23 @@
+{
+  "format":"clw.control-real-test-record.v1",
+  "case_id":"CW-01",
+  "operator_manual_model_switch_confirmed":false,
+  "visible_model_label":null,
+  "visible_effort_label":null,
+  "billing_identity_attested":false,
+  "session_id":null,
+  "request_id":null,
+  "original_claim_id":null,
+  "attempt_id":null,
+  "delegation_id":null,
+  "job_ids":[],
+  "send_count_observed":null,
+  "actual_receiving_model_turn_observed":false,
+  "reply_full_text_path":null,
+  "event_range":null,
+  "status":"not_run",
+  "uncertainties":[],
+  "manual_interventions":[],
+  "old_request_replayed":false,
+  "credentials_or_hidden_reasoning_saved":false
+}

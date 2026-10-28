@@ -1,0 +1,96 @@
+{
+  "schema": 1,
+  "source_head": "87117c05bed495089c7119937f1067e2f1be29d2",
+  "source_tree": "2ff5e78f09824025bc2b31dba5e38123bf1ffcf3",
+  "shallow_boundary": "37098d4624f0000bfab54ad102ecb0df619d7dc6",
+  "branch": "refs/heads/codex/runner-stability-20261018",
+  "commits": [
+    "37098d4624f0000bfab54ad102ecb0df619d7dc6",
+    "9ae45a2a0ad7e0de170d35075cc7ff12c4b64d98",
+    "3fb0ecaac9942405a1f5b0bf52a86f646b92bf5f",
+    "6d67dfd132e402d559b8e46465ed2cbcbcac8bd2",
+    "87117c05bed495089c7119937f1067e2f1be29d2"
+  ],
+  "entries": [
+    {
+      "path": "native-runtime-source/.git/HEAD",
+      "bytes": 48,
+      "sha256": "3ac8f345154517ba9ac44ed7b3b34cea2ca0d32b1dc36a022447d36be78889b4"
+    },
+    {
+      "path": "native-runtime-source/.git/refs/heads/codex/runner-stability-20261018",
+      "bytes": 41,
+      "sha256": "c805d0f4a07eeb1e86b18cff4f0352cab341e529d88addd5b7b0f9a69686bab0"
+    },
+    {
+      "path": "native-runtime-source/.git/shallow",
+      "bytes": 41,
+      "sha256": "c98c5b830649946b0e9b015a7848dfe4deba6e055daec79eff566a5f69b2a2ff"
+    },
+    {
+      "path": "native-runtime-source/.git/objects/pack/pack-2114e673bd0cd6f7a4740fbed6cae5cf39729e27.pack",
+      "bytes": 11020972,
+      "sha256": "c7951de19fede9f7428c5de08fd4f7b60058ddcba20ebee78819a545ac3f6a9a"
+    },
+    {
+      "path": "native-runtime-source/.git/objects/pack/pack-2114e673bd0cd6f7a4740fbed6cae5cf39729e27.idx",
+      "bytes": 45284,
+      "sha256": "dc417ac3da204307f9993e461fcecd44db1510069cb1ca7a000f8732157b2ce4"
+    }
+  ],
+  "files": [
+    {
+      "path": "source-git-6d67dfd132e4.zip",
+      "bytes": 11014393,
+      "sha256": "c01c7f5b9f7f12ebbc87e99ad996007a370f434f621d4edcc331e0ff2cd3fc02"
+    },
+    {
+      "path": "LICENSE-APACHE-2.0",
+      "bytes": 11358,
+      "sha256": "c95bae1d1ce0235ecccd3560b772ec1efb97f348a79f0fbe0a634f0c2ccefe2c"
+    },
+    {
+      "path": "patches/0001-fix-bound-runner-websocket-silence-and-clarify-trans.patch",
+      "bytes": 43655,
+      "sha256": "656a12da814182530d20097dac687c02cdf7721ddac0744d4557119fb4a7d1b0"
+    },
+    {
+      "path": "patches/0002-fix-runner-keep-heartbeat-responsive-during-project-.patch",
+      "bytes": 30572,
+      "sha256": "767b49b6086e1d69f5100a255ccce73f59829c3baedfaffd35a9692b71cc4b16"
+    },
+    {
+      "path": "patches/0003-fix-runtime-bound-optional-startup-checks-and-target.patch",
+      "bytes": 36289,
+      "sha256": "f8e6d16eac1812abc85eeab20d65df730acad995bddf02cf9d1a5437d3573722"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4278,
+      "sha256": "0bc18b8dda3b6fe64dbe8c8e676d5fb06f1494301c069c2d0952e0fa5fbe06fc"
+    },
+    {
+      "path": ".gitattributes",
+      "bytes": 20,
+      "sha256": "e97602ab9cac70102245345c5ab0fc9830df8b17f1072b188265a662a3a547ae"
+    },
+    {
+      "path": "patches/0004-terminal-attention-timeout-retry.patch",
+      "bytes": 20913,
+      "sha256": "c644ec133ac236d4e64e0eaa05b54e2e0e8490f0ddb184de78b331b403e9f01f"
+    },
+    {
+      "path": "source-git-87117c05bed4.zip",
+      "bytes": 11069251,
+      "sha256": "789decc0778b508e3147453a64b91985ceaab87ac8ae9a76fb5075ef9fcd0e65"
+    }
+  ],
+  "verification": {
+    "source_head": "87117c05bed495089c7119937f1067e2f1be29d2",
+    "source_tree": "2ff5e78f09824025bc2b31dba5e38123bf1ffcf3",
+    "git_fsck_full_exit": 0,
+    "restored_status_clean": true,
+    "source_clean": true,
+    "proof_sha256": "8572423b8cb33bc7ab6314d67b4ce1fbc145bf087d4ab7c7f37c0e8805d3774c"
+  }
+}

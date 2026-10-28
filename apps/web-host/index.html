@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; style-src-elem 'self'; style-src-attr 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'none'">
+<title>CLW · Web 工作区</title><link rel="stylesheet" href="shell.css"><link rel="stylesheet" href="assets/vendor/katex/katex-swap.min.css"><link rel="stylesheet" href="rich-text.css"></head>
+<body class="restoring-workspace">
+<aside id="task-sidebar" class="sidebar" aria-label="任务导航">
+  <div class="brand"><span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9M8 5.3l8 4.4"/></svg></span><strong>CLW</strong><span class="brand-note">工作区</span><button id="sidebar-close" type="button" class="icon sidebar-close" aria-label="关闭任务导航" title="关闭任务导航"><svg class="ui-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="m6 6 8 8M14 6l-8 8"/></svg></button></div>
+  <button id="new-page" class="new-task"><svg class="ui-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M10 4v12M4 10h12"/></svg> 新建任务</button>
+  <input id="search" type="search" placeholder="搜索任务" aria-label="搜索任务">
+  <div class="nav-section-label web-navigation-label">任务</div>
+  <nav id="pages" aria-label="项目与任务"></nav>
+  <button id="codex-overview" class="nav-overview" type="button" hidden>▦ 任务总览</button>
+  <div id="codex-nav-label" class="nav-section-label" hidden>任务</div>
+  <nav id="codex-pages" aria-label="Codex 项目与任务" hidden></nav>
+  <p id="local-navigation-note" class="scope-hint" hidden>任务与历史保留在原生 Codex 终端。</p>
+  <div class="sidebar-bottom">
+    <span id="workflow-select-caption" class="workflow-select-caption">工作方式</span>
+    <details id="workflow-selector" class="workflow-selector"><summary aria-labelledby="workflow-select-caption workflow-mode-label" aria-controls="workflow-choices" aria-expanded="false"><span class="workflow-mode-icon" aria-hidden="true">◇</span><span id="workflow-mode-label">纯 Web</span><svg class="workflow-mode-caret ui-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 7 3-3 3 3M7 13l3 3 3-3"/></svg></summary><div id="workflow-choices" class="workflow-choices" role="group" aria-label="选择工作方式"><button id="mode-web" type="button" class="active"><strong>纯 Web</strong><small>网页主控与协作者</small></button><button id="mode-codex" type="button"><strong>Codex＋Web</strong><small>原生工具，网页模型</small></button><button id="mode-local" type="button"><strong>本地 Codex</strong><small>原生模型与工具</small></button></div></details>
+    <div class="sidebar-settings">
+      <details id="connection-tools" class="sidebar-group connection-tools"><summary id="connection-tools-summary" aria-controls="connection-tools-items" aria-expanded="false"><svg class="ui-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="10" cy="7" r="3"/><path d="M4.5 16a5.5 5.5 0 0 1 11 0"/></svg><span>账号与连接</span><svg class="sidebar-group-caret ui-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg></summary>
+        <div id="connection-tools-items" class="sidebar-group-items" role="group" aria-labelledby="connection-tools-summary">
+          <button id="login" class="sidebar-item" type="button"><svg class="ui-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="10" cy="7" r="3"/><path d="M4.5 16a5.5 5.5 0 0 1 11 0"/></svg><span id="login-label">账号管理</span></button>
+          <button id="quota-open" class="sidebar-item" type="button" title="Chat Pro 用量与信息来源"><svg class="ui-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M10 5v5h4"/></svg><span class="sidebar-item-copy"><span>Pro 用量</span><span id="quota-summary" class="sidebar-item-note">B · Pro 尚未核验</span></span></button>
+          <button id="preview-settings-open" class="sidebar-item" type="button" hidden><span aria-hidden="true">⌁</span><span>本机连接</span></button>
+          <button id="connection-settings-open" class="sidebar-item" type="button"><svg class="ui-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3.5v3M13 3.5v3M5.5 6.5h9v2a4.5 4.5 0 0 1-4.5 4.5v3.5M3 16.5h14"/></svg><span>Codex＋Web 连接</span></button>
+        </div>
+      </details>
+      <details id="workspace-tools" class="sidebar-group workspace-tools"><summary id="workspace-tools-summary" aria-controls="workspace-tools-items" aria-expanded="false"><svg class="ui-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3.5" width="14" height="13" rx="2"/><path d="M3 8h14M8 8v8.5"/></svg><span>工作区</span><svg class="sidebar-group-caret ui-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg></summary>
+        <div id="workspace-tools-items" class="sidebar-group-items" role="group" aria-labelledby="workspace-tools-summary">
+          <div id="workspace-records" class="sidebar-subsection"><span class="sidebar-subheading">任务记录</span><button id="closed-tasks" class="sidebar-item" type="button"><svg class="ui-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M4 5h12v3H4zM5.5 8v8h9V8M8 11h4"/></svg><span>已关闭</span><span id="closed-count" class="count">0</span></button><button id="codex-archive" class="sidebar-item" type="button" hidden><svg class="ui-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M4 5h12v3H4zM5.5 8v8h9V8M8 11h4"/></svg><span>已归档</span><span id="codex-archive-count" class="count">0</span></button></div>
+          <div class="sidebar-subsection"><span class="sidebar-subheading">外观与入口</span><label class="accent-setting"><span>强调色</span><select id="accent-select" aria-label="强调色"><option value="purple">紫色</option><option value="blue">蓝色</option><option value="amber">琥珀色</option></select></label><button id="theme" class="sidebar-item" type="button" title="切换明暗主题"><svg class="ui-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M10 3.5v13"/></svg><span>切换明暗主题</span></button><button id="panel" class="sidebar-item" type="button"><svg class="ui-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4h5v5M16 4l-8 8M7 5H4v11h11v-3"/></svg><span>项目成果与旧入口</span></button></div>
+        </div>
+      </details>
+    </div>
+    <button id="preview-about-open" class="sidebar-item" type="button" hidden><span aria-hidden="true">ⓘ</span><span>关于与诊断</span></button>
+    <div class="sidebar-session-actions" role="group" aria-label="应用运行"><button id="background" type="button"><svg class="ui-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4H4v12h12v-3M10 4h6v6M16 4l-7 7"/></svg><span>后台运行</span></button><button id="quit" type="button"><svg class="ui-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M10 3v7M6.5 5.5a6.5 6.5 0 1 0 7 0"/></svg><span>退出并保留现场</span></button></div>
+    <div class="sidebar-status"><span id="vpn" class="network-status">正在核对 VPN…</span></div>
+  </div>
+</aside>
+<button id="sidebar-scrim" type="button" class="sidebar-scrim" aria-label="关闭任务导航"></button>
+<main>
+  <header class="topbar">
+    <button id="sidebar-toggle" class="icon sidebar-toggle" type="button" title="收起任务导航" aria-label="收起任务导航" aria-controls="task-sidebar" aria-expanded="true"><svg class="ui-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3.5" width="14" height="13" rx="2.2"/><path d="M7.5 3.5v13"/></svg></button>
+    <div class="heading"><h1 id="thread-title">CLW 工作区</h1><div id="connection" class="subtitle">正在连接本机…</div></div>
+    <div id="web-view-controls" class="web-view-controls" hidden><div id="view-switch" class="segmented" hidden><button id="records" class="active">工作记录</button><button id="native">对话网页</button></div><button id="refresh-page" type="button" class="icon page-refresh" title="刷新原对话" aria-label="刷新原对话" hidden disabled><svg class="ui-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 7a6.2 6.2 0 1 0 .2 5M16 3.5V7h-3.5"/></svg></button></div>
+    <button id="process-toggle" class="quiet" type="button" aria-expanded="true" aria-controls="process-panel">过程</button>
+    <button id="settings" class="quiet detail-toggle" title="任务详情" aria-label="任务详情" disabled>详情</button>
+    <button id="task-menu-toggle" class="icon" type="button" popovertarget="task-menu" title="更多任务操作" aria-label="更多任务操作" disabled><svg class="ui-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><circle cx="4" cy="10" r="1.5"/><circle cx="10" cy="10" r="1.5"/><circle cx="16" cy="10" r="1.5"/></svg></button>
+    <div id="task-menu" class="task-menu" popover><strong>任务操作</strong><p id="automation-control-note" class="scope-hint">暂停只停止后续自动推进，当前网页继续工作。</p><button id="team-maintenance" class="quiet" hidden>暂停自动推进</button><button id="pause" class="quiet" hidden>暂停自动推进</button><button id="resume" class="quiet" hidden>恢复自动推进</button><button id="stop-generation" class="quiet danger-text" hidden>停止网页生成…</button></div>
+  </header>
+  <div id="interaction-status" class="interaction-status" role="status" aria-live="polite" aria-busy="false" hidden><span class="interaction-spinner" aria-hidden="true"></span><span id="interaction-status-text"></span></div>
+  <section id="workspace-loading" class="workspace-loading" role="status" aria-live="polite" aria-busy="true"><span id="workspace-loading-spinner" class="loading-spinner" aria-hidden="true"></span><h2 id="workspace-loading-title">正在恢复工作区</h2><p id="workspace-loading-detail">正在读取原任务、对话和运行记录，请稍候。</p><small id="workspace-loading-hint">加载不会重新接入，也不会发送模型消息。</small></section>
+  <section id="workflow" class="workflow" aria-label="任务流程" hidden>
+    <div class="workflow-top"><span id="workflow-dot" class="state-dot"></span><strong id="workflow-title" role="status"></strong><button id="workflow-toggle" type="button" class="quiet" aria-expanded="false" aria-controls="workflow-detail-panel">进展 ⌄</button><span id="workflow-clock" class="workflow-clock" role="timer" aria-live="off" aria-label="工作计时" hidden><span id="workflow-round-time" class="workflow-round-time"></span><span id="workflow-goal-time" class="workflow-goal-time"></span></span><button id="workflow-action" class="secondary" hidden></button></div>
+    <p id="workflow-observation" class="workflow-observation" role="status" hidden></p>
+    <div id="workflow-detail-panel" hidden><ol id="workflow-steps"><li>发送</li><li>思考／工作</li><li>等待／核对结果</li><li>结果已保存</li></ol><p id="workflow-detail"></p><p id="workflow-time" class="scope-hint"></p><div id="model-difference" class="model-difference" hidden><span id="model-difference-text"></span><button id="review-model" class="secondary" hidden>核对网页设置</button></div><div id="worker-status" class="worker-status" hidden></div></div>
+  </section>
+  <div id="notice" class="notice" role="status" hidden><span id="notice-text"></span><button id="dismiss-notice" class="icon" aria-label="关闭提示">×</button></div>
+  <div id="codex-browser-bar" class="codex-browser-bar" role="status" hidden><strong id="codex-browser-account"></strong><span id="codex-browser-note">查看原对话不发送消息；补充要求和继续工作请回原 Codex。</span></div>
+  <div id="web-navigation-hint" class="web-navigation-hint" role="status" hidden></div>
+  <div id="page-host" class="page-host">
+    <section id="local-workspace" class="local-workspace" aria-label="本地 Codex" hidden><div class="workspace-intro"><div><span class="eyebrow">本地工作</span><h2>让 Codex 直接完成任务</h2><p>沿用本机 Codex 的账号、模型和原生工具。打开终端后输入目标，或接续已保存的任务。</p></div></div><form id="local-codex-form" class="local-launch-form"><label for="local-codex-root">工作目录</label><div class="folder-field"><input id="local-codex-root" spellcheck="false" placeholder="选择要工作的项目"><button id="local-codex-browse" type="button" class="secondary">选择…</button></div><p id="local-codex-status" class="scope-hint" role="status">正在核对本机 Codex…</p><div class="local-launch-actions"><button id="local-codex-resume" type="button" class="quiet">接续原任务</button><button id="local-codex-open" type="submit" class="primary">打开本地 Codex ↗</button></div></form><p class="scope-hint local-launch-note">打开终端不会发送模型消息。任务执行、登录和模型选择在原终端完成。</p></section>
+    <section id="record-toolbar" class="record-navigation" aria-label="工作记录导航" hidden>
+      <div class="record-toolbar-row">
+        <button id="record-directory-toggle" type="button" class="quiet" aria-expanded="false" aria-controls="record-drawer">查找记录</button>
+        <button id="record-latest" type="button" class="quiet" title="回到最新记录">最新 ↓</button>
+        <span id="record-range" class="record-range" role="status"></span>
+      </div>
+      <div id="record-error" class="record-error" role="status" hidden></div>
+      <aside id="record-drawer" class="record-drawer" aria-label="记录目录与查找" hidden>
+        <div class="record-drawer-head"><strong id="record-drawer-title">记录</strong><button id="record-drawer-close" type="button" class="icon" aria-label="关闭记录目录">×</button></div>
+        <div class="record-jump-actions"><button id="record-first" type="button" class="quiet" title="直接跳到最早保存的记录">跳到最早</button><button id="record-earlier" type="button" class="quiet" title="加载更早的记录">加载更早</button><button id="record-collapse" type="button" class="quiet" title="收起本页对话与输出">收起正文</button></div>
+        <form id="record-find-form"><input id="record-find" type="search" maxlength="200" placeholder="查找此任务的全部记录…" aria-label="查找此任务的全部记录"><button type="submit" class="secondary">查找</button></form>
+        <p id="record-find-status" class="scope-hint" role="status"></p>
+        <nav id="record-index" aria-label="对话记录目录"></nav>
+        <div class="record-index-actions"><button id="record-index-before" type="button" class="quiet">← 更早</button><button id="record-index-first" type="button" class="quiet">最早一页</button><button id="record-index-after" type="button" class="quiet">更晚 →</button></div>
+      </aside>
+    </section>
+    <section id="codex-workspace" class="codex-workspace" aria-label="Codex 工作记录" hidden>
+      <div class="workspace-intro"><div><span class="eyebrow">工作记录</span><h2 id="codex-workspace-title">任务总览</h2><p id="codex-workspace-description">每张卡片是一项任务；打开后查看最新回合和原网页。</p></div></div>
+      <div id="codex-status" class="bridge-health" role="status">正在连接…</div>
+      <p id="codex-record-status" class="scope-hint" role="status" hidden></p>
+      <div id="codex-summary" class="codex-summary" aria-label="运行概览"></div>
+      <div class="codex-workspace-toolbar"><button id="codex-back" type="button" class="quiet" hidden>← 任务总览</button><strong id="codex-list-label">任务</strong><button id="codex-settings" type="button" class="secondary">启动与连接设置</button></div>
+      <section id="codex-turns" aria-label="Codex 网页回合"></section>
+      <p id="codex-native-activity-status" class="scope-hint" role="status" hidden></p>
+
+      <details class="codex-continuation-note"><summary>如何手动使用</summary><ol><li>点击左侧「新建任务」，确认网页账号、模型和工作目录，打开 Codex＋Web 终端后直接输入完整目标。</li><li>在任务总览打开任务，查看工作记录或原对话网页。补充、停止和接续仍在原 Codex 终端操作，无需另一个 Codex 对话代管。</li><li>回合结束后核对结果；旧任务可以归档，归档不会删除对话。当前尚无自动唤醒桌面主控的完成通知。</li></ol><p>Pro 用于完整工作包；流程测试使用 Extra High。纯 Web 的目标和补充直接在其工作记录中发送。</p></details>
+    </section>
+    <section id="conversation" class="conversation">
+      <section id="intake-record" class="intake-record" aria-label="首次工作记录" hidden><article class="message user-message"><div class="message-meta"><strong>你</strong><span id="intake-delivery" class="delivery"></span></div><details class="intake-request"><summary id="intake-request-preview"></summary><pre id="intake-request-full" class="text"></pre></details></article><div id="intake-progress" class="run-activity"><span class="activity-orb" aria-hidden="true"></span><div><strong id="intake-progress-title"></strong><p id="intake-progress-note"></p></div><button id="intake-open-web" type="button" class="quiet">查看网页 ↗</button></div></section>
+      <section id="intake-diagnostics" class="intake-diagnostics" aria-label="接入记录" hidden>
+        <h2>接入未完成</h2><p>先核对停下的位置。原消息保留，不会自动重试。</p>
+        <dl id="intake-stages"></dl>
+        <button id="intake-configure" type="button" class="secondary" hidden>修正访问范围 · 不发送消息</button>
+        <details><summary>查看最新网页回复与首次错误</summary><p id="intake-source" class="scope-hint"></p><pre id="intake-report"></pre><p class="scope-hint">首次保存的错误</p><pre id="intake-original"></pre></details>
+      </section>
+      <div id="welcome" class="welcome"><div class="welcome-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9M8 5.3l8 4.4"/></svg></div><h2>今天想推进什么？</h2><p>选择一个任务继续，或开始新的工作。</p><button id="setup-start" class="primary">＋ 新建任务</button><div class="welcome-hint">沿用你选择的工作方式、账号与模型</div></div>
+      <div id="task-empty" class="task-empty" hidden><span class="eyebrow">首次使用 · 每段对话接入一次</span><h2>让这段对话开始工作</h2><p>接入后在这里发目标、看进展，工作记录会自动保存。</p><ol class="setup-steps"><li><strong>选择接入模型</strong><span>仅接入用极高；接入同时执行完整研究或开发任务可直接用 Pro。</span></li><li><strong>接入项目</strong><span>确认目录、访问范围与协作方式；如需简洁协作实验版，请在首次接入前选择。填写完整首任务，与接入合并为一条消息。</span></li><li><strong>选择工作模型，发送目标</strong><span>首次任务结果自动保存在工作记录。可直接继续工作，或从输入框下方切换工作模型，无需重新接入。</span></li></ol><div class="setup-actions"><button id="setup-web" class="primary">1 · 打开网页选模型</button><button id="setup-current" class="secondary">2 · 接入项目</button></div><p class="scope-hint">接续已有研究：在工作记录一次粘贴各角色的公开交接，注明定义、已证与待证结论、未决问题和文件路径。</p></div>
+      <form id="first-task-form" class="first-task-form" hidden><label for="first-task-objective">先做什么？</label><textarea id="first-task-objective" rows="5" maxlength="24000" placeholder="写下完整需求：要开发、研究或交付什么，以及相关文件路径。"></textarea><p id="first-task-location" class="scope-hint"></p><div class="compose-actions"><label class="first-account-label">账号<select id="first-task-account"><option value="A">A</option><option value="B">B</option></select></label><div class="model-chip first-model-label"><span>本轮模型</span><button id="first-task-effort" type="button" value="极高" aria-haspopup="menu" aria-label="首轮使用的模型">极高 ⌄</button></div><button id="first-task-send" type="submit" class="primary">发送 ↑</button></div><p class="scope-hint"><span id="first-task-model-hint">本轮将使用极高，发送前核对网页。</span> 首轮要求与必要的连接准备合并发送；按你选择的访问范围完成工作。</p></form>
+      <details id="first-task-options" class="first-task-options" hidden><summary>项目与运行设置 · 可选</summary><div id="first-settings-slot"></div></details>
+      <details id="task-prompt-preview" class="prompt-preview" hidden><summary id="task-prompt-summary">发送前查看附加内容</summary><p class="scope-hint">下面来自实际发送模板，作为普通网页消息附带。项目文件不会偷偷打包；模型按列出的路径和约定读取。接入凭据与本机身份不在预览中显示。</p><div id="task-prompt-blocks"></div></details>
+      <div id="record-loading" class="record-loading" role="status" hidden><span id="record-loading-spinner" class="interaction-spinner" aria-hidden="true"></span><span id="record-loading-text">正在读取当前任务记录…</span></div>
+      <div id="events" hidden></div>
+
+    </section>
+    <footer id="compose-footer" hidden>
+      <div id="composer-stack" class="composer-stack">
+        <div id="composer-context" class="composer-context" hidden>
+          <div id="composer-pending" class="composer-pending" aria-label="待处理的补充" hidden></div>
+          <div id="composer-goal" class="composer-goal" hidden>
+            <button id="settings-refill" type="button" class="composer-goal-entry" title="目标与验收" aria-label="目标与验收" hidden>
+              <svg class="composer-goal-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="10" cy="10" r="6.7"/><circle cx="10" cy="10" r="3.2"/><path d="M10 6.8V10h3.2M14.8 5.2l2-2"/></svg>
+              <span id="composer-goal-state" class="composer-goal-state"></span><span id="composer-goal-objective" class="composer-goal-objective"></span><span id="composer-goal-meta" class="composer-goal-meta"></span>
+              <svg class="composer-goal-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m6 4 4 4-4 4"/></svg>
+            </button>
+            <div class="composer-goal-actions" role="group" aria-label="目标控制">
+              <button id="composer-goal-toggle" type="button" class="icon" aria-label="暂停目标" title="暂停目标的后续自动发送" hidden></button>
+              <button id="composer-goal-stop" type="button" class="icon" aria-label="关闭目标" title="关闭目标，保留对话与成果" hidden><svg class="ui-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="m6 6 8 8M14 6l-8 8"/></svg></button>
+            </div>
+          </div>
+        </div>
+        <form id="composer">
+          <label for="objective" class="composer-label visually-hidden">目标或补充</label><textarea id="objective" rows="2" placeholder="告诉主控要完成什么…" aria-label="工作目标"></textarea>
+          <div class="compose-actions composer-actions">
+            <div class="composer-tools-start">
+              <button id="composer-add" type="button" class="icon composer-add" popovertarget="composer-add-menu" aria-label="添加内容" title="添加内容"><svg class="ui-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M10 4v12M4 10h12"/></svg></button>
+              <button id="composer-access" type="button" class="composer-access" aria-label="核对任务访问权限" title="核对任务访问权限"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m10 2.7 6 2.4v4.5c0 3.3-2.4 5.9-6 7.7-3.6-1.8-6-4.4-6-7.7V5.1z"/><path d="m7 9.5 2 2 4-4"/></svg><span id="composer-access-label">读取权限…</span></button>
+            </div>
+            <div class="composer-tools-end"><button id="composer-expand" class="icon" type="button" aria-label="放大编辑" title="放大编辑" aria-expanded="false">⤢</button><button type="button" id="model-button" class="model-chip" aria-haspopup="menu">模型与思考档位</button><button id="composer-stop" type="button" class="primary composer-stop" aria-label="停止网页生成" title="停止此任务的网页生成；独立本地任务仍继续" hidden><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="5" width="10" height="10" rx="1.5" fill="currentColor"/></svg></button><button id="start" type="submit" class="primary" aria-label="发送目标"><span class="action-symbol" aria-hidden="true">↑</span><span>发送目标</span></button></div>
+          </div>
+        </form>
+      </div>
+      <div id="compose-hint" class="compose-hint"></div>
+    </footer>
+  </div>
+</main>
+<aside id="process-panel" class="process-panel" aria-label="运行过程">
+  <div class="process-head"><strong>运行过程</strong><button id="process-close" type="button" class="icon" aria-label="收起运行过程">×</button></div>
+  <div id="public-process" class="public-process" role="status"></div>
+  <section id="process-workers" class="process-section" aria-label="协作者" hidden></section>
+  <section id="process-wait" class="process-section" aria-label="等待结果" hidden></section>
+  <section id="process-events" class="process-section" aria-label="任务过程"></section>
+  <section id="native-process" class="process-section" aria-label="原生工具活动" hidden></section>
+  <details id="codex-mcp-activity" class="codex-mcp-activity" open><summary>连接器工具活动</summary><p class="scope-hint">尚未关联到具体对话的调用。</p><div id="codex-mcp-activity-list"></div></details>
+  <details id="session-mcp-activity" class="codex-mcp-activity" hidden open><summary id="session-mcp-summary">本对话的工具活动</summary><p class="scope-hint">查看调用状态、参数和完整回包。</p><div id="session-mcp-activity-list"></div></details>
+</aside>
+<div id="composer-add-menu" class="composer-add-menu" popover aria-label="添加内容">
+  <button id="composer-add-files" type="button"><span class="composer-menu-icon" aria-hidden="true">↗</span><span>引用项目文件</span></button>
+  <button id="composer-add-folder" type="button"><span class="composer-menu-icon" aria-hidden="true">▱</span><span>引用项目文件夹</span></button>
+  <button id="composer-add-goal" type="button"><span class="composer-menu-icon" aria-hidden="true">◎</span><span>目标与验收</span></button>
+  <button id="composer-add-settings" type="button"><span class="composer-menu-icon" aria-hidden="true">⚙</span><span>任务设置</span></button>
+  <button id="composer-add-preview" type="button" hidden><span class="composer-menu-icon" aria-hidden="true">≡</span><span>查看附加内容</span></button>
+  <p class="scope-hint">引用只添加项目内路径，模型沿任务权限读取。</p>
+</div>
+<aside class="details" id="details" hidden>
+  <div class="detail-head"><strong id="detail-title">任务设置</strong><button id="close-details" class="icon" aria-label="关闭侧栏">×</button></div>
+  <section id="setup" class="setup">
+    <p id="setup-hint" class="hint">先在对话网页选好模型，再读取并接入。</p>
+    <form id="settings-form">
+      <label>任务名称<input id="title" maxlength="120" placeholder="根据首次要求自动命名"></label>
+      <label>工作目录 · 可选<div class="folder-field"><input id="root" spellcheck="false" readonly placeholder="留空，创建独立工作区"><button id="first-browse-root" type="button" class="secondary">选择…</button></div></label>
+      <p class="scope-hint">目录用于归组任务和安排文件操作。下方是本任务的访问约定，实际权限仍由 Local-MCP 执行。</p>
+      <label>文件访问<select id="access"><option value="full">完整项目访问</option><option value="read">只读查看</option><option value="write">指定目录（高级）</option></select></label>
+      <label id="write-paths-field" hidden>可写的相对目录（必填）<input id="write-paths" placeholder="例如 notes, proofs, checkpoints" aria-describedby="write-paths-help"><span id="write-paths-help" class="scope-hint">填写项目内允许写入的目录，以逗号分隔；空白不表示整个项目。提交前会检查，不消耗模型发送。</span></label>
+      <div id="initial-limits" class="field-grid"><label>运行窗口（小时）<input id="hours" type="number" min="0.01" max="168" placeholder="不限" step="any"></label><label>发送预算<input id="budget" type="number" min="1" max="10000" placeholder="不限"></label></div>
+      <div class="protocol-card"><label class="collaboration-opt-in"><input id="collaboration-enabled" type="checkbox"> 自动协作</label><label id="collaboration-mode-field" hidden>协作方式<select id="collaboration-protocol" aria-describedby="collaboration-protocol-help"><option value="tool_v1">工具模式</option><option value="text_v1">简洁协作实验版</option></select></label><p id="collaboration-protocol-help" class="scope-hint"></p></div>
+      <div class="model-card"><label><span id="model-label">接入模型</span><input id="model" placeholder="尚未读取" readonly></label><label>思考档位<input id="effort" placeholder="尚未读取" readonly></label><button type="button" id="inspect" class="secondary">读取网页模型</button></div>
+      <p id="bootstrap-policy" class="hint"></p>
+      <p id="model-policy" class="hint">任务采用的设置将用于发送前核对，新 worker 默认继承。</p>
+      <button id="adopt-model" class="secondary wide" type="button" hidden>采用网页设置</button>
+      <button id="enroll" class="primary wide" type="submit">接入项目 · 1 条接入消息</button>
+    </form>
+    <details id="task-runtime-details" class="task-runtime-details"><summary>运行与记录</summary><p id="run-info" class="scope-hint">运行时长与发送次数不限</p><p id="send-stats" class="scope-hint">本地发送统计</p><div id="saved-prompt-slot"></div></details>
+    <p class="hint">worker 默认继承；主控也可为每个 worker 指定模型与思考档位。写入同一目录或使用独占资源时自动排队。</p>
+    <button id="close-current" class="text-button">关闭此任务…</button>
+  </section>
+  <section id="closed-list" class="closed-list" hidden></section>
+  <section id="codex-setup" class="setup" hidden>
+    <p id="codex-current-account" class="hint"></p><button id="codex-manage-account" type="button" class="text-button">网页登录管理…</button><p class="scope-hint">登录页在纯 Web 工作区打开；登录其他账号不会迁移原 Codex 任务或切换当前桥接账号。</p>
+    <p class="hint">使用原生 Codex 终端操作文件、运行工具；由所选网页模型思考和开发。同一条网页回合内完成完整工作，等待不发送“继续”。</p>
+    <label>工作目录<div class="folder-field"><input id="codex-root" placeholder="选择要工作的项目" spellcheck="false"><button id="codex-browse" type="button" class="secondary">选择…</button></div></label>
+    <p class="scope-hint">完整访问；工作目录用于定位任务，不是目录访问上限。仍遵守具体项目的写入与协作约定。</p>
+    <label>网页模型<select id="codex-model"><option value="pro">Pro</option><option value="extra-high">Extra High · 极高</option><option value="high">High · 高</option><option value="medium">Medium · 中</option><option value="light">Light · 低</option><option value="gpt-6-pro">GPT-6 Pro</option><option value="gpt-5.6-pro">GPT-5.6 Pro</option></select></label>
+    <button id="codex-open" type="button" class="primary wide">打开 Codex＋Web ↗</button>
+    <button id="codex-resume" type="button" class="secondary wide">接续已有任务…</button>
+    <p class="scope-hint">打开终端和选择任务不发送模型消息。输入目标后才开始；模型不可用时说明原因，不切换提供方。无需另做“接入”对话。Ctrl+C 停止当前回合，退出后可从这里接续。</p>
+    <button id="codex-check" type="button" class="text-button">重新检查连接 · 不发送消息</button>
+    <p class="scope-hint">Pro 只用于有实质内容的完整工作包。接入、简单测试使用 Extra High；不为等待和检查额外发送。</p>
+  </section>
+  <section id="connection-setup" class="setup connection-setup" hidden>
+    <p class="hint">纯 Web 在「账号与连接」登录，并使用已有 Local-MCP。Codex＋Web 在这里保存所选网页账号和已有连接。</p>
+    <form id="connection-settings-form">
+      <label class="connection-enable"><input id="connection-enabled" type="checkbox"> 下次打开启用 Codex＋Web</label>
+      <label>网页推理账号<select id="connection-account"><option value="A">账号 A</option><option value="B">账号 B</option></select></label>
+      <label>连接方式<select id="connection-transport"><option value="dedicated">已有专用连接</option><option value="shared-mcp">沿用已有共享连接</option></select></label>
+      <p id="connection-shared-hint" class="scope-hint"></p>
+      <label>隧道标识<input id="connection-tunnel-id" spellcheck="false" maxlength="39" placeholder="tunnel_…" required></label>
+      <label>运行密钥文件<div class="folder-field"><input id="connection-key-path" spellcheck="false" placeholder="选择已有文件；只保存路径" required><button id="connection-pick-key" type="button" class="secondary">选择…</button></div></label>
+      <label>隧道客户端<div class="folder-field"><input id="connection-binary-path" spellcheck="false" placeholder="选择已有 tunnel-client.exe" required><button id="connection-pick-binary" type="button" class="secondary">选择…</button></div></label>
+      <p id="connection-prerequisites" class="scope-hint" role="status"></p>
+      <p class="scope-hint">保存只更新此工作区的连接引用。任务在途或原执行待核对时保留原配置；正常退出并重新打开后才初始化。密钥内容不会读取或显示。</p>
+      <button id="connection-settings-save" type="submit" class="primary wide" disabled>保存连接设置</button>
+      <button id="connection-settings-refresh" type="button" class="quiet">重新读取原配置</button>
+      <p id="connection-settings-message" class="scope-hint" role="status"></p>
+    </form>
+    <details class="connection-prerequisite-note"><summary>首次使用需要准备什么</summary><p class="scope-hint">需要已有 Python 3.11+、本机 Codex CLI 与 127.0.0.1:17890 的 VPN 代理。专用连接另需外部已创建的隧道标识、运行密钥文件和隧道客户端。保存后沿正常打开流程登录所选账号、核对连接器与真实工具。共享连接还需要原 Union、Local-MCP 后台、账号配置与授权；本页仅延续完整的现有共享配置，新安装不会复制开发环境的私有资料或另起轮询者。</p></details>
+  </section>
+</aside>
+<div id="first-model-menu" popover role="menu" aria-label="选择首轮模型">
+  <strong>首轮模型</strong>
+  <button type="button" data-first-effort="Pro" role="menuitemradio">Pro</button>
+  <button type="button" data-first-effort="极高" role="menuitemradio">极高</button>
+  <button type="button" data-first-effort="高" role="menuitemradio">高</button>
+  <button type="button" data-first-effort="中" role="menuitemradio">中</button>
+  <p class="scope-hint">选择模型不会发送消息；点击“发送”后才开始。</p>
+</div>
+<div id="work-model-menu" popover aria-label="选择工作模型">
+  <strong>工作模型</strong>
+  <button type="button" data-work-effort="Pro" role="menuitemradio">Pro</button>
+  <button type="button" data-work-effort="极高" role="menuitemradio">极高</button>
+  <button type="button" data-work-effort="高" role="menuitemradio">高</button>
+  <button type="button" data-work-effort="中" role="menuitemradio">中</button>
+  <p id="work-model-hint">切换不发送消息，首次接入档位不变。</p>
+  <button type="button" id="more-models" class="quiet">更多网页模型…</button>
+</div>
+<dialog id="budget-dialog" aria-labelledby="budget-title">
+  <div class="dialog-head"><div><span class="dialog-eyebrow">持续推进</span><h2 id="budget-title">目标</h2></div><button id="budget-close" type="button" class="icon" aria-label="关闭目标">×</button></div>
+  <div id="goal-dialog-body" class="goal-dialog-body">
+  <section id="goal-panel" class="goal-panel" aria-label="任务目标">
+    <div class="goal-section-head"><h3>目标</h3><button id="goal-edit" type="button" class="quiet" hidden>编辑目标</button></div>
+    <div class="goal-status-row"><strong id="goal-status" role="status">正在读取目标…</strong><span id="goal-progress" class="scope-hint"></span></div>
+    <pre id="goal-objective-view" class="goal-objective-view" hidden></pre>
+    <form id="goal-form" class="goal-editor">
+      <label for="goal-objective" class="visually-hidden">要完成的目标</label><textarea id="goal-objective" rows="5" maxlength="18000" placeholder="写下最终要完成什么，以及你会怎样验收。" disabled></textarea>
+      <label class="collaboration-opt-in"><input id="goal-auto-continue" type="checkbox" checked> 自动接续未完成的工作</label>
+      <p id="goal-policy" class="scope-hint">目标独立保存。保存不发送模型消息，也不增加运行次数。</p>
+      <div class="goal-editor-actions"><button id="goal-edit-cancel" type="button" class="quiet" hidden>取消编辑</button><button id="goal-save" type="submit" class="secondary" disabled>保存目标</button></div>
+    </form>
+    <div class="goal-package-summary"><strong id="goal-package-status"></strong><p id="goal-package-detail" class="scope-hint"></p></div>
+    <p id="goal-review-summary" class="goal-review-summary" hidden></p>
+    <section id="goal-review-section" class="goal-review-section" hidden>
+      <div class="goal-section-head"><h3>验收当前工作包</h3></div><p class="scope-hint">查看工作记录与成果后，记录你的决定。</p>
+      <form id="goal-review-form">
+        <label for="goal-review-decision">验收决定<select id="goal-review-decision"><option value="continue">继续推进目标</option><option value="revise">需要修正后再推进</option><option value="complete">目标已达成</option></select></label>
+        <label for="goal-review-notes">验收反馈<textarea id="goal-review-notes" rows="3" maxlength="6000" placeholder="写下已确认的成果、仍需改进的内容，或目标达成的依据。"></textarea></label>
+        <div class="goal-editor-actions"><button id="goal-review-save" type="submit" class="primary" disabled>保存验收决定</button></div>
+      </form>
+    </section>
+    <p id="goal-feedback" class="scope-hint" role="status"></p>
+    <button id="goal-review-edit" type="button" class="quiet" hidden>修改验收决定</button>
+    <button id="goal-discard" type="button" class="secondary" hidden>撤销待发的下一包</button>
+  </section>
+  <details id="budget-details" class="budget-details"><summary><span>派发预算</span><span class="summary-note">次数与时长</span></summary><form id="budget-form">
+    <p id="budget-summary" class="hint"></p>
+    <div class="field-grid"><label>追加派发次数<input id="refill-sends" type="number" min="0" max="10000" step="1" value="0" required></label><label>追加时间（小时）<input id="refill-hours" type="number" min="0" max="168" step="any" value="0" required></label></div>
+    <p id="budget-preview" class="budget-preview" aria-live="polite"></p>
+    <p class="scope-hint">派发次数包含主控和协作者的模型发送，是本工作包的运行预算，不是账号官方额度。保存只追加次数与时长，保留已用次数及暂停；下包时间从实际发送起算。</p>
+    <div class="goal-editor-actions"><button id="budget-save" type="submit" class="secondary">保存追加预算 · 不发送消息</button></div>
+    <p id="budget-feedback" role="status" class="hint"></p>
+  </form></details>
+  <section id="budget-continue-section" class="goal-next-section" hidden>
+    <div class="goal-section-head"><h3>下一工作包</h3></div>
+    <label for="budget-instructions">下一工作包的重点（可选）</label><textarea id="budget-instructions" rows="3" maxlength="11000" placeholder="结合验收反馈，写下下一包要完成和验证的内容。"></textarea>
+    <div class="goal-next-actions"><p class="scope-hint">沿用原对话、目标与成果。</p><button id="budget-continue" type="button" class="primary">开始下一包</button></div>
+    <p class="scope-hint">只有点击此按钮才向当前任务模型发送。沿用原对话、目标与成果；不会自动追加预算。</p>
+  </section>
+  </div>
+</dialog>
+<dialog id="task-dialog">
+  <form id="task-dialog-form">
+    <div class="dialog-head"><h2 id="dialog-title">新建任务</h2><button id="dialog-close" type="button" class="icon" aria-label="取消">×</button></div>
+    <p id="dialog-description" class="hint"></p>
+    <div id="dialog-fields">
+      <label>任务名称<input id="dialog-name" maxlength="120" placeholder="根据要求自动命名" autocomplete="off"></label>
+    </div>
+    <div id="dialog-error" class="field-error" role="alert" hidden></div>
+    <div class="dialog-actions"><button id="dialog-cancel" type="button" class="secondary">取消</button><button id="dialog-confirm" type="submit" class="primary">创建任务</button></div>
+  </form>
+</dialog>
+<dialog id="quota-dialog" aria-labelledby="quota-title">
+  <div class="dialog-head"><h2 id="quota-title">Pro 用量与可用性</h2><button id="quota-close" type="button" class="icon" aria-label="关闭用量面板">×</button></div>
+  <p class="scope-hint">纯 Web 与 Codex＋Web 共用所选账号的 Chat 额度；这里不使用 Work／Codex 用量推算。</p>
+  <div id="quota-history" class="quota-history" aria-live="polite"></div>
+  <p id="quota-history-message" role="status" class="scope-hint">本机保存信息，不联网读取。统计按完成的 Pro 回复计数，不是官方剩余额度。手动标记仅保存到本机。</p>
+  <hr>
+  <label>账号<select id="quota-account"><option>B</option><option>A</option></select></label>
+  <div id="quota-models"></div>
+  <p id="quota-local" class="scope-hint"></p>
+  <p class="scope-hint">官方已用／剩余：未提供。历史统计保留原采集区间与时间；临时、已删除、未完成及列表未返回的归档记录不计。</p>
+  <p id="quota-message" role="status" class="scope-hint"></p>
+  <details><summary>记录我在网页看到的限制</summary>
+    <label>模型<select id="quota-report-model"><option value="latest-pro">Pro · 最新</option><option value="gpt-5.6-pro">GPT-5.6 Sol Pro</option></select></label>
+    <label>网页提示的重置时间（可留空）<input id="quota-reset" maxlength="120" placeholder="例如：周三 17:09，或页面上的原文"></label>
+    <div class="dialog-actions"><button id="quota-clear" type="button" class="secondary">清除我的限制记录</button><button id="quota-exhausted" type="button" class="primary">记录额度耗尽</button></div>
+    <p class="scope-hint">手动记录会标注来源。清除不表示额度已恢复，也不会恢复暂停任务。</p>
+  </details>
+</dialog>
+<script src="failure-state.js"></script><script src="runtime-availability.js"></script><script src="quota-view.js"></script><script src="workflow-state.js"></script><script src="work-timer.js"></script><script src="task-presentation.js"></script><script src="state-patch.js"></script><script src="assets/vendor/markdown-it/markdown-it.min.js"></script><script src="assets/vendor/katex/katex.min.js"></script><script src="assets/vendor/markdown-it-texmath/texmath.js"></script><script src="rich-text.js"></script><script src="work-record.js"></script><script src="record-history.js"></script><script src="codex-turns.js"></script><script src="mcp-activity.js"></script><script src="interaction-feedback.js"></script><script src="shell.js"></script><script src="preview-ui.js"></script></body></html>

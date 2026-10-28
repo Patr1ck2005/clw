@@ -1,0 +1,56 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {validateSnapshot,safeParseSnapshot,emptyAnnotations,validateAnnotations,setBinding,visibleSessions,completedCalls,classifyCall,routeAdvice,makeTaskPacket,projectGroup,MAX_BYTES} from '../apps/control-center/model.mjs';
+import {createAnnotationStore} from '../apps/control-center/annotations.mjs';
+const file=readFileSync(new URL('../apps/control-center/data/observed.json',import.meta.url),'utf8');
+const fresh=()=>JSON.parse(file);
+const valid=()=>validateSnapshot(fresh());
+function bad(fn){const data=fresh();fn(data);assert.throws(()=>validateSnapshot(data));}
+test('actual bounded sample: 13 projects and 2 explicitly observed Sessions',()=>{const s=valid();assert.equal(s.projects.length,13);assert.equal(s.sessions.length,2);assert.equal(s.source.live,false);});
+test('even a live claim cannot convert an import into real-time status',()=>{const s=fresh();s.source.live=true;assert.equal(validateSnapshot(s).source.live,false);});
+test('unknown schema is rejected',()=>bad(s=>s.schema_version=2));
+test('duplicate Project identity is rejected',()=>bad(s=>s.projects.push(s.projects[0])));
+test('duplicate Session identity is rejected',()=>bad(s=>s.sessions.push(s.sessions[0])));
+test('unknown Session project is rejected',()=>bad(s=>s.sessions[0].project_id='other'));
+test('cross-Session event is rejected',()=>bad(s=>s.sessions[0].events[0].session_id=s.sessions[1].id));
+test('duplicate event identity is rejected',()=>bad(s=>s.sessions[0].events.push(s.sessions[0].events[0])));
+test('unknown job-project association is rejected',()=>bad(s=>s.jobs.push({id:'j',project_id:'outside',session_id:null,status:'running',exit_code:null})));
+test('cross-project job-session association is rejected',()=>bad(s=>s.jobs.push({id:'j',project_id:s.projects[0].id,session_id:s.sessions[0].id,status:'running',exit_code:null})));
+test('negative processing time is rejected',()=>bad(s=>s.sessions[0].events[0].duration_ms=-1));
+test('invalid time is rejected',()=>bad(s=>s.source.observed_at='not-time'));
+test('unsafe structured credential input is rejected',()=>bad(s=>s.source.api_key='synthetic-only'));
+test('prototype key is rejected',()=>{const s=fresh();s.extra=JSON.parse('{"__proto__":{"polluted":true}}');assert.throws(()=>validateSnapshot(s));assert.equal({}.polluted,undefined);});
+test('oversized import cannot be parsed',()=>assert.throws(()=>safeParseSnapshot(' '.repeat(MAX_BYTES+1))));
+test('malicious-looking text is preserved as text, not executed by model',()=>{const s=fresh();s.projects[0].name='<img src=x onerror=alert(1)>';assert.equal(validateSnapshot(s).projects[0].name,s.projects[0].name);});
+test('business and recorder merge by exact logical id within Session',()=>{const s=valid();const rows=completedCalls(s.sessions[0].events);assert.equal(rows.length,2);assert.equal(rows.find(e=>e.logical_id==='wc_inv_14624cbe1400090e9059829ab328a584').role,'business');});
+test('same logical id in a different Session is not collapsed',()=>{const a=valid().sessions[0].events.find(e=>e.kind==='finished');assert.equal(completedCalls([a,{...a,id:'other',session_id:'other-session'}]).length,2);});
+test('started-only records never count as success',()=>assert.equal(completedCalls(valid().sessions[0].events.filter(e=>e.kind==='started')).length,0));
+test('accepted Job is not completion',()=>assert.equal(classifyCall({status:'succeeded',job_id:'j',exit_code:null}).label,'已接受 · 非完成'));
+test('program failure is distinct from transport failure',()=>assert.equal(classifyCall({status:'succeeded',exit_code:1,error_class:'command_exit_nonzero'}).label,'程序失败'));
+test('unknown outcome stays unknown',()=>assert.equal(classifyCall({status:'unknown'}).label,'结果未知'));
+test('labels cannot bind an unknown Session',()=>{const s=valid();assert.throws(()=>setBinding(emptyAnnotations(s.runtime.id),s,{session_id:'unknown',account_alias:'A',role:'M',updated_at:'now'}));});
+test('labels cannot cross backend identity',()=>{const s=valid();assert.throws(()=>validateAnnotations(emptyAnnotations('other-server'),s));});
+test('account labels are cosmetic and leave source data unchanged',()=>{const s=valid(),before=JSON.stringify(s);const a=setBinding(emptyAnnotations(s.runtime.id),s,{session_id:s.sessions[0].id,account_alias:'我的A',role:'M',model_label:'自报Pro',updated_at:'2026-09-20T00:00:00Z'});assert.equal(a.bindings[0].source,'user_label_not_identity');assert.equal(JSON.stringify(s),before);assert.equal(visibleSessions(s,a,{alias:'我的A'}).length,1);assert.equal(visibleSessions(s,a,{alias:'__unbound__'}).length,1);});
+test('project filtering never changes the Project binding',()=>{const s=valid();assert.equal(visibleSessions(s,emptyAnnotations(s.runtime.id),{project:s.projects[0].id}).length,0);});
+test('logical navigation groups do not require different accounts',()=>{const s=valid();assert.equal(projectGroup(s.projects[0],emptyAnnotations(s.runtime.id)),'Spirefall');});
+test('deterministic work is not assigned to a model by default',()=>assert.equal(routeAdvice('deterministic').target,'普通本机 Job'));
+test('model-intensive implementation defaults to Web',()=>assert.equal(routeAdvice('implementation').target,'Web 主导'));
+test('image route states separate billing',()=>assert.match(routeAdvice('images').reason,/另计费/));
+test('unknown routing value including prototype lookup is rejected',()=>assert.throws(()=>routeAdvice('constructor')));
+test('task packet preserves full original goal and acceptance and never auto-executes',()=>{const s=valid(),goal='含中文\n约束不可删',acceptance='恢复必须查原Job';const p=makeTaskPacket({project:s.projects[0],goal,acceptance,kind:'implementation'});assert.ok(p.includes(goal));assert.ok(p.includes(acceptance));assert.match(p,/不是执行或新增授权/);assert.match(p,/不按时长/);});
+test('no empty task request',()=>assert.throws(()=>makeTaskPacket({project:valid().projects[0],goal:'',acceptance:'ok',kind:'implementation'})));
+test('partial events cannot claim untruncated coverage',()=>bad(s=>s.sessions[0].events_truncated=false));
+test('event totals cannot be smaller than returned events',()=>bad(s=>s.sessions[0].events_total=1));
+test('success and failure counts cannot exceed total calls',()=>bad(s=>s.sessions[0].counts.failed=100));
+test('task text budget rejects instead of silently truncating',()=>assert.throws(()=>makeTaskPacket({project:valid().projects[0],goal:'x'.repeat(32769),acceptance:'valid',kind:'implementation'})));
+function memoryStore(){const data=new Map();return{getItem:k=>data.get(k)??null,setItem:(k,v)=>data.set(k,v)};}
+function serialLocks(){let tail=Promise.resolve();return{request:(key,options,action)=>{assert.equal(options.mode,'exclusive');const result=tail.then(action);tail=result.catch(()=>{});return result;}};}
+function label(s,index,name){return{session_id:s.sessions[index].id,account_alias:name,role:'M',model_label:'',updated_at:'2026-09-20T00:00:00Z'};}
+test('cross-window stores merge unrelated edits under shared lock',async()=>{const s=valid(),storage=memoryStore(),locks=serialLocks(),a=createAnnotationStore({key:'labels',snapshot:s,storage,locks}),b=createAnnotationStore({key:'labels',snapshot:s,storage,locks});await Promise.all([a.saveBinding(label(s,0,'one'),null),b.saveBinding(label(s,1,'two'),null)]);assert.equal(a.read().bindings.length,2);});
+test('same-item stale edit never replaces newer save',async()=>{const s=valid(),storage=memoryStore(),locks=serialLocks(),a=createAnnotationStore({key:'labels',snapshot:s,storage,locks});await a.saveBinding(label(s,0,'new'),null);await assert.rejects(a.saveBinding(label(s,0,'stale'),null),/其他窗口/);assert.equal(a.read().bindings[0].account_alias,'new');});
+test('missing cross-tab locking does not silently fall back to unsafe writes',async()=>{const s=valid(),storage=memoryStore(),a=createAnnotationStore({key:'labels',snapshot:s,storage,locks:null});await assert.rejects(a.saveBinding(label(s,0,'a'),null),/保存锁/);assert.equal(storage.getItem('labels'),null);});
+test('import compares the raw pre-read revision before replacing',async()=>{const s=valid(),storage=memoryStore(),a=createAnnotationStore({key:'labels',snapshot:s,storage,locks:serialLocks()}),before=a.raw();await a.saveBinding(label(s,0,'keep'),null);await assert.rejects(a.replace(emptyAnnotations(s.runtime.id),before),/导入期间/);assert.equal(a.read().bindings.length,1);});
+test('superseded pending UI action cannot write after acquiring lock',async()=>{const s=valid(),storage=memoryStore(),a=createAnnotationStore({key:'labels',snapshot:s,storage,locks:serialLocks()});await assert.rejects(a.saveBinding(label(s,0,'late'),null,()=>false),/上下文已改变/);assert.equal(storage.getItem('labels'),null);});
+test('custom group can be reset without changing any project',async()=>{const s=valid(),storage=memoryStore(),a=createAnnotationStore({key:'labels',snapshot:s,storage,locks:serialLocks()}),value={project_id:s.projects[0].id,name:'My group'},before=JSON.stringify(s);await a.saveGroup(value,null);assert.equal(projectGroup(s.projects[0],a.read()),'My group');await a.saveGroup({...value,name:''},value);assert.equal(projectGroup(s.projects[0],a.read()),'Spirefall');assert.equal(JSON.stringify(s),before);});
+test('corrupted stored state is never silently overwritten by ordinary editing',async()=>{const s=valid(),storage=memoryStore();storage.setItem('labels','broken');const a=createAnnotationStore({key:'labels',snapshot:s,storage,locks:serialLocks()});await assert.rejects(a.saveBinding(label(s,0,'a'),null));assert.equal(storage.getItem('labels'),'broken');});

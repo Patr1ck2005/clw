@@ -1,0 +1,12 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>CLW Web Companion</title><link rel="stylesheet" href="popup.css"><body>
+<h1>CLW 网页伴侣 <small>0.6.3</small></h1>
+<p>在你已经打开的这条对话里监护。保留当前模型，支持 Pro；无需启动 CLW、登记项目或重发原需求。</p>
+<button id="monitorStart" class="primary">启用当前页监护与失败接续</button>
+<button id="monitorStatus">查看监护状态</button><button id="monitorStop">停止当前页监护</button>
+<p class="hint">明确失败后最多短接续三次。连接等待且公开进度三分钟不变，刷新同一原页核对，每轮最多两次。正常长思考继续等；你的输入、停止和切换优先。</p>
+<pre id="status" role="status">尚未核对当前页。</pre>
+<details><summary>CLW 已登记任务（原高级入口）</summary>
+<p>下面用于原 CLW 任务载体，与“仅监护当前页”互斥。此历史载体仍只支持 Sol 的中等／极高档位。</p>
+<button id="openNew">打开新 ChatGPT 页（不发送）</button><button id="managedJoin">将本已绑定对话加入专用托管窗口</button><button id="managedStop">停止托管窗口轮换</button><button id="inspect">查看当前页识别状态（不发送）</button><button id="enable">首次授权当前对话加入 CLW</button><div id="choices"></div><button id="resume">恢复当前页观察（不重发旧 attempt）</button><button id="stop">停用当前页 CLW 接管</button>
+</details><small>本地 Codex 可经已配对通道查询、发送、监护及刷新原页。断网先等网络恢复；原发送未知不重放。自行刷新后自动核对新文档；手动刷新或重启浏览器后请重新启用。页面关闭／休眠时无法保证观察继续。</small>
+<script src="control-policy.js"></script><script src="popup.js"></script></body></html>

@@ -1,0 +1,934 @@
+From 6d67dfd132e402d559b8e46465ed2cbcbcac8bd2 Mon Sep 17 00:00:00 2001
+From: Wang Keren <144989952+Patr1ck2005@users.noreply.github.com>
+Date: Wed, 14 Oct 2026 04:11:21 -0700
+Subject: [PATCH 3/3] fix(runtime): bound optional startup checks and target
+ project lookup
+
+Keep optional startup metadata on one deadline without changing explicit tool budgets. Resolve only the selected registered project for LSP status.
+
+Origin: ai-assisted:gpt-6.1-sol-codex
+---
+ .../src/webcodex_runner/lsp/adapter.rs        |  12 +-
+ .../src/webcodex_runner/lsp/mod.rs            |   3 +
+ .../lsp/project_resolution_tests.rs           | 113 +++++++
+ .../src/webcodex_runner/projects.rs           |   5 +-
+ .../src/webcodex_runner/projects/catalog.rs   |  43 +++
+ src/plugin_gateway.rs                         |  43 ++-
+ src/tool_runtime/coding_task.rs               |  10 +-
+ src/tool_runtime/skills.rs                    | 130 +++++++-
+ src/tool_runtime/tests/startup_catalog.rs     | 291 ++++++++++++++++++
+ 9 files changed, 625 insertions(+), 25 deletions(-)
+ create mode 100644 crates/webcodex-runner/src/webcodex_runner/lsp/project_resolution_tests.rs
+
+diff --git a/crates/webcodex-runner/src/webcodex_runner/lsp/adapter.rs b/crates/webcodex-runner/src/webcodex_runner/lsp/adapter.rs
+index 0de4f298b36383a0a05809ae8fd3dca84f6dc901..c40c8e4f2682e7e96f37885eac028b5d24d271d6 100644
+--- a/crates/webcodex-runner/src/webcodex_runner/lsp/adapter.rs
++++ b/crates/webcodex-runner/src/webcodex_runner/lsp/adapter.rs
+@@ -6,7 +6,7 @@
+ 
+ use super::super::config::RunnerPolicy;
+ use super::super::output::CommandResult;
+-use super::super::projects::load_runner_project_summaries_from_dir;
++use super::super::projects::find_project_root_by_id;
+ use super::super::shell::cwd_allowed;
+ #[cfg(test)]
+ use crate::lsp_bridge::AGENT_LSP_REQUEST_KIND;
+@@ -83,13 +83,9 @@ fn resolve_runner_project(
+             "project_id cannot be empty",
+         ));
+     }
+-    load_runner_project_summaries_from_dir(project_registry_dir)
+-        .into_iter()
+-        .find(|project| project.id == id)
+-        .map(|project| PathBuf::from(project.path))
+-        .ok_or_else(|| {
+-            RunnerLspResultEnvelope::err(error_codes::UNKNOWN_PROJECT, "unknown agent project")
+-        })
++    find_project_root_by_id(project_registry_dir, id).ok_or_else(|| {
++        RunnerLspResultEnvelope::err(error_codes::UNKNOWN_PROJECT, "unknown agent project")
++    })
+ }
+ 
+ fn validate_project_root(
+diff --git a/crates/webcodex-runner/src/webcodex_runner/lsp/mod.rs b/crates/webcodex-runner/src/webcodex_runner/lsp/mod.rs
+index c8ad43090cec65a90ca2a9d25e24f56f15c9fdfe..acdbe5b2cc45cc4d600f9fac89a0cfdb1c2bfc08 100644
+--- a/crates/webcodex-runner/src/webcodex_runner/lsp/mod.rs
++++ b/crates/webcodex-runner/src/webcodex_runner/lsp/mod.rs
+@@ -28,6 +28,9 @@ fn serialize_fake_lsp_test() -> FakeLspTestSerialGuard {
+ #[cfg(test)]
+ mod navigation_test_support;
+ 
++#[cfg(test)]
++mod project_resolution_tests;
++
+ #[cfg(test)]
+ #[path = "navigation_tests.rs"]
+ mod navigation_tests;
+diff --git a/crates/webcodex-runner/src/webcodex_runner/lsp/project_resolution_tests.rs b/crates/webcodex-runner/src/webcodex_runner/lsp/project_resolution_tests.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..df00a313c484791459c18f30e57c736c3fd28e1b
+--- /dev/null
++++ b/crates/webcodex-runner/src/webcodex_runner/lsp/project_resolution_tests.rs
+@@ -0,0 +1,113 @@
++//! Startup status resolution must inspect one root, without a full Git inventory.
++
++use super::adapter::handle_lsp_operation;
++use crate::lsp_bridge::{parse_runner_lsp_result_envelope, RunnerLspPayload, RunnerLspRequest};
++use crate::webcodex_runner::config::RunnerPolicy;
++use crate::webcodex_runner::projects::project_git_probe_count;
++use std::fs;
++use std::path::Path;
++use webcodex_lsp::{LspSupervisor, LspSupervisorConfig};
++
++fn registration(dir: &Path, filename: &str, id: &str, root: &Path, disabled: bool) {
++    fs::write(
++        dir.join(filename),
++        format!(
++            "id = {id:?}\npath = {:?}\ndisabled = {disabled}\n",
++            root.to_string_lossy()
++        ),
++    )
++    .unwrap();
++}
++
++fn status(dir: &Path, id: &str, policy: &RunnerPolicy) -> serde_json::Value {
++    let supervisor = LspSupervisor::new(LspSupervisorConfig::default());
++    let response = handle_lsp_operation(
++        policy,
++        dir,
++        &supervisor,
++        &RunnerLspPayload {
++            project_id: id.to_string(),
++            request: RunnerLspRequest::Status,
++        },
++        1,
++    );
++    serde_json::to_value(
++        parse_runner_lsp_result_envelope(response.stdout.as_deref().unwrap()).unwrap(),
++    )
++    .unwrap()
++}
++
++#[test]
++fn startup_status_resolution_does_not_run_git_for_any_registered_project() {
++    let temp = tempfile::tempdir().unwrap();
++    let registry = temp.path().join("registry");
++    fs::create_dir(&registry).unwrap();
++    let target = temp.path().join("target");
++    fs::create_dir(&target).unwrap();
++    registration(
++        &registry,
++        "unrelated-filename.toml",
++        "target",
++        &target,
++        false,
++    );
++    for index in 0..135 {
++        registration(
++            &registry,
++            &format!("project-{index:03}.toml"),
++            &format!("other-{index}"),
++            &temp.path().join(format!("missing-{index}")),
++            false,
++        );
++    }
++    let before = project_git_probe_count();
++    let result = status(
++        &registry,
++        " target ",
++        &RunnerPolicy {
++            allow_cwd_anywhere: true,
++            ..Default::default()
++        },
++    );
++    assert_eq!(result["success"], true, "{result}");
++    assert_eq!(
++        project_git_probe_count(),
++        before,
++        "status must not invoke any Git probes"
++    );
++}
++
++#[test]
++fn startup_status_resolution_preserves_registration_precedence_and_policy() {
++    let temp = tempfile::tempdir().unwrap();
++    let registry = temp.path().join("registry");
++    fs::create_dir(&registry).unwrap();
++    let allowed = temp.path().join("allowed");
++    let forbidden = temp.path().join("forbidden");
++    fs::create_dir(&allowed).unwrap();
++    fs::create_dir(&forbidden).unwrap();
++    // Preserve the full inventory's first valid id even when that record is
++    // disabled. The adapter does not choose a later enabled duplicate.
++    registration(&registry, "a-first.toml", "demo", &forbidden, true);
++    registration(&registry, "z-later.toml", "demo", &allowed, false);
++    fs::write(registry.join("0-malformed.toml"), "invalid TOML").unwrap();
++    let policy = RunnerPolicy {
++        allowed_roots: vec![allowed.clone()],
++        ..Default::default()
++    };
++    let rejected = status(&registry, "demo", &policy);
++    assert_eq!(
++        rejected["error"]["code"], "invalid_project_path",
++        "{rejected}"
++    );
++    fs::remove_file(registry.join("a-first.toml")).unwrap();
++    assert_eq!(status(&registry, "demo", &policy)["success"], true);
++    assert_eq!(
++        status(&registry, "missing", &policy)["error"]["code"],
++        "unknown_project"
++    );
++    assert_eq!(
++        status(&registry, " ", &policy)["error"]["code"],
++        "unknown_project"
++    );
++}
+diff --git a/crates/webcodex-runner/src/webcodex_runner/projects.rs b/crates/webcodex-runner/src/webcodex_runner/projects.rs
+index 962aeb36a383cee85918d039ce12dec145f81203..b41f428c7433907f34f1a18a52089e3325739db8 100644
+--- a/crates/webcodex-runner/src/webcodex_runner/projects.rs
++++ b/crates/webcodex-runner/src/webcodex_runner/projects.rs
+@@ -24,12 +24,13 @@ mod managed_worktree;
+ mod registration;
+ 
+ pub(crate) use catalog::{
+-    find_project_shell_context, find_project_shell_context_by_id,
++    find_project_root_by_id, find_project_shell_context, find_project_shell_context_by_id,
+     load_runner_project_summaries_from_dir,
+ };
+ #[cfg(test)]
+ pub(crate) use catalog::{
+-    parse_runner_project_toml, project_root_fingerprint, runner_project_summary,
++    parse_runner_project_toml, project_git_probe_count, project_root_fingerprint,
++    runner_project_summary,
+ };
+ 
+ pub(crate) use lifecycle::{handle_project_lifecycle_operation, handle_project_operation};
+diff --git a/crates/webcodex-runner/src/webcodex_runner/projects/catalog.rs b/crates/webcodex-runner/src/webcodex_runner/projects/catalog.rs
+index c5a3819c164ca48641f629b932cdf6e48f3737b7..a301a0b3baa618ef958f1c409aea057d321b55bc 100644
+--- a/crates/webcodex-runner/src/webcodex_runner/projects/catalog.rs
++++ b/crates/webcodex-runner/src/webcodex_runner/projects/catalog.rs
+@@ -134,6 +134,37 @@ pub(crate) fn parse_runner_project_toml(content: &str) -> Result<RunnerProjectFi
+     Ok(project)
+ }
+ 
++/// Resolve the first valid registration for one id without probing Git or
++/// canonicalizing unrelated project roots. Registry filenames are not ids;
++/// retain the sorted-file precedence used by the full inventory loader.
++pub(crate) fn find_project_root_by_id(dir: &Path, project_id: &str) -> Option<PathBuf> {
++    let mut files = std::fs::read_dir(dir)
++        .ok()?
++        .flatten()
++        .map(|entry| entry.path())
++        .filter(|path| path.extension().and_then(|ext| ext.to_str()) == Some("toml"))
++        .collect::<Vec<_>>();
++    files.sort();
++    for file in files {
++        let Ok(content) = std::fs::read_to_string(file) else {
++            continue;
++        };
++        let Ok(project) = parse_runner_project_toml(&content) else {
++            continue;
++        };
++        if project.id == project_id {
++            let path = PathBuf::from(project.path);
++            return Some(
++                canonicalize_existing(&path)
++                    .ok()
++                    .filter(|path| path.is_dir())
++                    .unwrap_or(path),
++            );
++        }
++    }
++    None
++}
++
+ fn load_runner_project_shell_contexts_from_dir(dir: &Path) -> Vec<RunnerProjectShellContext> {
+     let entries = match std::fs::read_dir(dir) {
+         Ok(entries) => entries,
+@@ -452,7 +483,19 @@ pub(super) fn run_git_bounded_with_program(
+     })
+ }
+ 
++#[cfg(test)]
++thread_local! {
++    static PROJECT_GIT_PROBE_COUNT: std::cell::Cell<usize> = const { std::cell::Cell::new(0) };
++}
++
++#[cfg(test)]
++pub(crate) fn project_git_probe_count() -> usize {
++    PROJECT_GIT_PROBE_COUNT.with(|count| count.get())
++}
++
+ fn run_git_capture(path: &str, args: &[&str], shutdown: Option<&AtomicBool>) -> Option<String> {
++    #[cfg(test)]
++    PROJECT_GIT_PROBE_COUNT.with(|count| count.set(count.get() + 1));
+     let output = run_git_bounded(Path::new(path), args, PROJECT_GIT_TIMEOUT, shutdown).ok()?;
+     if !output.status.success() || output.stdout_capped {
+         return None;
+diff --git a/src/plugin_gateway.rs b/src/plugin_gateway.rs
+index 616951b7cfed151c49a4177612050e7ee0f8325e..a69025effad7ac0ad7a8d81cb473ed32544a07da 100644
+--- a/src/plugin_gateway.rs
++++ b/src/plugin_gateway.rs
+@@ -20,7 +20,7 @@ use serde::Serialize;
+ use serde_json::{json, Value};
+ use std::collections::{HashMap, VecDeque};
+ use std::sync::Mutex;
+-use std::time::Duration;
++use std::time::{Duration, Instant};
+ use webcodex_tool_contracts::PluginToolAction;
+ 
+ pub(crate) const PLUGIN_TOOL_NAME: &str = "plugin_tool";
+@@ -822,6 +822,22 @@ pub(crate) async fn execute_exact(
+     request: PluginGatewayRequest,
+     auth: Option<&AuthContext>,
+ ) -> Result<PluginGatewayResponse, GatewayError> {
++    execute_exact_until(runtime, runner, request, auth, None).await
++}
++
++async fn execute_exact_until(
++    runtime: &ToolRuntime,
++    runner: &ResolvedPluginRunner,
++    request: PluginGatewayRequest,
++    auth: Option<&AuthContext>,
++    deadline: Option<Instant>,
++) -> Result<PluginGatewayResponse, GatewayError> {
++    if deadline.is_some_and(|deadline| Instant::now() >= deadline) {
++        return Err(GatewayError::local(
++            "plugin_gateway_timeout",
++            "Plugin gateway observation deadline elapsed before enqueue",
++        ));
++    }
+     let access = crate::runner_http::runner_access_from_auth(auth);
+     let (request_id, receiver) = runtime
+         .runner_registry
+@@ -853,7 +869,8 @@ pub(crate) async fn execute_exact(
+             )
+         })?;
+ 
+-    match tokio::time::timeout(GATEWAY_WAIT_TIMEOUT, receiver).await {
++    let deadline = deadline.unwrap_or_else(|| Instant::now() + GATEWAY_WAIT_TIMEOUT);
++    match tokio::time::timeout_at(deadline.into(), receiver).await {
+         Ok(Ok(response)) => Ok(response),
+         Ok(Err(_)) | Err(_) => {
+             let dispatched = runtime
+@@ -988,19 +1005,39 @@ impl ToolRuntime {
+         &self,
+         project: &crate::tool_runtime::ResolvedProject,
+         auth: Option<&AuthContext>,
++    ) -> Result<ProjectPluginCatalog, &'static str> {
++        self.project_plugin_catalog_until(project, auth, None).await
++    }
++
++    pub(crate) async fn startup_plugin_catalog(
++        &self,
++        project: &crate::tool_runtime::ResolvedProject,
++        auth: Option<&AuthContext>,
++        deadline: Instant,
++    ) -> Result<ProjectPluginCatalog, &'static str> {
++        self.project_plugin_catalog_until(project, auth, Some(deadline))
++            .await
++    }
++
++    async fn project_plugin_catalog_until(
++        &self,
++        project: &crate::tool_runtime::ResolvedProject,
++        auth: Option<&AuthContext>,
++        deadline: Option<Instant>,
+     ) -> Result<ProjectPluginCatalog, &'static str> {
+         let project_id = crate::tool_runtime::runner_local_project_id(&project.resolved_id)
+             .ok_or("project_target_unavailable")?;
+         let runner = resolve_runner(self, &project.config.client_id, auth)
+             .await
+             .map_err(|error| project_catalog_reason(&error))?;
+-        let response = execute_exact(
++        let response = execute_exact_until(
+             self,
+             &runner,
+             PluginGatewayRequest::ProjectCatalog {
+                 project_id: project_id.to_string(),
+             },
+             auth,
++            deadline,
+         )
+         .await
+         .map_err(|error| project_catalog_reason(&error))?;
+diff --git a/src/tool_runtime/coding_task.rs b/src/tool_runtime/coding_task.rs
+index 3eb24a8ff15a96b4a6622cb819da64775fa2b727..5963c94a6e795b1be0d9c42f42c03788e06eac33 100644
+--- a/src/tool_runtime/coding_task.rs
++++ b/src/tool_runtime/coding_task.rs
+@@ -51,12 +51,15 @@ use crate::runner_protocol::{
+     ShellFileOpRequest, RUNNER_CAPABILITY_FILE_READ, RUNNER_CAPABILITY_GIT, RUNNER_CAPABILITY_SHELL,
+ };
+ use std::collections::HashSet;
+-use std::time::Duration;
++use std::time::{Duration, Instant};
+ 
+ const RULES_MAX_HEADINGS: usize = 8;
+ const RULES_MAX_FIRST_LINES: usize = 5;
+ const RULES_MAX_LINE_CHARS: usize = 180;
+ const FINISH_SESSION_EVENT_LIMIT: usize = 200;
++/// Optional extension catalogs share one short deadline; slow discovery must
++/// not consume the main work_on_project startup request's entire budget.
++const STARTUP_EXTENSION_DISCOVERY_BUDGET: Duration = Duration::from_secs(6);
+ /// Short startup probe budget for the repository overview, much tighter than
+ /// the standalone `project_overview` tool's 30s wait. An optional overview
+ /// failure must not block the coding task, so it fails over quickly.
+@@ -1283,12 +1286,13 @@ impl ToolRuntime {
+         project: &ResolvedProject,
+         auth: Option<&AuthContext>,
+     ) -> StartupExtensions {
+-        let skills = self.startup_skills_catalog(project, auth);
++        let deadline = Instant::now() + STARTUP_EXTENSION_DISCOVERY_BUDGET;
++        let skills = self.startup_skills_catalog(project, auth, deadline);
+         let plugins = async {
+             if auth.is_some_and(|auth| !auth.has_scope(crate::auth::SCOPE_PLUGIN_INSPECT)) {
+                 return StartupPluginsCatalog::unavailable("plugin_inspect_scope_unavailable");
+             }
+-            match self.project_plugin_catalog(project, auth).await {
++            match self.startup_plugin_catalog(project, auth, deadline).await {
+                 Ok(catalog) => {
+                     let entries = catalog
+                         .entries
+diff --git a/src/tool_runtime/skills.rs b/src/tool_runtime/skills.rs
+index 1316924d9bf2c46908423737976aab4493d64230..57b39dd2c5dc1e21a217e6e5c901de361b582fca 100644
+--- a/src/tool_runtime/skills.rs
++++ b/src/tool_runtime/skills.rs
+@@ -206,6 +206,16 @@ fn observe_skill_source_request(
+     );
+ }
+ 
++/// A startup discovery deadline is shared by every dependent read, never
++/// reset by a successful package/list response. Ordinary calls keep their
++/// existing per-operation wait budgets.
++fn bounded_skill_wait_deadline(deadline: Option<Instant>, wait: Duration) -> Instant {
++    let operation_deadline = Instant::now() + wait;
++    deadline.map_or(operation_deadline, |deadline| {
++        deadline.min(operation_deadline)
++    })
++}
++
+ impl ToolRuntime {
+     async fn runner_skill_request(
+         &self,
+@@ -215,6 +225,29 @@ impl ToolRuntime {
+         optional_if_unsupported: bool,
+         metric_operation: Option<SkillSourceMetricOperation>,
+     ) -> Result<Option<ShellRunResponse>, String> {
++        self.runner_skill_request_until(
++            project,
++            auth,
++            operation,
++            optional_if_unsupported,
++            metric_operation,
++            None,
++        )
++        .await
++    }
++
++    async fn runner_skill_request_until(
++        &self,
++        project: &ResolvedProject,
++        auth: Option<&AuthContext>,
++        operation: RunnerSkillRequest,
++        optional_if_unsupported: bool,
++        metric_operation: Option<SkillSourceMetricOperation>,
++        deadline: Option<Instant>,
++    ) -> Result<Option<ShellRunResponse>, String> {
++        if deadline.is_some_and(|deadline| Instant::now() >= deadline) {
++            return Err("skill_catalog_unavailable".to_string());
++        }
+         let client_id = project.config.client_id.clone();
+         let access = crate::runner_http::runner_access_from_auth(auth);
+         let management = operation.requires_management_capability();
+@@ -267,7 +300,8 @@ impl ToolRuntime {
+             .map_err(|error| runner_skill_enqueue_error_kind(&error, management).to_string())?;
+         let request_started = Instant::now();
+         let wait_secs = if management { 120 } else { 30 };
+-        match tokio::time::timeout(Duration::from_secs(wait_secs), rx).await {
++        let wait_deadline = bounded_skill_wait_deadline(deadline, Duration::from_secs(wait_secs));
++        match tokio::time::timeout_at(wait_deadline.into(), rx).await {
+             Ok(Ok(response)) => Ok(Some(response)),
+             Ok(Err(_)) => {
+                 if let Some(operation) = metric_operation {
+@@ -316,15 +350,17 @@ impl ToolRuntime {
+         &self,
+         project: &ResolvedProject,
+         auth: Option<&AuthContext>,
++        deadline: Option<Instant>,
+     ) -> Result<Option<RunnerSkillListResponse>, String> {
+         let observation_started = Instant::now();
+         let Some(response) = self
+-            .runner_skill_request(
++            .runner_skill_request_until(
+                 project,
+                 auth,
+                 RunnerSkillRequest::List,
+                 true,
+                 Some(SkillSourceMetricOperation::CatalogList),
++                deadline,
+             )
+             .await?
+         else {
+@@ -707,9 +743,20 @@ impl ToolRuntime {
+         project: &ResolvedProject,
+         auth: Option<&AuthContext>,
+     ) -> Result<SkillCatalog, &'static str> {
+-        let mut catalog = self.discover_project_skills(project).await?;
++        self.discover_skills_until(project, auth, None).await
++    }
++
++    async fn discover_skills_until(
++        &self,
++        project: &ResolvedProject,
++        auth: Option<&AuthContext>,
++        deadline: Option<Instant>,
++    ) -> Result<SkillCatalog, &'static str> {
++        let mut catalog = self
++            .discover_project_skills_until(project, deadline)
++            .await?;
+         let runner = self
+-            .observe_runner_skill_catalog(project, auth)
++            .observe_runner_skill_catalog(project, auth, deadline)
+             .await
+             .map_err(|_| "skills_catalog_unavailable")?;
+         let mut seen_ids = catalog
+@@ -790,8 +837,12 @@ impl ToolRuntime {
+         &self,
+         project: &ResolvedProject,
+         auth: Option<&AuthContext>,
++        deadline: Instant,
+     ) -> StartupSkillsCatalog {
+-        let catalog = match self.discover_skills(project, auth).await {
++        let catalog = match self
++            .discover_skills_until(project, auth, Some(deadline))
++            .await
++        {
+             Ok(catalog) => catalog,
+             Err(_) => return StartupSkillsCatalog::unavailable("skills_catalog_unavailable"),
+         };
+@@ -1786,9 +1837,21 @@ impl ToolRuntime {
+     pub(crate) async fn discover_project_skills(
+         &self,
+         project: &ResolvedProject,
++    ) -> Result<SkillCatalog, &'static str> {
++        self.discover_project_skills_until(project, None).await
++    }
++
++    async fn discover_project_skills_until(
++        &self,
++        project: &ResolvedProject,
++        deadline: Option<Instant>,
+     ) -> Result<SkillCatalog, &'static str> {
+         let packages = self
+-            .list_agent_skill_packages(project, SkillSourceMetricOperation::CatalogList)
++            .list_agent_skill_packages_until(
++                project,
++                SkillSourceMetricOperation::CatalogList,
++                deadline,
++            )
+             .await?;
+         let discovery_truncated = packages.truncated;
+         let mut invalid_count = 0usize;
+@@ -1803,7 +1866,7 @@ impl ToolRuntime {
+             let package_root = format!("{}/{}", SKILL_ROOT, package.name);
+             let definition_path = format!("{package_root}/{SKILL_DEFINITION_FILE}");
+             let read = match self
+-                .read_agent_skill_file(
++                .read_agent_skill_file_until(
+                     project,
+                     SkillSourceMetricOperation::CatalogDefinitionRead,
+                     &package_root,
+@@ -1812,6 +1875,7 @@ impl ToolRuntime {
+                     MAX_SKILL_DISCOVERY_READ_LINES,
+                     MAX_SKILL_DEFINITION_BYTES,
+                     MAX_SKILL_DEFINITION_BYTES,
++                    deadline,
+                 )
+                 .await
+             {
+@@ -1869,6 +1933,19 @@ impl ToolRuntime {
+         project: &ResolvedProject,
+         operation: SkillSourceMetricOperation,
+     ) -> Result<AgentSkillPackageList, &'static str> {
++        self.list_agent_skill_packages_until(project, operation, None)
++            .await
++    }
++
++    async fn list_agent_skill_packages_until(
++        &self,
++        project: &ResolvedProject,
++        operation: SkillSourceMetricOperation,
++        deadline: Option<Instant>,
++    ) -> Result<AgentSkillPackageList, &'static str> {
++        if deadline.is_some_and(|deadline| Instant::now() >= deadline) {
++            return Err("skills_catalog_unavailable");
++        }
+         let client_id = project.config.client_id.clone();
+         let payload = json!({"limit": MAX_SKILL_DISCOVERY_PACKAGES + 1}).to_string();
+         let wait_timeout = 20_u64;
+@@ -1897,7 +1974,9 @@ impl ToolRuntime {
+             .await
+             .map_err(|_| "skills_catalog_unavailable")?;
+         let request_started = Instant::now();
+-        let response = match tokio::time::timeout(Duration::from_secs(wait_timeout + 2), rx).await {
++        let wait_deadline =
++            bounded_skill_wait_deadline(deadline, Duration::from_secs(wait_timeout + 2));
++        let response = match tokio::time::timeout_at(wait_deadline.into(), rx).await {
+             Ok(Ok(response)) => response,
+             _ => {
+                 observe_skill_source_request(
+@@ -1909,6 +1988,7 @@ impl ToolRuntime {
+                     SkillSourceMetricOutcomeClass::Unavailable,
+                     None,
+                 );
++                self.runner_registry.cancel_request(&request_id).await;
+                 return Err("skills_catalog_unavailable");
+             }
+         };
+@@ -1987,6 +2067,36 @@ impl ToolRuntime {
+         max_file_bytes: usize,
+         text_budget: usize,
+     ) -> Result<AgentSkillFileRead, SkillIoError> {
++        self.read_agent_skill_file_until(
++            project,
++            operation,
++            package_root,
++            full_path,
++            start_line,
++            limit,
++            max_file_bytes,
++            text_budget,
++            None,
++        )
++        .await
++    }
++
++    #[allow(clippy::too_many_arguments)]
++    async fn read_agent_skill_file_until(
++        &self,
++        project: &ResolvedProject,
++        operation: SkillSourceMetricOperation,
++        package_root: &str,
++        full_path: &str,
++        start_line: usize,
++        limit: usize,
++        max_file_bytes: usize,
++        text_budget: usize,
++        deadline: Option<Instant>,
++    ) -> Result<AgentSkillFileRead, SkillIoError> {
++        if deadline.is_some_and(|deadline| Instant::now() >= deadline) {
++            return Err(SkillIoError::Unavailable);
++        }
+         let client_id = project.config.client_id.clone();
+         let payload = json!({
+             "package_root": package_root,
+@@ -2020,7 +2130,9 @@ impl ToolRuntime {
+             .await
+             .map_err(|_| SkillIoError::Unavailable)?;
+         let request_started = Instant::now();
+-        let response = match tokio::time::timeout(Duration::from_secs(wait_timeout + 2), rx).await {
++        let wait_deadline =
++            bounded_skill_wait_deadline(deadline, Duration::from_secs(wait_timeout + 2));
++        let response = match tokio::time::timeout_at(wait_deadline.into(), rx).await {
+             Ok(Ok(response)) => response,
+             _ => {
+                 observe_skill_source_request(
+diff --git a/src/tool_runtime/tests/startup_catalog.rs b/src/tool_runtime/tests/startup_catalog.rs
+index 0e7b3f659f937261b9961aa1fea0b7e3e7497fa8..43e9ca51fefefee1d6cbbbe6f91390cdfacd1f12 100644
+--- a/src/tool_runtime/tests/startup_catalog.rs
++++ b/src/tool_runtime/tests/startup_catalog.rs
+@@ -198,3 +198,294 @@ fn startup_catalog_combined_budget_and_utf8_description_remain_bounded() {
+     assert!(extensions.skills.truncated);
+     assert!(extensions.plugins.truncated);
+ }
++
++// Lifecycle regressions: optional startup reads expire with their own exact
++// accepted request, rather than leaving abandoned entries or replaying them.
++use super::support::{
++    bootstrap_auth_context, complete_patch_agent_request, probe_patch_agent_request,
++    register_runner_project_at_path_with_capabilities, wait_for_runner_request_for_instance,
++};
++use crate::runner_protocol::{RunnerCapabilities, RunnerResultPayload, RunnerResultRequest};
++use crate::tool_runtime::ToolRuntime;
++use std::time::{Duration, Instant};
++use webcodex_core::plugin::{
++    PluginGatewayRequest, PluginGatewayResponse, PluginGatewayResponsePayload, ProjectPluginCatalog,
++};
++
++async fn startup_runtime(
++    client: &str,
++) -> (
++    tempfile::TempDir,
++    ToolRuntime,
++    crate::tool_runtime::ResolvedProject,
++    crate::auth::AuthContext,
++) {
++    let root = tempfile::tempdir().unwrap();
++    let runtime = ToolRuntime::new_for_tests();
++    let id = register_runner_project_at_path_with_capabilities(
++        &runtime,
++        client,
++        "demo",
++        root.path(),
++        RunnerCapabilities {
++            file_read: true,
++            native_tool_plugins: true,
++            skill_runtime: true,
++            ..Default::default()
++        },
++    )
++    .await;
++    let auth = bootstrap_auth_context();
++    let project = runtime
++        .resolve_project_input_for_auth(&id, Some(&auth))
++        .await
++        .unwrap();
++    (root, runtime, project, auth)
++}
++
++async fn complete_plugin_catalog(
++    runtime: &ToolRuntime,
++    request: crate::runner_protocol::RunnerRequest,
++) {
++    runtime
++        .runner_registry
++        .complete(RunnerResultPayload {
++            result: RunnerResultRequest {
++                client_id: request.client_id,
++                runner_instance_id: "inst".to_string(),
++                request_id: request.request_id,
++                exit_code: None,
++                stdout: None,
++                stderr: None,
++                stdout_truncated: false,
++                stderr_truncated: false,
++                duration_ms: None,
++                error: None,
++            },
++            command_execution_state: None,
++            mcp_gateway: None,
++            coding_agent: None,
++            plugin_gateway: Some(PluginGatewayResponse::success(
++                PluginGatewayResponsePayload::ProjectCatalog {
++                    catalog: ProjectPluginCatalog {
++                        catalog_revision: format!(
++                            "wc_plugcat_{}",
++                            webcodex_core::compact::encode([0xaa; 32])
++                        ),
++                        total_count: 0,
++                        entries: Vec::new(),
++                    },
++                },
++            )),
++        })
++        .await
++        .unwrap();
++}
++
++#[tokio::test]
++async fn startup_catalog_plugin_queue_timeout_clears_exact_pending_request() {
++    let (_root, runtime, project, auth) = startup_runtime("catalog-queued").await;
++    let started = Instant::now();
++    let response = runtime
++        .startup_plugin_catalog(
++            &project,
++            Some(&auth),
++            Instant::now() + Duration::from_millis(50),
++        )
++        .await;
++    assert_eq!(response.unwrap_err(), "plugin_runtime_unavailable");
++    assert!(
++        started.elapsed() >= Duration::from_millis(50),
++        "authorized catalog must enqueue and wait, not fail before dispatch admission"
++    );
++    assert!(probe_patch_agent_request(&runtime, "catalog-queued")
++        .await
++        .is_none());
++    assert_eq!(
++        runtime
++            .runner_registry
++            .cancel_abandoned_sync_requests()
++            .await,
++        0
++    );
++}
++
++#[tokio::test]
++async fn startup_catalog_plugin_dispatch_timeout_clears_original_without_replay() {
++    let (_root, runtime, project, auth) = startup_runtime("catalog-dispatched").await;
++    let task = tokio::spawn({
++        let runtime = runtime.clone();
++        async move {
++            runtime
++                .startup_plugin_catalog(
++                    &project,
++                    Some(&auth),
++                    Instant::now() + Duration::from_millis(500),
++                )
++                .await
++        }
++    });
++    let request =
++        wait_for_runner_request_for_instance(&runtime, "catalog-dispatched", "inst").await;
++    assert!(matches!(
++        request.plugin_gateway,
++        Some(PluginGatewayRequest::ProjectCatalog { .. })
++    ));
++    assert_eq!(
++        task.await.unwrap().unwrap_err(),
++        "plugin_runtime_unavailable"
++    );
++    assert_eq!(
++        runtime
++            .runner_registry
++            .cancel_request_dispatch_state(&request.request_id)
++            .await,
++        None
++    );
++    assert!(probe_patch_agent_request(&runtime, "catalog-dispatched")
++        .await
++        .is_none());
++    assert_eq!(
++        runtime
++            .runner_registry
++            .cancel_abandoned_sync_requests()
++            .await,
++        0
++    );
++}
++
++#[tokio::test]
++async fn startup_catalog_short_deadline_does_not_change_explicit_plugin_catalog_wait() {
++    let (_root, runtime, project, auth) = startup_runtime("catalog-explicit").await;
++    let task = tokio::spawn({
++        let runtime = runtime.clone();
++        async move { runtime.project_plugin_catalog(&project, Some(&auth)).await }
++    });
++    let request = wait_for_runner_request_for_instance(&runtime, "catalog-explicit", "inst").await;
++    tokio::time::sleep(Duration::from_millis(100)).await;
++    assert!(
++        !task.is_finished(),
++        "explicit discovery retains its original longer wait"
++    );
++    complete_plugin_catalog(&runtime, request).await;
++    assert_eq!(task.await.unwrap().unwrap().total_count, 0);
++}
++
++#[tokio::test]
++async fn startup_catalog_skill_package_queue_timeout_is_unavailable_and_cleared() {
++    let (_root, runtime, project, auth) = startup_runtime("skills-queued").await;
++    let started = Instant::now();
++    let response = runtime
++        .startup_skills_catalog(
++            &project,
++            Some(&auth),
++            Instant::now() + Duration::from_millis(50),
++        )
++        .await;
++    assert_eq!(json!(response)["status"], "unavailable");
++    assert!(started.elapsed() >= Duration::from_millis(50));
++    assert!(probe_patch_agent_request(&runtime, "skills-queued")
++        .await
++        .is_none());
++    assert_eq!(
++        runtime
++            .runner_registry
++            .cancel_abandoned_sync_requests()
++            .await,
++        0
++    );
++}
++
++#[tokio::test]
++async fn startup_catalog_skill_definition_shares_original_absolute_deadline() {
++    let (_root, runtime, project, auth) = startup_runtime("skills-definition").await;
++    let deadline = Instant::now() + Duration::from_millis(800);
++    let task = tokio::spawn({
++        let runtime = runtime.clone();
++        async move {
++            runtime
++                .startup_skills_catalog(&project, Some(&auth), deadline)
++                .await
++        }
++    });
++    let packages =
++        wait_for_runner_request_for_instance(&runtime, "skills-definition", "inst").await;
++    assert_eq!(packages.kind, "file_skill_list_packages");
++    tokio::time::sleep(Duration::from_millis(100)).await;
++    complete_patch_agent_request(&runtime, "skills-definition", &packages.request_id, 0,
++        r#"{"format":"webcodex.skill_package_list.v1","entries":[{"name":"demo","kind":"dir"}],"truncated":false}"#, "").await;
++    let definition =
++        wait_for_runner_request_for_instance(&runtime, "skills-definition", "inst").await;
++    assert_eq!(definition.kind, "file_skill_read_file");
++    let response = tokio::time::timeout(Duration::from_millis(750), task)
++        .await
++        .expect("definition must not reset discovery deadline")
++        .unwrap();
++    assert_eq!(json!(response)["status"], "unavailable");
++    assert_eq!(
++        runtime
++            .runner_registry
++            .cancel_request_dispatch_state(&definition.request_id)
++            .await,
++        None
++    );
++    assert!(probe_patch_agent_request(&runtime, "skills-definition")
++        .await
++        .is_none());
++    assert_eq!(
++        runtime
++            .runner_registry
++            .cancel_abandoned_sync_requests()
++            .await,
++        0
++    );
++}
++
++#[tokio::test]
++async fn startup_catalog_runner_skill_list_uses_same_deadline_and_cleans_original() {
++    let (_root, runtime, project, auth) = startup_runtime("skills-runner-list").await;
++    let task = tokio::spawn({
++        let runtime = runtime.clone();
++        async move {
++            runtime
++                .startup_skills_catalog(
++                    &project,
++                    Some(&auth),
++                    Instant::now() + Duration::from_millis(500),
++                )
++                .await
++        }
++    });
++    let packages =
++        wait_for_runner_request_for_instance(&runtime, "skills-runner-list", "inst").await;
++    complete_patch_agent_request(
++        &runtime,
++        "skills-runner-list",
++        &packages.request_id,
++        0,
++        r#"{"format":"webcodex.skill_package_list.v1","entries":[],"truncated":false}"#,
++        "",
++    )
++    .await;
++    let catalog =
++        wait_for_runner_request_for_instance(&runtime, "skills-runner-list", "inst").await;
++    assert_eq!(catalog.kind, "skill");
++    assert_eq!(json!(task.await.unwrap())["status"], "unavailable");
++    assert_eq!(
++        runtime
++            .runner_registry
++            .cancel_request_dispatch_state(&catalog.request_id)
++            .await,
++        None
++    );
++    assert!(probe_patch_agent_request(&runtime, "skills-runner-list")
++        .await
++        .is_none());
++    assert_eq!(
++        runtime
++            .runner_registry
++            .cancel_abandoned_sync_requests()
++            .await,
++        0
++    );
++}

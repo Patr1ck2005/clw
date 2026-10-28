@@ -1,0 +1,15 @@
+{
+  "recorded_at": "2026-09-20T02:32:10.974517+00:00",
+  "release": "v0.4.1",
+  "commit": "f080c8f3ea70e37bd9f17fdd0e1b4c3a3aa330f8",
+  "archive": "webcodex-v0.4.1-win32-x64.tar.gz",
+  "url": "https://github.com/yyjeqhc/webcodex/releases/download/v0.4.1/webcodex-v0.4.1-win32-x64.tar.gz",
+  "sha256": "a97cc94fef24456b43b70a3420098e240fea153a7d567f053e8b9279edd0751c",
+  "checksum_verified": true,
+  "trust": "Publisher release plus SHA256SUMS; not independently audited or a signature guarantee",
+  "files": {
+    "webcodex-runner.exe": "dfec051a5a8d644136e18c71a9b3c3855b1dc2fec6fd9454c70cf95a9368cb89",
+    "webcodex-server.exe": "4b1c602960596989e6bb7afffcbcefd37610fde04aac93229557786e61c9febb",
+    "webcodex.exe": "1bc153e969028e2416e1770c6b8a604d56e65bbae0c216ab4ca4f6377934287c"
+  }
+}

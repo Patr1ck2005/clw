@@ -1,0 +1,2052 @@
+{
+  "repository": "https://github.com/miuuyy/codex-chatgpt-web",
+  "commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+  "release": "6.1.1",
+  "reviewed_backports": [
+    {
+      "release": "6.1.2",
+      "commit": "2d73f626290a5062825bb595dabb89aaf88d16c5",
+      "scope": "reply parsing, sign-in recovery, broker cleanup; selected changes only"
+    }
+  ],
+  "license": "MIT",
+  "usage": "Complete runtime, launcher and test sources. Setup/config installer and upstream UI are not automatically executed. CLW uses its own shell.",
+  "files": [
+    {
+      "path": "LICENSE",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "d8b06e8d802722749b8f09e4ed1f2439fde0995a09b7e47c65dca3cc54d43d6e",
+      "sha256": "d8b06e8d802722749b8f09e4ed1f2439fde0995a09b7e47c65dca3cc54d43d6e",
+      "adaptations": []
+    },
+    {
+      "path": "README.md",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "aaeb48a928c6d8617a90d27b8d4a657b7f30efb0d57ed0e2de093b0ad35f792b",
+      "sha256": "aaeb48a928c6d8617a90d27b8d4a657b7f30efb0d57ed0e2de093b0ad35f792b",
+      "adaptations": []
+    },
+    {
+      "path": "README.zh-CN.md",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "9fa6d7815028edd64e53e2acc1e00d4cffb7882e27b686d7e23c16b2f2ffa536",
+      "sha256": "9fa6d7815028edd64e53e2acc1e00d4cffb7882e27b686d7e23c16b2f2ffa536",
+      "adaptations": []
+    },
+    {
+      "path": "TROUBLESHOOTING.md",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "d9338908b410d7c72c25cd093606bb64873e74e390ff441432242870e57572d7",
+      "sha256": "d9338908b410d7c72c25cd093606bb64873e74e390ff441432242870e57572d7",
+      "adaptations": []
+    },
+    {
+      "path": "bun.lock",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "d99dbffb6b44872cedcdb09d7bafc42c83dfa8a4fab902bec3ed4b4660a57f2a",
+      "sha256": "d99dbffb6b44872cedcdb09d7bafc42c83dfa8a4fab902bec3ed4b4660a57f2a",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/assets/icon.ico",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "cf85d470b4a24071d78b6f9765cd428eb8cab1db05ad7cf54893bc0b11796f4c",
+      "sha256": "cf85d470b4a24071d78b6f9765cd428eb8cab1db05ad7cf54893bc0b11796f4c",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/assets/icon.png",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "f251b2f98e35ecdba402028bc36ac2bf89c091a4f83f46ba2000a847bd855da5",
+      "sha256": "f251b2f98e35ecdba402028bc36ac2bf89c091a4f83f46ba2000a847bd855da5",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/assets/linux-appimage-runner.sh",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "ff370085dcbc714c03299a4a06aec011299598326bf37ed3c6c4b9bf5572c391",
+      "sha256": "ff370085dcbc714c03299a4a06aec011299598326bf37ed3c6c4b9bf5572c391",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/assets/mcp-mark.svg",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "75b007e05880de1648832e86695d7b02b5e92746fa9a3c51f622cbba56137afb",
+      "sha256": "75b007e05880de1648832e86695d7b02b5e92746fa9a3c51f622cbba56137afb",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/bun.lock",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "b701bececbf911f37b2d2be887c5cce85ca68b8f1472b4f3d1d082fb08269697",
+      "sha256": "b701bececbf911f37b2d2be887c5cce85ca68b8f1472b4f3d1d082fb08269697",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/electron/atomic-file.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "274a849d3004a2c22c8507b13e671d0e81fc2532ba7d90a0493bc375f59e3ef8",
+      "sha256": "a8a7bfe20a3c37012dc0c676892e6841d43f7fe495be5cc74676a481adb15520",
+      "adaptations": [
+        "Optional flush before atomic replacement for durable CLW intents; cleanup cannot report a committed replacement as failed. Original Windows bounded lock retry retained."
+      ]
+    },
+    {
+      "path": "launcher/electron/autostart.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "fbd1e62683342c265f4907e781aff8805d76515b6777792575b14df267b635e8",
+      "sha256": "fbd1e62683342c265f4907e781aff8805d76515b6777792575b14df267b635e8",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/electron/browser-announcements.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "a95b5e2807e51745e16696bb45da6f50f070623ebc4efeaac61c91b5ce3568f7",
+      "sha256": "a95b5e2807e51745e16696bb45da6f50f070623ebc4efeaac61c91b5ce3568f7",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/electron/browser-helper-verifier.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "ff508b5773cc0f093f2d7a3a8f37fdab39d1af52b3f24a2a1c583dcbd1997a0c",
+      "sha256": "03b10a15a26b3acb3ec31633334647341a00dc4a6d97170ec2eab0b36b9fb267",
+      "adaptations": [
+        "Reviewed CLW overlay: CLW owned editor focus and verified cleanup, bounded 30s cleanup and 180s local inspection; retain connector identity, abort and readback protections."
+      ]
+    },
+    {
+      "path": "launcher/electron/browser-host.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "a92b0339deaa3b7191b2c979f290025251f95f445a839c33209db14f0e01365c",
+      "sha256": "3af8e4af5f171fac4537226ef077601e24b65f25329be2c07fb297aa99c8b741",
+      "adaptations": [
+        "Reuse the CLW account B partition inside the same Electron owner; no cookie transfer.",
+        "Remove the five-tab ceiling and allocate unbounded positive tab ordinals; preserve turn ownership and cancellation.",
+        "Restore owned background viewport at DOM-ready before slow subresources finish; preserve ownership and existing load completion checks.",
+        "Restore primary viewport at DOM-ready; use upstream primaryDeviceEmulationDirty and viewport sizing. The previous CLW viewport implementation is superseded by upstream.",
+        "Retain failed public pages for diagnosis with no active authority and no reuse eligibility; explicit cancellation still releases its page.",
+        "Reviewed CLW overlay: Fixed 6.1.2 backport. Preserve CLW receipt/EOF/error-frame behavior, diagnostic-only failed tabs and explicit A/B production partitions (development remains separate). Upstream five-tab policy excluded; existing CLW resource-admission tests cover unbounded pages.",
+        "Reviewed CLW overlay: Restore this exact hidden turn viewport at full navigation completion even when its DOM-ready emulation dimensions are still cached. No focus change, account change, navigation retry or model Send."
+      ]
+    },
+    {
+      "path": "launcher/electron/browser-state.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "da76e18553ad552a2e9ca9aef2578d9de110ddcec2916116c37ce7d7506341a6",
+      "sha256": "da76e18553ad552a2e9ca9aef2578d9de110ddcec2916116c37ce7d7506341a6",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/electron/chatgpt-auth-session.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "6c99cfd3d843441bb5ecd67a84b1fbe2e023eddc78603536e97221bf759b41c8",
+      "sha256": "6c99cfd3d843441bb5ecd67a84b1fbe2e023eddc78603536e97221bf759b41c8",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/electron/connector-identity.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "d34e250f5514cac4aaa3e32e6f0ade086478892c78eae1e884a57759be41e0d7",
+      "sha256": "d34e250f5514cac4aaa3e32e6f0ade086478892c78eae1e884a57759be41e0d7",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/electron/control-server.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "4654ef16c29574fb181b31efe28199e7e5e6bef57cba61e9d93ac9accce84fcb",
+      "sha256": "4654ef16c29574fb181b31efe28199e7e5e6bef57cba61e9d93ac9accce84fcb",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/electron/languages.json",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "491a0037b77b753f572a7f2a86ce41661a6a74cd7c665a93935d433c29d0746d",
+      "sha256": "491a0037b77b753f572a7f2a86ce41661a6a74cd7c665a93935d433c29d0746d",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/electron/limits-controller.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "8f7b8f2fbe73e76647ca2e4c3e1199caad07975321555c002ca23f52107783b4",
+      "sha256": "8f7b8f2fbe73e76647ca2e4c3e1199caad07975321555c002ca23f52107783b4",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/electron/limits-policy.json",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "02da3d94839b7230bc74a97923b81799b7b1acd4487ef605ce261f9a16cb2611",
+      "sha256": "02da3d94839b7230bc74a97923b81799b7b1acd4487ef605ce261f9a16cb2611",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/electron/limits-store.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "1d7e7b97593eda719094df23d8fc7b2cfb4f2952f40e3a11ea42b7325f217654",
+      "sha256": "1d7e7b97593eda719094df23d8fc7b2cfb4f2952f40e3a11ea42b7325f217654",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/electron/logging.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "1084b3bb9fa25632a19d32d87b574d88502b4c85b7afac353c3944c1c3ae2422",
+      "sha256": "1084b3bb9fa25632a19d32d87b574d88502b4c85b7afac353c3944c1c3ae2422",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/electron/main.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "87c6c8090c5365c3bce1e6c4c52eb7fcd608ec82394712131dc8f35bd19e9fb1",
+      "sha256": "87c6c8090c5365c3bce1e6c4c52eb7fcd608ec82394712131dc8f35bd19e9fb1",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/electron/passkey-login-state.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "02e4ccd40aca8d832398f2a4fb9e0e6f5ddc240583c0768d09373276e1b7e95d",
+      "sha256": "02e4ccd40aca8d832398f2a4fb9e0e6f5ddc240583c0768d09373276e1b7e95d",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/electron/preload.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "cf1156ae1ae2f765f6c3b54e482eb99875e776ef7033190a47cdafef37c04ae2",
+      "sha256": "cf1156ae1ae2f765f6c3b54e482eb99875e776ef7033190a47cdafef37c04ae2",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/electron/process-tree.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "750c0e7e89aa562c8ac6b28eba5649f0f5140a7e88262551dbc62d0176372aa1",
+      "sha256": "750c0e7e89aa562c8ac6b28eba5649f0f5140a7e88262551dbc62d0176372aa1",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/electron/profile.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "a3a5358d4ce228820e52cc579e359d1f3cfdc29f8a1a726e95f9e20377b314d6",
+      "sha256": "a3a5358d4ce228820e52cc579e359d1f3cfdc29f8a1a726e95f9e20377b314d6",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/electron/retained-turn-release.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "6d161d413140962de07ccebde7f7719a4a115141d911f9529d7e608c3058dfca",
+      "sha256": "6d161d413140962de07ccebde7f7719a4a115141d911f9529d7e608c3058dfca",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/electron/runtime-command.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "b08d4ccd30460471599df5873af5d9a3123bb58e725f42389b691321d73652b2",
+      "sha256": "b08d4ccd30460471599df5873af5d9a3123bb58e725f42389b691321d73652b2",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/electron/runtime-install.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "fc1fd29967d84fb7c3c12e73589a091e4f247b52674441dad3058e1a230ab837",
+      "sha256": "fc1fd29967d84fb7c3c12e73589a091e4f247b52674441dad3058e1a230ab837",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/electron/runtime-supervisor.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "00768cc607f5bccc5b4c4b5934125c36d5b99005a21a03fcf972829a97be856d",
+      "sha256": "00768cc607f5bccc5b4c4b5934125c36d5b99005a21a03fcf972829a97be856d",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/electron/runtime.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "6effe35904a98e54807ab190ab741db557e7e5a8f6970bf806e48d822014aea5",
+      "sha256": "6effe35904a98e54807ab190ab741db557e7e5a8f6970bf806e48d822014aea5",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/electron/state.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "10b196db01f1ea6847bb40b4d7c9d25ce1e03991d07e5ed52c81b53021ec51d6",
+      "sha256": "10b196db01f1ea6847bb40b4d7c9d25ce1e03991d07e5ed52c81b53021ec51d6",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/electron/turn-suspension.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "6364570ab9de2d94afda14d18bca7d900b5467cf99cd1250fceeef522c326523",
+      "sha256": "6364570ab9de2d94afda14d18bca7d900b5467cf99cd1250fceeef522c326523",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/electron/update-worker.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "faa240cace42a6bac39217b4cc62f15a820b2e201805153232fd678b741b08f9",
+      "sha256": "faa240cace42a6bac39217b4cc62f15a820b2e201805153232fd678b741b08f9",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/electron/update.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "8e63b80c38d5ab6133f396d166a13f74d71cc2663e5f3a4ed4399df9543fe4c8",
+      "sha256": "8e63b80c38d5ab6133f396d166a13f74d71cc2663e5f3a4ed4399df9543fe4c8",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/electron/window-state.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "0100a4478ecd2d740abe892aa40168d9aa9d5a13f8a913daff414199f0d8458e",
+      "sha256": "0100a4478ecd2d740abe892aa40168d9aa9d5a13f8a913daff414199f0d8458e",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/index.html",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "39f6b258b74bacaeb0a510f7c444b31faa55c52eb25140d1b8a3380f4ddf7b75",
+      "sha256": "39f6b258b74bacaeb0a510f7c444b31faa55c52eb25140d1b8a3380f4ddf7b75",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/package.json",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "f4b6abf85a8e64bef2e0c8ca8faf97aea0efa27f3f8ca7ffdf70f0211cd2ac8a",
+      "sha256": "f4b6abf85a8e64bef2e0c8ca8faf97aea0efa27f3f8ca7ffdf70f0211cd2ac8a",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/scripts/dev.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "45f52a0321e1de7361f9218ff01a3d8a5946b9cb50f6344d9541c5cf7d74118f",
+      "sha256": "45f52a0321e1de7361f9218ff01a3d8a5946b9cb50f6344d9541c5cf7d74118f",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/scripts/package.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "c283c7bb055819f4115ada17b244f532579175d186467918633c56ed0bf49475",
+      "sha256": "c283c7bb055819f4115ada17b244f532579175d186467918633c56ed0bf49475",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/scripts/prepare-linux-appimage-tools.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "f636933459526b51cc4f108280566e4866ddc9c7b1a5b16c54dad807e2c2959b",
+      "sha256": "f636933459526b51cc4f108280566e4866ddc9c7b1a5b16c54dad807e2c2959b",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/scripts/prepare-runtime.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "a5c9e71e4e42ba8dd6418feb498f462945ef8ff7d6d8ed203231c5ee13290e22",
+      "sha256": "a5c9e71e4e42ba8dd6418feb498f462945ef8ff7d6d8ed203231c5ee13290e22",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/scripts/smoke-linux-appimage-symbols.sh",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "99bdb59fc1e6b6410806e67354c64a91f14d7b075e077b338c6ac1fcb3f9e97a",
+      "sha256": "99bdb59fc1e6b6410806e67354c64a91f14d7b075e077b338c6ac1fcb3f9e97a",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/scripts/smoke-package.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "3a5bac63d0e8c81ca97a9e4dc1fe880146cec00f4b108b169ba0475d39d854c8",
+      "sha256": "3a5bac63d0e8c81ca97a9e4dc1fe880146cec00f4b108b169ba0475d39d854c8",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/src/App.tsx",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "ccf0b94f1b9ab2c8dc6c9ece7716cb8699ab2a53b8d313caed0fe2775adac379",
+      "sha256": "ccf0b94f1b9ab2c8dc6c9ece7716cb8699ab2a53b8d313caed0fe2775adac379",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/src/LimitsSurface.tsx",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "e5572e9b340e527680d9377af1f8e605a3ac2e02a48e1147c4dad6103ae08fab",
+      "sha256": "e5572e9b340e527680d9377af1f8e605a3ac2e02a48e1147c4dad6103ae08fab",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/src/assets/mcp-connect-connector.gif",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "125ed1e66b77c088dc44f52f0e728833dcbcf6396d1dac0b745a6876f52c6b30",
+      "sha256": "125ed1e66b77c088dc44f52f0e728833dcbcf6396d1dac0b745a6876f52c6b30",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/src/assets/mcp-connect-connector.mp4",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "2cebfe72ea9f29cfd57a2e8c69153dc57c8716e2c9b952be604348658645c3f2",
+      "sha256": "2cebfe72ea9f29cfd57a2e8c69153dc57c8716e2c9b952be604348658645c3f2",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/src/assets/mcp-create-tunnel.gif",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "e9461ca6191a959f749cf0ec2eb4a646f051af08e5dd06caa6e26d888dee7390",
+      "sha256": "e9461ca6191a959f749cf0ec2eb4a646f051af08e5dd06caa6e26d888dee7390",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/src/assets/mcp-create-tunnel.mp4",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "c342b71d2ca533c28a23913119db87ba9c0576885017c86dd57cb3ef7df07f3a",
+      "sha256": "c342b71d2ca533c28a23913119db87ba9c0576885017c86dd57cb3ef7df07f3a",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/src/i18n.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "2f1d4ff4a52872f5efd49bc70ab082dc2283bc527078cc90d775fa737b477706",
+      "sha256": "2f1d4ff4a52872f5efd49bc70ab082dc2283bc527078cc90d775fa737b477706",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/src/icons.tsx",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "798f0134030bf5b24692c4da1f6aad94a7349011db50db1be9c560507568311a",
+      "sha256": "798f0134030bf5b24692c4da1f6aad94a7349011db50db1be9c560507568311a",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/src/limits-copy.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "4c7807544beabb928c9eb02001347fb6d81ff01f8b3e1da393d2da21cf7dacba",
+      "sha256": "4c7807544beabb928c9eb02001347fb6d81ff01f8b3e1da393d2da21cf7dacba",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/src/limits-types.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "868e627180bb40a3504ac5a5737d966c9f17873d935685d9a102fcebaf683922",
+      "sha256": "868e627180bb40a3504ac5a5737d966c9f17873d935685d9a102fcebaf683922",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/src/limits.css",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "fe6a6495b5190b27b2dc172d323a678f0e97d5f4a17d699eacb2857a95252459",
+      "sha256": "fe6a6495b5190b27b2dc172d323a678f0e97d5f4a17d699eacb2857a95252459",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/src/main.tsx",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "13a70b435b226a5356e623b0d2980a1582cb426b310e084245dbf29b1be080f5",
+      "sha256": "13a70b435b226a5356e623b0d2980a1582cb426b310e084245dbf29b1be080f5",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/src/styles.css",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "1f6a956f7f637fd032a2ccb42a3912af100bea03c2325f1ba404a070f935dc25",
+      "sha256": "1f6a956f7f637fd032a2ccb42a3912af100bea03c2325f1ba404a070f935dc25",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/src/tokens.css",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "9e2524cdade2b0394c244eafd7c533f19e3b7d76e979a4d72d138280e3815edd",
+      "sha256": "9e2524cdade2b0394c244eafd7c533f19e3b7d76e979a4d72d138280e3815edd",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/src/types.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "02b3c0d5530490be8752243017f8bccb48718fae64a632c8ce43b6486420e9a0",
+      "sha256": "02b3c0d5530490be8752243017f8bccb48718fae64a632c8ce43b6486420e9a0",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/src/useLimits.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "a3699bb02222e6384c343f123789d13686d05047ac6a3434b14d241b232faa20",
+      "sha256": "a3699bb02222e6384c343f123789d13686d05047ac6a3434b14d241b232faa20",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/tests/atomic-file.test.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "30415b7e984537ef1b9ff90cb4dce5cfc5ff749964e3176a8507ebe8af8e92f6",
+      "sha256": "30415b7e984537ef1b9ff90cb4dce5cfc5ff749964e3176a8507ebe8af8e92f6",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/tests/browser-announcements.test.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "23ad00255f8cfcdb77f2447645ce8fd12172215152f21a1efe61ffce064cc648",
+      "sha256": "23ad00255f8cfcdb77f2447645ce8fd12172215152f21a1efe61ffce064cc648",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/tests/browser-helper-verifier.test.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "f31f8a165962e7edd9b642b45fb4656b628bddeeddd75a2cb31d6e61715887fe",
+      "sha256": "f31f8a165962e7edd9b642b45fb4656b628bddeeddd75a2cb31d6e61715887fe",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/tests/browser-host.test.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "35febe8ade087343c8f57cde40f49371e28ffb474b9430dfad58d0a54db19298",
+      "sha256": "5386ae5148ce1df6ddbacef2083cb211948e66635ce8c8a2cc5eaed6d17d0943",
+      "adaptations": [
+        "Reviewed CLW overlay: Fixed 6.1.2 backport. Preserve CLW receipt/EOF/error-frame behavior, diagnostic-only failed tabs and explicit account B partition. Upstream five-tab policy excluded; existing CLW resource-admission tests cover unbounded pages.",
+        "Reviewed CLW overlay: Restore this exact hidden turn viewport at full navigation completion even when its DOM-ready emulation dimensions are still cached. No focus change, account change, navigation retry or model Send."
+      ]
+    },
+    {
+      "path": "launcher/tests/control-server.test.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "97dc4b63f56cddc7aa4a0e749a6fdf8dbf2fddba423c7dfbd888ee8c6902fcc3",
+      "sha256": "97dc4b63f56cddc7aa4a0e749a6fdf8dbf2fddba423c7dfbd888ee8c6902fcc3",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/tests/limits-controller.test.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "07f6a14b881ef12741ec4ad8ac75cce8f39d99dbafae90f0b81a33842ac371f7",
+      "sha256": "07f6a14b881ef12741ec4ad8ac75cce8f39d99dbafae90f0b81a33842ac371f7",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/tests/limits-store.test.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "01fdd720ded32f92af46007fc55224602811932db6c9a0863e420539099b1395",
+      "sha256": "01fdd720ded32f92af46007fc55224602811932db6c9a0863e420539099b1395",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/tests/localization.test.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "65577db14efd3581721056c67cf4bdf246ed5a857b2aec8a2bca4268e250dacf",
+      "sha256": "65577db14efd3581721056c67cf4bdf246ed5a857b2aec8a2bca4268e250dacf",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/tests/logging.test.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "2ee11338de25606af738e57b05b56f87d7a6f71039a7b14d1631f0e94f711043",
+      "sha256": "2ee11338de25606af738e57b05b56f87d7a6f71039a7b14d1631f0e94f711043",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/tests/packaging-contract.test.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "54e1097ecef4a67a4ead0ead62772c6c7dbc397af113ac9b22dfdbd222105ced",
+      "sha256": "54e1097ecef4a67a4ead0ead62772c6c7dbc397af113ac9b22dfdbd222105ced",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/tests/passkey-login-state.test.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "67d29c501feed66beeb344fd007cf8859cbe42bb7a824bf66bd6c83aaf12aa42",
+      "sha256": "67d29c501feed66beeb344fd007cf8859cbe42bb7a824bf66bd6c83aaf12aa42",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/tests/profile.test.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "67462a2f09180cc482412135994553f5ebaa1f0d7b20bad8e1b80891e55c3f3b",
+      "sha256": "67462a2f09180cc482412135994553f5ebaa1f0d7b20bad8e1b80891e55c3f3b",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/tests/renderer-wiring.test.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "bb86acb49753e584d970a568520292825398e7ef6b7807e4e1fc469a6c593a95",
+      "sha256": "bb86acb49753e584d970a568520292825398e7ef6b7807e4e1fc469a6c593a95",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/tests/runtime-host.test.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "7a37aeae7844b159092da0284e71ea9c69671f3a5ee270428941fcaa9989efe6",
+      "sha256": "7a37aeae7844b159092da0284e71ea9c69671f3a5ee270428941fcaa9989efe6",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/tests/runtime-install.test.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "4737a62e50bba84c3afd594f5d0fc8d6f1607bf94bdb55ffea3511582f52d074",
+      "sha256": "4737a62e50bba84c3afd594f5d0fc8d6f1607bf94bdb55ffea3511582f52d074",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/tests/runtime-supervisor.test.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "f299cfdfd4373e6673284c3b5db00681ff21a8485ad1669b99efdd5bc4c6f979",
+      "sha256": "f299cfdfd4373e6673284c3b5db00681ff21a8485ad1669b99efdd5bc4c6f979",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/tests/state.test.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "0851783f3257ba876e74078c63aa3de8bd410574cf27ecb610419f4a997d1b10",
+      "sha256": "0851783f3257ba876e74078c63aa3de8bd410574cf27ecb610419f4a997d1b10",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/tests/turn-suspension.test.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "e2951839781cf738daecc5620023d105a43c6b769e2f9c5af932150f7b4789b2",
+      "sha256": "e2951839781cf738daecc5620023d105a43c6b769e2f9c5af932150f7b4789b2",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/tests/update.test.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "a0d3f792762872040b91450ffe6f83c6483d20518386ce3cf3d6fe2bb34aeb34",
+      "sha256": "a0d3f792762872040b91450ffe6f83c6483d20518386ce3cf3d6fe2bb34aeb34",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/tests/window-state.test.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "bd6e13a863ae89395620c93ab0e8f8e0291aecc189a2f60433a62dad0d7a4138",
+      "sha256": "bd6e13a863ae89395620c93ab0e8f8e0291aecc189a2f60433a62dad0d7a4138",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/tests/windows-installer.test.cjs",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "ea018b8b2d6b32cb5a443200e0043391cf6030c198ce529c59f5cbb6156551f2",
+      "sha256": "ea018b8b2d6b32cb5a443200e0043391cf6030c198ce529c59f5cbb6156551f2",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/tests/windows-installer.test.ps1",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "c3f0c186f30f57819b1ef35cfb7dc75fa154becc14942914596b687c3467aaed",
+      "sha256": "c3f0c186f30f57819b1ef35cfb7dc75fa154becc14942914596b687c3467aaed",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/tsconfig.json",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "20a936e14228ab8ea4d2899ae3004096da5d2fd8ffd1f74368d826d53b04fed0",
+      "sha256": "20a936e14228ab8ea4d2899ae3004096da5d2fd8ffd1f74368d826d53b04fed0",
+      "adaptations": []
+    },
+    {
+      "path": "launcher/vite.config.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "ef56e64d250eafc59e1a8b06e5e0f640da1adabfa0f1654d63fd6e999cfdb075",
+      "sha256": "ef56e64d250eafc59e1a8b06e5e0f640da1adabfa0f1654d63fd6e999cfdb075",
+      "adaptations": []
+    },
+    {
+      "path": "package.json",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "bbf006a0c0dc9e3028cfa4df37c76b942f2f74afbd8fb50119be28b89cb077f1",
+      "sha256": "bbf006a0c0dc9e3028cfa4df37c76b942f2f74afbd8fb50119be28b89cb077f1",
+      "adaptations": []
+    },
+    {
+      "path": "scripts/build-browser-helper.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "089669c9655532d180d9b9e696d3a45dfe96001dfed8fcf70cc94f4209809eb6",
+      "sha256": "089669c9655532d180d9b9e696d3a45dfe96001dfed8fcf70cc94f4209809eb6",
+      "adaptations": []
+    },
+    {
+      "path": "scripts/build-runtime-bundle.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "8308ac6801661b10b560f4d80233377404555d5fe849b626fd37fc3d39fd6d66",
+      "sha256": "8308ac6801661b10b560f4d80233377404555d5fe849b626fd37fc3d39fd6d66",
+      "adaptations": []
+    },
+    {
+      "path": "scripts/check-version.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "559c537b800119f2874d407cb7b72044daccf5ebafbe3d1e3b31c07d5c84aa4e",
+      "sha256": "559c537b800119f2874d407cb7b72044daccf5ebafbe3d1e3b31c07d5c84aa4e",
+      "adaptations": []
+    },
+    {
+      "path": "scripts/clean.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "100066a30f25c5cf6904c3d3f1f2e0e3a81e4d40182d648533fa0170a93cb2f6",
+      "sha256": "100066a30f25c5cf6904c3d3f1f2e0e3a81e4d40182d648533fa0170a93cb2f6",
+      "adaptations": []
+    },
+    {
+      "path": "scripts/generate-third-party-notices.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "b916a603f27ec73ca503d6ba1cdf54f0d0282ae3bcb34702456fa9af672787cb",
+      "sha256": "b916a603f27ec73ca503d6ba1cdf54f0d0282ae3bcb34702456fa9af672787cb",
+      "adaptations": []
+    },
+    {
+      "path": "scripts/install-launcher.ps1",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "f319b61fdaffc6a937a06e1fc894790716918a7fcaead9a3009ed50fa9a0ac8b",
+      "sha256": "f319b61fdaffc6a937a06e1fc894790716918a7fcaead9a3009ed50fa9a0ac8b",
+      "adaptations": []
+    },
+    {
+      "path": "scripts/install-launcher.sh",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "7a92e1aec6365315e6d0d7aaebc22a4c41426bed865bf918acc7089665fd0abb",
+      "sha256": "7a92e1aec6365315e6d0d7aaebc22a4c41426bed865bf918acc7089665fd0abb",
+      "adaptations": []
+    },
+    {
+      "path": "scripts/install.sh",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "13b1dd3df652aa42b0bf9dbcd88fafd72b9df560a303cbaa64e8a94090565fa1",
+      "sha256": "13b1dd3df652aa42b0bf9dbcd88fafd72b9df560a303cbaa64e8a94090565fa1",
+      "adaptations": []
+    },
+    {
+      "path": "scripts/prepare-linux-libnotify.sh",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "a26f3ca0ac7cc89628f2d4a47a6e70ac30a7c9a0d35a3c64cf547e00fdcb023f",
+      "sha256": "a26f3ca0ac7cc89628f2d4a47a6e70ac30a7c9a0d35a3c64cf547e00fdcb023f",
+      "adaptations": []
+    },
+    {
+      "path": "scripts/prepare-windows-baseline-bun.ps1",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "ffd1a068ef244074335dfbf3b4d29c54fea1bb76b5cbd80fe00e769f2069bbb2",
+      "sha256": "ffd1a068ef244074335dfbf3b4d29c54fea1bb76b5cbd80fe00e769f2069bbb2",
+      "adaptations": []
+    },
+    {
+      "path": "scripts/smoke-codex-cancel.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "5c0d49731216fda9c6eb05a9ab64402cd8f27b43567ab3dca2547995a5783790",
+      "sha256": "5c0d49731216fda9c6eb05a9ab64402cd8f27b43567ab3dca2547995a5783790",
+      "adaptations": []
+    },
+    {
+      "path": "scripts/smoke-codex-catalog.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "bba77890c224868daa0180228b621e1281ea0db12ab994c4a8915b24d038af82",
+      "sha256": "bba77890c224868daa0180228b621e1281ea0db12ab994c4a8915b24d038af82",
+      "adaptations": []
+    },
+    {
+      "path": "scripts/smoke-codex-environment.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "21938a7b4a03b3236199d233d157e77eb635468dc1c72f0359dd3bca1ec03986",
+      "sha256": "21938a7b4a03b3236199d233d157e77eb635468dc1c72f0359dd3bca1ec03986",
+      "adaptations": []
+    },
+    {
+      "path": "scripts/smoke-codex-interrupt.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "aaec74a30bb9c2253fd4b2552f93fe7a4625c7c95e18da7d9f7f593250f11a61",
+      "sha256": "aaec74a30bb9c2253fd4b2552f93fe7a4625c7c95e18da7d9f7f593250f11a61",
+      "adaptations": []
+    },
+    {
+      "path": "scripts/smoke-codex-subagents.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "05006e5b4961a7e238e71987fdf5be992c241dd4a86047bbfcdb73c03e9f8e74",
+      "sha256": "05006e5b4961a7e238e71987fdf5be992c241dd4a86047bbfcdb73c03e9f8e74",
+      "adaptations": []
+    },
+    {
+      "path": "scripts/smoke-codex-web-subagents.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "e8a2180f536e1086361448abe828a8448c70d0e780eed60f5ed6ff3c32d7c225",
+      "sha256": "e8a2180f536e1086361448abe828a8448c70d0e780eed60f5ed6ff3c32d7c225",
+      "adaptations": []
+    },
+    {
+      "path": "scripts/smoke-release.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "16c7a10c3fe611b8119904e9eafa2d5a6f32a53b360d6860832c742f9e89b5e3",
+      "sha256": "16c7a10c3fe611b8119904e9eafa2d5a6f32a53b360d6860832c742f9e89b5e3",
+      "adaptations": []
+    },
+    {
+      "path": "scripts/start-launcher.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "6c08c2ee404640f3894a11a780a68933b5d38b18a1c7906f6ee28a7e0487d5d3",
+      "sha256": "6c08c2ee404640f3894a11a780a68933b5d38b18a1c7906f6ee28a7e0487d5d3",
+      "adaptations": []
+    },
+    {
+      "path": "scripts/verify.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "dc183141d1e488cff4827f86c2e599d9e083db5704e85f1de62951aa555181ba",
+      "sha256": "dc183141d1e488cff4827f86c2e599d9e083db5704e85f1de62951aa555181ba",
+      "adaptations": []
+    },
+    {
+      "path": "src/adapters/base.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "8441cdd6621d8fcd700383a07c01a234029b3adea854fc6f79119bdcc58ea4f2",
+      "sha256": "8441cdd6621d8fcd700383a07c01a234029b3adea854fc6f79119bdcc58ea4f2",
+      "adaptations": []
+    },
+    {
+      "path": "src/adapters/chatgpt-web/adapter-error.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "64cd38d8cb168ccdaa04011999da9bba86916ea332faff1fc834a582392eb033",
+      "sha256": "64cd38d8cb168ccdaa04011999da9bba86916ea332faff1fc834a582392eb033",
+      "adaptations": []
+    },
+    {
+      "path": "src/adapters/chatgpt-web/browser-helper-main.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "a356251052a85a5b0d3e85aa1b8b71c3e9f75e5d24cda0df2eed55dc99575363",
+      "sha256": "a356251052a85a5b0d3e85aa1b8b71c3e9f75e5d24cda0df2eed55dc99575363",
+      "adaptations": []
+    },
+    {
+      "path": "src/adapters/chatgpt-web/browser-helper-prompt-selection.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "72e0293b5aad62d99525e3e8552f5ddc1b702dab8520837a2128ea5e4dc6a96f",
+      "sha256": "72e0293b5aad62d99525e3e8552f5ddc1b702dab8520837a2128ea5e4dc6a96f",
+      "adaptations": []
+    },
+    {
+      "path": "src/adapters/chatgpt-web/browser-worker.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "ff2558ade3d1bc7c7d0a21728d556adcc185d5d3a0ebe68be96f250704253a58",
+      "sha256": "8596a1f5fd263f7c14e862784aaf618de47331e597683d9d6de37feb249d65f2",
+      "adaptations": [
+        "Search the configured connector name, not hardcoded @codex; preserve exact visible-row and selected-identity checks.",
+        "Before reusing a restored connector pill, require an empty owned composer. Clear a foreign persisted draft through native editing and select the same connector once; preserve exact prompt readback and never retry an accepted submission.",
+        "Wait up to 180 seconds for the initial composer without sending; report browser_not_ready rather than inferring login expiry or model capacity.",
+        "Allow the original connector query 20 seconds to populate before a bounded trigger retry; avoid repeatedly cancelling a slow cold catalog lookup. Exact identity and existing three-attempt/operation limits remain.",
+        "Record submission acceptance before waiting for the assistant so a later DOM failure does not erase delivery evidence.",
+        "Allow a busy long-context renderer 30 seconds to answer the original read before reconnecting the same page; retain bounded rebinds, aborts and explicit whole-turn deadlines.",
+        "A unique persisted user group replaces an optimistic one only after exact prompt proof; explicit connector mention and strict-prefix hydration are handled with a 60-second fail-closed bound.",
+        "Preserve the accepted user identity through Activity and strictly verify any group rekey.",
+        "Reviewed CLW overlay: CLW task provenance clarification with semantic and role preservation tests. Bounded one-time navigation followed by public composer readiness, preserving pre-send failure and no replay.",
+        "Reviewed CLW overlay: Fixed 6.1.2 backport. Preserve CLW receipt/EOF/error-frame behavior, diagnostic-only failed tabs and explicit account B partition. Upstream five-tab policy excluded; existing CLW resource-admission tests cover unbounded pages. CLW 2026-09-28: launcher-owned background editor uses existing native text insertion, exact connector row activation and verified draft clearing without dropped keyboard events; managed Chrome keyboard behavior preserved. DEMO-02: verify recorded connector padding and structurally decode captured rich user fallback escapes; preserve exact body comparison and reject competing turns.",
+        "Reviewed CLW overlay: Use composer-owned public DOM transactions for model selection, exact connector menu activation, full prompt attachment, independent rollback, Send, acknowledgement and the exact bound assistant response. Ordinary and retained summary turns share the same model and effort selection, persisted range and lock checks, and family announcement verification; carry the original model family into retained compaction. The current mention portal is proved by its composer marker, the unique editor, exact inserted query, focus and unique row; ambiguous or changed owners never activate a connector. Keep Temporary Chat personalization proof and rollback. Avoid background Locator handle resolution without changing account, connector, request, prompt, model or effort. Genuine observation timeouts enter bounded same-page recovery, while missing and duplicate identities, actual availability failures, explicit cancellation and unknown submissions retain their guards. Never resend an unknown submission. Restore the existing 70s initial selection readiness budget for a newly mounted saved-chat composer using its same public DOM owner. Wait only for an absent effort control, recheck account failures and original editor/form identity, and immediately reject duplicates; pre-send verification does not wait or weaken model, effort, draft or Send guards. Wait for the same owned menu container or slider to mount within the existing one-second availability budget; reject ambiguous, changed owner/menu and public account failures without Send. Read-only ui-state inspects public account alerts independently of editor availability. Before the first launcher attachment mutation, wait through the existing activeComposer readiness path so an unmounted composer cannot trigger an editor transaction or rollback. Mutating/readback/Send operations still require the same unique connected visible editor and retain original connector, model, effort and submission guards; no selector, retry budget, account or original request changes. Wait for the exact post-navigation operational viewport before activating its owned model/effort picker; a mounted composer at zero viewport is not ready. Preserve Pro, account, same original page and no-Send failure boundaries. CLW Full access handles the unique configured MCP app confirmation through its public DOM, including Chinese alerts with a sibling approval form and keyboard hints. Prefer persistent approval when offered, retain one-shot fallback, abort and changed-card checks; manual timeout never denies a pending card. Resolve a first native MCP confirmation before submission acknowledgement or assistant DOM mounting can wait on that same approval."
+      ]
+    },
+    {
+      "path": "src/adapters/chatgpt-web/clw-user-authorization.ts",
+      "source_commit": null,
+      "source_sha256": null,
+      "sha256": "13b803e1d937ea1e3e03339e9899c6fcd5e57f840bd9ae35eff65f3d757fd78e",
+      "adaptations": [
+        "Reviewed CLW overlay: User-authorized CLW task consent; preserve tool permissions and omit compaction",
+        "Reviewed CLW overlay: Fresh approved policy supports routine tool confirmations alongside file confirmations; malformed or unreadable policies remain explicit errors."
+      ]
+    },
+    {
+      "path": "src/adapters/chatgpt-web/clw-work-package.ts",
+      "source_commit": null,
+      "source_sha256": null,
+      "sha256": "c308d2a539243435b0995d4ffaab752bcd738424b93ff606c30c8c084a44b82d",
+      "adaptations": [
+        "Reviewed CLW overlay: Load the user-selected substantial development workload from the shared CLW policy file; preserve transport and original execution authority."
+      ]
+    },
+    {
+      "path": "src/adapters/chatgpt-web/codex-rollout-environment.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "efd5a06fcca2853b755c672216cadaa9b1cec79452ac88ef9f7edee40bb141a0",
+      "sha256": "efd5a06fcca2853b755c672216cadaa9b1cec79452ac88ef9f7edee40bb141a0",
+      "adaptations": []
+    },
+    {
+      "path": "src/adapters/chatgpt-web/compaction-continuation.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "fe11e5518e285efb51aa7e84b4382a669a252218326d2cf5bee3e5a187a4c7c1",
+      "sha256": "fe11e5518e285efb51aa7e84b4382a669a252218326d2cf5bee3e5a187a4c7c1",
+      "adaptations": []
+    },
+    {
+      "path": "src/adapters/chatgpt-web/compaction-handoff.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "25d25b1c58d41b13309db12a5b2bfc781f6b92a5a71f0af3ebea3c5d9964c01f",
+      "sha256": "abdfee2dbccdbfa79b888893e00ba01effcb625bdf184ea444c5136d380ef90f",
+      "adaptations": [
+        "Reviewed CLW overlay: Preserve selected effort and original source/tool identity; independent retained checkpoint phase budget with a bounded Pro window. Prior call-id reconnect accounting retained.",
+        "Reviewed CLW overlay: Use composer-owned public DOM transactions for model selection, exact connector menu activation, full prompt attachment, independent rollback, Send, acknowledgement and the exact bound assistant response. Ordinary and retained summary turns share the same model and effort selection, persisted range and lock checks, and family announcement verification; carry the original model family into retained compaction. The current mention portal is proved by its composer marker, the unique editor, exact inserted query, focus and unique row; ambiguous or changed owners never activate a connector. Keep Temporary Chat personalization proof and rollback. Avoid background Locator handle resolution without changing account, connector, request, prompt, model or effort. Genuine observation timeouts enter bounded same-page recovery, while missing and duplicate identities, actual availability failures, explicit cancellation and unknown submissions retain their guards. Never resend an unknown submission. Retain structured compaction and delegated physical settlement promises until actual cleanup settles, independently from returned summary/failure and preserving original source/tool identity."
+      ]
+    },
+    {
+      "path": "src/adapters/chatgpt-web/compaction-transaction.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "f391d1fc43aee6a9dba17ceb10ac52f081481f9b5ae5d87f692085f3a48db77a",
+      "sha256": "f391d1fc43aee6a9dba17ceb10ac52f081481f9b5ae5d87f692085f3a48db77a",
+      "adaptations": []
+    },
+    {
+      "path": "src/adapters/chatgpt-web/concurrency.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "11b393a9a63d11f059ee8941a363640fa4266830e1227c5ef8e9800e08d01782",
+      "sha256": "6837ca052a14379d6adff2cff3a6bab1d502ca6ca4cca4d918eb68925c8eec7f",
+      "adaptations": [
+        "Remove fixed five-turn admission limit from browser worker and turn execution registry."
+      ]
+    },
+    {
+      "path": "src/adapters/chatgpt-web/conversation-key.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "536c5de53852e4073ad7ddffc31b3cbf28bbfd292967154495a8812d8b978ca0",
+      "sha256": "cd782069220f526751f14c4f0a28bfcd1d61f50f60997dbc7d9f0c90173e9b3c",
+      "adaptations": [
+        "Reviewed CLW overlay: Keep native conversation identity stable when the first full system context is replaced by the approved short incremental context on later turns."
+      ]
+    },
+    {
+      "path": "src/adapters/chatgpt-web/environment.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "349b1331bfc9ab6aa5e29fdf3e9a120a52e8a76268b8fd70f1d95bbc77ebc767",
+      "sha256": "349b1331bfc9ab6aa5e29fdf3e9a120a52e8a76268b8fd70f1d95bbc77ebc767",
+      "adaptations": []
+    },
+    {
+      "path": "src/adapters/chatgpt-web/index.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "20801eaa7b1fd1b458a5f3cd0a39b91f9893635d273be3624721c2bbeb26d3e7",
+      "sha256": "be7a359275a9479f9efde7cf5177ecfc430f88f557084d57a859ec3fb47219dc",
+      "adaptations": [
+        "Reviewed CLW overlay: Preserve selected effort and original source/tool identity; independent retained checkpoint phase budget with a bounded Pro window. Prior call-id reconnect accounting retained.",
+        "Reviewed CLW overlay: Cache a native conversation's fixed system context only after successful completion, with a bounded 64-entry lifetime; retries and failed turns retain full original context and native execution identity."
+      ]
+    },
+    {
+      "path": "src/adapters/chatgpt-web/input-tokens.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "7ae84e1ff914bc0c1338bac839c8a3759d009d81305d7b3c76bb34626dca8949",
+      "sha256": "7ae84e1ff914bc0c1338bac839c8a3759d009d81305d7b3c76bb34626dca8949",
+      "adaptations": []
+    },
+    {
+      "path": "src/adapters/chatgpt-web/launcher-helper-client.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "ff599512b2f533cc2dc3fd95b9059e697c0cc7989c27b7563b4c1c8f465e12c4",
+      "sha256": "ff599512b2f533cc2dc3fd95b9059e697c0cc7989c27b7563b4c1c8f465e12c4",
+      "adaptations": []
+    },
+    {
+      "path": "src/adapters/chatgpt-web/limits.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "db1a44b9cf3d17a4715cace34157ee2207010b6e15fc0422932822643a1bf45c",
+      "sha256": "4c30abb94f510fad66334fd83a3bb281ed4f6ee25b7074485200d251fb54b210",
+      "adaptations": [
+        "Reviewed CLW overlay: Use composer-owned public DOM transactions for model selection, exact connector menu activation, full prompt attachment, independent rollback, Send, acknowledgement and the exact bound assistant response. Ordinary and retained summary turns share the same model and effort selection, persisted range and lock checks, and family announcement verification; carry the original model family into retained compaction. The current mention portal is proved by its composer marker, the unique editor, exact inserted query, focus and unique row; ambiguous or changed owners never activate a connector. Keep Temporary Chat personalization proof and rollback. Avoid background Locator handle resolution without changing account, connector, request, prompt, model or effort. Genuine observation timeouts enter bounded same-page recovery, while missing and duplicate identities, actual availability failures, explicit cancellation and unknown submissions retain their guards. Never resend an unknown submission."
+      ]
+    },
+    {
+      "path": "src/adapters/chatgpt-web/markdown.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "fa14c43054264f32c3a1abc469a95e72db59ff79e00f6115abdec9b4cf145ce1",
+      "sha256": "e4fab56369603464d62d77ee02cbb87162ce2b7742f303d38f02830a66ffe84c",
+      "adaptations": [
+        "Preserve public KaTeX TeX annotations without accessibility/visual duplication; CLW regression clw-latex-preservation.test.ts.",
+        "Reviewed CLW overlay: Fixed 6.1.2 backport. Preserve CLW receipt/EOF/error-frame behavior, diagnostic-only failed tabs and explicit account B partition. Upstream five-tab policy excluded; existing CLW resource-admission tests cover unbounded pages."
+      ]
+    },
+    {
+      "path": "src/adapters/chatgpt-web/mcp-main.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "1d648681cf0d2481236c1ec5b2bc90836474725bdc34252b06a2f47f440fe317",
+      "sha256": "1d648681cf0d2481236c1ec5b2bc90836474725bdc34252b06a2f47f440fe317",
+      "adaptations": []
+    },
+    {
+      "path": "src/adapters/chatgpt-web/mcp-observation.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "d1f69c11536327bde1ecb5c19cd8c1dd727b2e9d115585e3ae9a3f121afe70fe",
+      "sha256": "d1f69c11536327bde1ecb5c19cd8c1dd727b2e9d115585e3ae9a3f121afe70fe",
+      "adaptations": []
+    },
+    {
+      "path": "src/adapters/chatgpt-web/mcp-server.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "7941b607d344e00378b2bc4a86027c1a3559364919354f3b9e5f318591e024d9",
+      "sha256": "a3cfcf65aa43da39f13c71f076fa184bccbe1bb3b799a08b4f9a1749ad7a8d55",
+      "adaptations": [
+        "Reviewed CLW overlay: Fixed 6.1.2 backport. Preserve CLW receipt/EOF/error-frame behavior, diagnostic-only failed tabs and explicit account B partition. Upstream five-tab policy excluded; existing CLW resource-admission tests cover unbounded pages."
+      ]
+    },
+    {
+      "path": "src/adapters/chatgpt-web/model-selection.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "f1680c15a1fbefc74b8df761f283251a62ead4e0de3223f46e93912a67000048",
+      "sha256": "a98580069b74bb86528202084b4d3e674b2345f9173e7a3376c09cbf315a6cae",
+      "adaptations": [
+        "Reviewed CLW overlay: Use composer-owned public DOM transactions for model selection, exact connector menu activation, full prompt attachment, independent rollback, Send, acknowledgement and the exact bound assistant response. Ordinary and retained summary turns share the same model and effort selection, persisted range and lock checks, and family announcement verification; carry the original model family into retained compaction. The current mention portal is proved by its composer marker, the unique editor, exact inserted query, focus and unique row; ambiguous or changed owners never activate a connector. Keep Temporary Chat personalization proof and rollback. Avoid background Locator handle resolution without changing account, connector, request, prompt, model or effort. Genuine observation timeouts enter bounded same-page recovery, while missing and duplicate identities, actual availability failures, explicit cancellation and unknown submissions retain their guards. Never resend an unknown submission."
+      ]
+    },
+    {
+      "path": "src/adapters/chatgpt-web/model.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "95330db2ec89c0c58fb59050f1946b7326efa5d37f6c8225fc6fd6d8e7cc1611",
+      "sha256": "95330db2ec89c0c58fb59050f1946b7326efa5d37f6c8225fc6fd6d8e7cc1611",
+      "adaptations": []
+    },
+    {
+      "path": "src/adapters/chatgpt-web/native-compaction-control.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "3cdbf2502c105f3c036fa4e927446fc108a0632be6592e619f499d1813b178c9",
+      "sha256": "8bdea3eb45b72fd97187334f470b783d184948ce88d8334e889fefdf8a8ed59a",
+      "adaptations": [
+        "Reviewed CLW overlay: CLW retained compaction returns an exact fully settled public text checkpoint, with no execution capability, tool call, fallback replay, or change to original errors, identity, stop and permission fences."
+      ]
+    },
+    {
+      "path": "src/adapters/chatgpt-web/native-tool-activity.ts",
+      "source_commit": null,
+      "source_sha256": null,
+      "sha256": "98f58531a6057cc6593527f7088898fae4c7a9d17ad41afdf5dfc65d099b9afd",
+      "adaptations": [
+        "Reviewed CLW overlay: CLW adaptation preserved from the active checkout and verified by hash"
+      ]
+    },
+    {
+      "path": "src/adapters/chatgpt-web/output-validation.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "f8e7e2c1fde027d0388a8a83241884c93729a41f2c3932b5d92e630a77db29fc",
+      "sha256": "f8e7e2c1fde027d0388a8a83241884c93729a41f2c3932b5d92e630a77db29fc",
+      "adaptations": []
+    },
+    {
+      "path": "src/adapters/chatgpt-web/process-line-writer.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "727b115fc87663fdf476ec5af6fbb4763093d14da706780b9067dc180c0af91d",
+      "sha256": "727b115fc87663fdf476ec5af6fbb4763093d14da706780b9067dc180c0af91d",
+      "adaptations": []
+    },
+    {
+      "path": "src/adapters/chatgpt-web/prompt.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "b635277c57f525b82fd5995a258d22f7448b6ded042aabb6b6cb31ca5910f401",
+      "sha256": "520c9cefd67cf9461117f8f805ea10dfbcc73322c35888ec896f37a51ac3979a",
+      "adaptations": [
+        "Reviewed CLW overlay: User-authorized CLW task consent; preserve tool permissions and omit compaction",
+        "Reviewed CLW overlay: Append the exact short common working agreement once; first-turn pointers and native tools retain authority while subsequent turns carry only relevant incremental context instead of repeated long management and authorization text."
+      ]
+    },
+    {
+      "path": "src/adapters/chatgpt-web/retry-policy.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "70c49df9b0baa80e997fd3c25c8efe50062f54e2cf49c863654df15a89a188e9",
+      "sha256": "70c49df9b0baa80e997fd3c25c8efe50062f54e2cf49c863654df15a89a188e9",
+      "adaptations": []
+    },
+    {
+      "path": "src/adapters/chatgpt-web/rolling-checkpoint.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "6e8e624f555cd42f1a5e32ab222b8494d1bdccf5f6e503e9557548845f283365",
+      "sha256": "6e8e624f555cd42f1a5e32ab222b8494d1bdccf5f6e503e9557548845f283365",
+      "adaptations": []
+    },
+    {
+      "path": "src/adapters/chatgpt-web/skill-attachments.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "eec8b77fb38954240375e862e7ed5a17d84426cc0f971c70c800061e302ff817",
+      "sha256": "eec8b77fb38954240375e862e7ed5a17d84426cc0f971c70c800061e302ff817",
+      "adaptations": []
+    },
+    {
+      "path": "src/adapters/chatgpt-web/thread-environment.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "b18d13cf8d0cae50287ac3d9f8c2090df103e676cd3bd5ba1f7bce16a612208e",
+      "sha256": "b18d13cf8d0cae50287ac3d9f8c2090df103e676cd3bd5ba1f7bce16a612208e",
+      "adaptations": []
+    },
+    {
+      "path": "src/adapters/chatgpt-web/turn-broker.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "1ab7e5034b4819bce2064e1163b30cb51e58bb69a4ce4b5dd07a71c510226e04",
+      "sha256": "1e0fb1ef53ae5228dafc82fa389352ef86085aff23c4563f5fb112462dfbe154",
+      "adaptations": [
+        "Cache only the canonical result digest and original owner_complete ACK for each live token/call. Exact ACK-loss retries return the same receipt; changed results, invalid tokens and terminal Zero Risk turns remain rejected.",
+        "Reviewed CLW overlay: CLW adaptation preserved from the active checkout and verified by hash",
+        "Reviewed CLW overlay: Fixed 6.1.2 backport. Preserve CLW receipt/EOF/error-frame behavior, diagnostic-only failed tabs and explicit account B partition. Upstream five-tab policy excluded; existing CLW resource-admission tests cover unbounded pages.",
+        "Reviewed CLW overlay: Maintain actual pending invocation/activity and external-owner counts; caller fence refuses new work without pruning existing execution or replacing canonical completion receipts."
+      ]
+    },
+    {
+      "path": "src/adapters/chatgpt-web/turn-execution.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "096fe05425289e25125a29fd02f1e6d6e52391f071ca459e74f89634b2493b85",
+      "sha256": "f4f3c1d4f278ddc4921b387adc1e4333222a5c41acae500f5781c230edd6fe29",
+      "adaptations": [
+        "Reviewed CLW overlay: CLW adaptation preserved from the active checkout and verified by hash",
+        "Reviewed CLW overlay: Keep current and retired browser physical-settlement promises visible to current-owner maintenance after a browser final; retained cleanup cannot disappear through retirement or cancellation."
+      ]
+    },
+    {
+      "path": "src/adapters/chatgpt-web/turn-progress.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "906e63e3e9cbb85478a02c7605babc14a166b617b8f97e660109c8f8ece5263e",
+      "sha256": "2a1bbfd8f4e057b5734bdb2ddfccccbf152b79bd5d1db790f6c4ff8011e854a0",
+      "adaptations": [
+        "Reviewed CLW overlay: Call-id based progress preserves original tool boundaries across listener reconnect, with adapter/broker regression and original result accounting."
+      ]
+    },
+    {
+      "path": "src/adapters/chatgpt-web/ui-labels.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "3ffe3bba94951f7fe7aa98cb686ed8121f3ef5c0cca09c3bcc4fbb5f51ac3346",
+      "sha256": "3ffe3bba94951f7fe7aa98cb686ed8121f3ef5c0cca09c3bcc4fbb5f51ac3346",
+      "adaptations": []
+    },
+    {
+      "path": "src/adapters/chatgpt-web/usage.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "f505a3d183cce15b7e1932b004aa0814070b7e247a5e4bc5664c86ab85d52e36",
+      "sha256": "f505a3d183cce15b7e1932b004aa0814070b7e247a5e4bc5664c86ab85d52e36",
+      "adaptations": []
+    },
+    {
+      "path": "src/adapters/image.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "daabf37ff2147c319020e5675743e0ef1c8757bf29bb451a255f171a6ed471fb",
+      "sha256": "daabf37ff2147c319020e5675743e0ef1c8757bf29bb451a255f171a6ed471fb",
+      "adaptations": []
+    },
+    {
+      "path": "src/bridge.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "720408cb98557ddd430bbdbe28af8f70afbdbf700b60746d839b8a205c6dba1e",
+      "sha256": "207570bdaf034a75d700be824f438609e96c73c533690ca20d1deb77d2256cd6",
+      "adaptations": [
+        "Reviewed CLW overlay: CLW adaptation preserved from the active checkout and verified by hash"
+      ]
+    },
+    {
+      "path": "src/browser-login.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "46dc2c12b71adcc114d4955f868b7ac95189a83084905423b2b437a3046dfc8e",
+      "sha256": "46dc2c12b71adcc114d4955f868b7ac95189a83084905423b2b437a3046dfc8e",
+      "adaptations": []
+    },
+    {
+      "path": "src/chatgpt-session.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "2a8a265d58029044c27c7a2b5c3a07d3492d37ac24426e4e27aacf5fade1996c",
+      "sha256": "9ebd31b7723663d6e232c6d638c84b20bcc4a3c71f97112206a96497dd4e480b",
+      "adaptations": [
+        "Recognize the localized new composer Stop controls as live generation, so long reasoning does not lose its native tool authority after the DOM grace period.",
+        "Reviewed CLW overlay: Use composer-owned public DOM transactions for model selection, exact connector menu activation, full prompt attachment, independent rollback, Send, acknowledgement and the exact bound assistant response. Ordinary and retained summary turns share the same model and effort selection, persisted range and lock checks, and family announcement verification; carry the original model family into retained compaction. The current mention portal is proved by its composer marker, the unique editor, exact inserted query, focus and unique row; ambiguous or changed owners never activate a connector. Keep Temporary Chat personalization proof and rollback. Avoid background Locator handle resolution without changing account, connector, request, prompt, model or effort. Genuine observation timeouts enter bounded same-page recovery, while missing and duplicate identities, actual availability failures, explicit cancellation and unknown submissions retain their guards. Never resend an unknown submission."
+      ]
+    },
+    {
+      "path": "src/chatgpt-web-models.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "a29b7ffb49b16b73043911395598d2aafe3fe454efd25dfd8e592febfba758e2",
+      "sha256": "a29b7ffb49b16b73043911395598d2aafe3fe454efd25dfd8e592febfba758e2",
+      "adaptations": []
+    },
+    {
+      "path": "src/cli.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "e8e5cbff88cd6f58b61ecd8c3c87b9340c06ff56356a9ea77d7e2fe104f6af28",
+      "sha256": "e8e5cbff88cd6f58b61ecd8c3c87b9340c06ff56356a9ea77d7e2fe104f6af28",
+      "adaptations": []
+    },
+    {
+      "path": "src/codex-integration-document.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "f358623998662de2673f66e8ba6cb88f2b9f8d7c897965a7686fc5495b27792b",
+      "sha256": "f358623998662de2673f66e8ba6cb88f2b9f8d7c897965a7686fc5495b27792b",
+      "adaptations": []
+    },
+    {
+      "path": "src/codex-integration-journal.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "bcc7cb5f960493bcc8651b889cfcb59287e24dc1eb74aede2cd7b4cde247d812",
+      "sha256": "bcc7cb5f960493bcc8651b889cfcb59287e24dc1eb74aede2cd7b4cde247d812",
+      "adaptations": []
+    },
+    {
+      "path": "src/codex-integration-route.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "0d48f695ef10567732b9b516551d6ae554f10b98f7811aeafbecffc80e986a2a",
+      "sha256": "0d48f695ef10567732b9b516551d6ae554f10b98f7811aeafbecffc80e986a2a",
+      "adaptations": []
+    },
+    {
+      "path": "src/codex-integration-shared.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "52bc1ea150d275232e5768c06f07d171fb8f5b6fce0cf729eb9999fa494e81e6",
+      "sha256": "52bc1ea150d275232e5768c06f07d171fb8f5b6fce0cf729eb9999fa494e81e6",
+      "adaptations": []
+    },
+    {
+      "path": "src/codex-integration.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "55e6f957cdcbd625d894dfb565ab3047a3a47ca7d585ed939e030dd20d35175f",
+      "sha256": "55e6f957cdcbd625d894dfb565ab3047a3a47ca7d585ed939e030dd20d35175f",
+      "adaptations": []
+    },
+    {
+      "path": "src/codex-interrupt-hook.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "7d147aebae4fc168d95011e8b23d09a8d41f93089019748161360312f682878b",
+      "sha256": "7d147aebae4fc168d95011e8b23d09a8d41f93089019748161360312f682878b",
+      "adaptations": []
+    },
+    {
+      "path": "src/config.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "2abb45bfcf99d185abae1c4a8ff4dd07057adf842e94832778d66fd41daebe91",
+      "sha256": "2abb45bfcf99d185abae1c4a8ff4dd07057adf842e94832778d66fd41daebe91",
+      "adaptations": []
+    },
+    {
+      "path": "src/dev-chat/cli.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "69311eefeb6fb1ab057d62a231c449287e5f9bc5b19e564bad24ea1cf7f69567",
+      "sha256": "69311eefeb6fb1ab057d62a231c449287e5f9bc5b19e564bad24ea1cf7f69567",
+      "adaptations": []
+    },
+    {
+      "path": "src/dev-chat/constants.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "9283b1e0cb36794d4b3adb9f08fdaf667a1bc0600b130fc026ec82608ad77389",
+      "sha256": "9283b1e0cb36794d4b3adb9f08fdaf667a1bc0600b130fc026ec82608ad77389",
+      "adaptations": []
+    },
+    {
+      "path": "src/dev-chat/driver.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "424bc0ad4b8cd2cb27686743fc6eb1db95b96133f68eaa3517a61d5a7ae41dd9",
+      "sha256": "424bc0ad4b8cd2cb27686743fc6eb1db95b96133f68eaa3517a61d5a7ae41dd9",
+      "adaptations": []
+    },
+    {
+      "path": "src/dev-chat/profile.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "76f098cc6fee783821135eee8393b9098d6d22551d1847188b8ae3ab0d3ccef3",
+      "sha256": "76f098cc6fee783821135eee8393b9098d6d22551d1847188b8ae3ab0d3ccef3",
+      "adaptations": []
+    },
+    {
+      "path": "src/dev-chat/session.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "a4c064ffd1ff0d79dd074164f6bbf08dc88a8cc23d31d31de37bca7fae1af776",
+      "sha256": "a4c064ffd1ff0d79dd074164f6bbf08dc88a8cc23d31d31de37bca7fae1af776",
+      "adaptations": []
+    },
+    {
+      "path": "src/dev-chat/transport.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "88c9ccb3d05642765e2115087b96f20018011590eb09b40e1e7424e49955f44b",
+      "sha256": "88c9ccb3d05642765e2115087b96f20018011590eb09b40e1e7424e49955f44b",
+      "adaptations": []
+    },
+    {
+      "path": "src/doctor.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "3f0bb86679efa3db67864b51a124577bd61c62f0f1b5439c40a32b5c5b0d60cd",
+      "sha256": "3f0bb86679efa3db67864b51a124577bd61c62f0f1b5439c40a32b5c5b0d60cd",
+      "adaptations": []
+    },
+    {
+      "path": "src/event-queue.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "21f3be62898aeb317e785e128c2c325b2c6942ab552f82077d0c121c7a73fb88",
+      "sha256": "21f3be62898aeb317e785e128c2c325b2c6942ab552f82077d0c121c7a73fb88",
+      "adaptations": []
+    },
+    {
+      "path": "src/http-body.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "de03e4dd84d4732b9d1c6a7fa448bef6b318b50e3ef3b4a8b826896ae6189400",
+      "sha256": "de03e4dd84d4732b9d1c6a7fa448bef6b318b50e3ef3b4a8b826896ae6189400",
+      "adaptations": []
+    },
+    {
+      "path": "src/launcher-browser-host.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "3fa52006ec26c2d7e971fa2399725a84af84c8f975055b78dc862fb7758a8317",
+      "sha256": "b80f25a467fd0c127d4f50e4eff452031c16e6bdae16ca4812a4e04a5c0031bc",
+      "adaptations": [
+        "Reuse the CLW account B partition inside the same Electron owner; no cookie transfer.",
+        "Reviewed CLW overlay: Fixed 6.1.2 backport. Preserve CLW receipt/EOF/error-frame behavior, diagnostic-only failed tabs and explicit account B partition. Upstream five-tab policy excluded; existing CLW resource-admission tests cover unbounded pages. Explicit A/B production partitions; development remains separate.",
+        "Reviewed CLW overlay: Use composer-owned public DOM transactions for model selection, exact connector menu activation, full prompt attachment, independent rollback, Send, acknowledgement and the exact bound assistant response. Ordinary and retained summary turns share the same model and effort selection, persisted range and lock checks, and family announcement verification; carry the original model family into retained compaction. The current mention portal is proved by its composer marker, the unique editor, exact inserted query, focus and unique row; ambiguous or changed owners never activate a connector. Keep Temporary Chat personalization proof and rollback. Avoid background Locator handle resolution without changing account, connector, request, prompt, model or effort. Genuine observation timeouts enter bounded same-page recovery, while missing and duplicate identities, actual availability failures, explicit cancellation and unknown submissions retain their guards. Never resend an unknown submission. Retry the owned read-only CDP handshake at most three times within the original connection deadline; preserve descriptor identity and caller cancellation; no retry on HTTP denials or invalid metadata and no browser Send or navigation."
+      ]
+    },
+    {
+      "path": "src/lib/errors.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "1e9ecf1edffbe63d1c190bc060639bd394596253eb3ff809d523e229232d5939",
+      "sha256": "1e9ecf1edffbe63d1c190bc060639bd394596253eb3ff809d523e229232d5939",
+      "adaptations": []
+    },
+    {
+      "path": "src/lib/token-estimate.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "ee52458858218eac6d9f012c1cec2955f4c04e14ad176851905c99f9942a2727",
+      "sha256": "ee52458858218eac6d9f012c1cec2955f4c04e14ad176851905c99f9942a2727",
+      "adaptations": []
+    },
+    {
+      "path": "src/model-catalog.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "de6b2a8ab936a2487596c066b837cfe62fb259e052f0863e4feb92aba1169c6a",
+      "sha256": "de6b2a8ab936a2487596c066b837cfe62fb259e052f0863e4feb92aba1169c6a",
+      "adaptations": []
+    },
+    {
+      "path": "src/native-maintenance-history.ts",
+      "source_commit": null,
+      "source_sha256": null,
+      "sha256": "5601d852f2a3c5e790a2a0de05add5e259a092f40d152b7eb1779b739112c5c2",
+      "adaptations": [
+        "Reviewed CLW overlay: Keep only the current caller fence resident; archive released/refused original owner/operation keys with stable exact reads and write-before-release. Historical maintenance cycles impose no lifetime count limit; failed archives retain the original fence/drain. Same-key tombstones remain durable and snapshots never load terminal history."
+      ]
+    },
+    {
+      "path": "src/native-maintenance.ts",
+      "source_commit": null,
+      "source_sha256": null,
+      "sha256": "d6be93e71a55dedb37cfc99498ff45fbe1fbc66538de371a111d4d6e63eac709",
+      "adaptations": [
+        "Reviewed CLW overlay: Keep only the current caller fence resident; archive released/refused original owner/operation keys with stable exact reads and write-before-release. Historical maintenance cycles impose no lifetime count limit; failed archives retain the original fence/drain. Same-key tombstones remain durable and snapshots never load terminal history."
+      ]
+    },
+    {
+      "path": "src/native-network.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "d6ff1f4d13d67c54e72c92d5d1cb20c2eadcf6688c7d1df48c73c6f27d164b5e",
+      "sha256": "d6ff1f4d13d67c54e72c92d5d1cb20c2eadcf6688c7d1df48c73c6f27d164b5e",
+      "adaptations": []
+    },
+    {
+      "path": "src/native-passthrough.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "9da225f9581e19914ed192ba4ccaf17c6b99f4eafa78aa6d30b426d164b4f22e",
+      "sha256": "9da225f9581e19914ed192ba4ccaf17c6b99f4eafa78aa6d30b426d164b4f22e",
+      "adaptations": []
+    },
+    {
+      "path": "src/process.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "788126f540921897b9d978af25b8b4de992ec2b088d1cb908c2ea1b330fc3e6a",
+      "sha256": "788126f540921897b9d978af25b8b4de992ec2b088d1cb908c2ea1b330fc3e6a",
+      "adaptations": []
+    },
+    {
+      "path": "src/responses/compaction.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "8667e8bae558cefb72749f2355df085392b316cdce991e8800f0e634ee52ae60",
+      "sha256": "8667e8bae558cefb72749f2355df085392b316cdce991e8800f0e634ee52ae60",
+      "adaptations": []
+    },
+    {
+      "path": "src/responses/parser.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "14b0fcb065087a1f37ef14e683dc2bb20b8b2e47272576b4921a7663c0598c9f",
+      "sha256": "14b0fcb065087a1f37ef14e683dc2bb20b8b2e47272576b4921a7663c0598c9f",
+      "adaptations": []
+    },
+    {
+      "path": "src/responses/reasoning-envelope.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "5df8453122d8816358a013b6b96d4e53a0d2d3820a741754fc68622feebc3fe8",
+      "sha256": "5df8453122d8816358a013b6b96d4e53a0d2d3820a741754fc68622feebc3fe8",
+      "adaptations": []
+    },
+    {
+      "path": "src/responses/schema.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "8be73a8ebd278e1254fe615327eb85bed636f35d51ad752053f549fb3e2d1653",
+      "sha256": "8be73a8ebd278e1254fe615327eb85bed636f35d51ad752053f549fb3e2d1653",
+      "adaptations": []
+    },
+    {
+      "path": "src/responses/state.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "b432b1d1beb54877a74f28e6ec0f951ed548a3c5fffe5d1ef4c3f02b56102c0b",
+      "sha256": "b432b1d1beb54877a74f28e6ec0f951ed548a3c5fffe5d1ef4c3f02b56102c0b",
+      "adaptations": []
+    },
+    {
+      "path": "src/server.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "f23b793b3366d902f84f5d90d5c43bc2b57df6e3ad080aaa398da68b60594f4a",
+      "sha256": "a8f2e32d88267b212bdded655f89a2be8420ad20b280740d1dbb57ad761c07ab",
+      "adaptations": [
+        "Optional owner request guard; CLW prevents unintended native model/API fallback before any turn starts. Upstream default behavior remains unchanged.",
+        "Reviewed CLW overlay: CLW adaptation preserved from the active checkout and verified by hash",
+        "Reviewed CLW overlay: Authenticated maintenance endpoints freeze original owner/caller admission and full Session baseline before shutdown; fresh final CAS, retained cleanup promises and exact normal settlement callback preserve unknown and rejected exits."
+      ]
+    },
+    {
+      "path": "src/service.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "a9026e84b3fd825ade6c9d69faaf208faef83662b504d12f64ef2dbcff2b0542",
+      "sha256": "a9026e84b3fd825ade6c9d69faaf208faef83662b504d12f64ef2dbcff2b0542",
+      "adaptations": []
+    },
+    {
+      "path": "src/setup.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "e3f6ca8e7e1f6cc20dd6ab72b9203504accb9291d6b1c1738d887723d2079def",
+      "sha256": "e3f6ca8e7e1f6cc20dd6ab72b9203504accb9291d6b1c1738d887723d2079def",
+      "adaptations": []
+    },
+    {
+      "path": "src/stall-timeout.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "3be4873187e20953627e3d9b59f65a52194756eb947384075b35ab9d0ce6a9f0",
+      "sha256": "3be4873187e20953627e3d9b59f65a52194756eb947384075b35ab9d0ce6a9f0",
+      "adaptations": []
+    },
+    {
+      "path": "src/tunnel-service.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "68ee49353a0bc1a5e4d8d6d6b6ee5e148fc89cd64d602d7307cc389c0fcb8511",
+      "sha256": "68ee49353a0bc1a5e4d8d6d6b6ee5e148fc89cd64d602d7307cc389c0fcb8511",
+      "adaptations": []
+    },
+    {
+      "path": "src/tunnel.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "49c8f6ea63425ba26ec7e0959208567585830bbabe84f1e67b63c8f855038885",
+      "sha256": "49c8f6ea63425ba26ec7e0959208567585830bbabe84f1e67b63c8f855038885",
+      "adaptations": []
+    },
+    {
+      "path": "src/turndown-plugin-gfm.d.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "ea990b5626ea8873e7b47591225d19b6b4c3816331cd5fc4980118779768bfd5",
+      "sha256": "ea990b5626ea8873e7b47591225d19b6b4c3816331cd5fc4980118779768bfd5",
+      "adaptations": []
+    },
+    {
+      "path": "src/types.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "4826e9ec815b5cef44989d22d63c6ba6bd1a0603eb0bc232c1af69d8a8ae3ccc",
+      "sha256": "4826e9ec815b5cef44989d22d63c6ba6bd1a0603eb0bc232c1af69d8a8ae3ccc",
+      "adaptations": []
+    },
+    {
+      "path": "src/usage/totals.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "c2f05d79c896c9719dade24b0d31f2824abf86e7e77aacb3843f7fd32d2d8c13",
+      "sha256": "c2f05d79c896c9719dade24b0d31f2824abf86e7e77aacb3843f7fd32d2d8c13",
+      "adaptations": []
+    },
+    {
+      "path": "src/version.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "ca728199f79e4172dcd95a69acd0f3e0780f62f8f712cacdb871585e41159b2d",
+      "sha256": "ca728199f79e4172dcd95a69acd0f3e0780f62f8f712cacdb871585e41159b2d",
+      "adaptations": []
+    },
+    {
+      "path": "tests/bridge-collaboration.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "bce12fe5ad2faeb9621e940cfd374e610c8b6198e81e7ad2735584590d51d066",
+      "sha256": "bce12fe5ad2faeb9621e940cfd374e610c8b6198e81e7ad2735584590d51d066",
+      "adaptations": []
+    },
+    {
+      "path": "tests/bridge-platform.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "1eda67229ab8b33fbdf6087b3142e0d8efe9f0d8b6e5e3c376f732f46ef86bdd",
+      "sha256": "1eda67229ab8b33fbdf6087b3142e0d8efe9f0d8b6e5e3c376f732f46ef86bdd",
+      "adaptations": []
+    },
+    {
+      "path": "tests/bridge-stall-timeout.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "d0cd07ff69d74d26d97f152262ad48e6a53624ef8f14b21b231cd85a7e2ddf4d",
+      "sha256": "d0cd07ff69d74d26d97f152262ad48e6a53624ef8f14b21b231cd85a7e2ddf4d",
+      "adaptations": []
+    },
+    {
+      "path": "tests/browser-login.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "2e71f04f96d4b993dc3d78a9c917de4193944fd21c2469727f06cd74ac8fdf77",
+      "sha256": "2e71f04f96d4b993dc3d78a9c917de4193944fd21c2469727f06cd74ac8fdf77",
+      "adaptations": []
+    },
+    {
+      "path": "tests/browser-response-dom.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "a013a08340a7d01c2a41a9f4fa1abebd2890cdc8be96c4ce78120b02b96fbbbb",
+      "sha256": "2e8c14aaf2d10d37cc7bb89be32456146a04e8a9046e53899ca880bbee87d81e",
+      "adaptations": [
+        "Reviewed CLW overlay: Fixed 6.1.2 backport. Preserve CLW receipt/EOF/error-frame behavior, diagnostic-only failed tabs and explicit account B partition. Upstream five-tab policy excluded; existing CLW resource-admission tests cover unbounded pages."
+      ]
+    },
+    {
+      "path": "tests/browser-turn-binding.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "83d6f72cfa8f53bbc54c3d4572cdb16aabfef85ddfe2aa16a664643a725418d3",
+      "sha256": "a8f8e0049c8c55eeae87fda0fbe728338619cf37444328ab9fb84584b5b5bc7a",
+      "adaptations": [
+        "DOM regressions for exact rich-prompt rekey, strict-prefix hydration, Activity fallback, timeout and foreign-turn rejection.",
+        "Reviewed CLW overlay: CLW rich user turn identity regression coverage. DEMO-02: verify recorded connector padding and structurally decode captured rich user fallback escapes; preserve exact body comparison and reject competing turns.",
+        "Reviewed CLW overlay: Use composer-owned public DOM transactions for model selection, exact connector menu activation, full prompt attachment, independent rollback, Send, acknowledgement and the exact bound assistant response. Ordinary and retained summary turns share the same model and effort selection, persisted range and lock checks, and family announcement verification; carry the original model family into retained compaction. The current mention portal is proved by its composer marker, the unique editor, exact inserted query, focus and unique row; ambiguous or changed owners never activate a connector. Keep Temporary Chat personalization proof and rollback. Avoid background Locator handle resolution without changing account, connector, request, prompt, model or effort. Genuine observation timeouts enter bounded same-page recovery, while missing and duplicate identities, actual availability failures, explicit cancellation and unknown submissions retain their guards. Never resend an unknown submission."
+      ]
+    },
+    {
+      "path": "tests/browser-worker-contract.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "04f0d604e1e8ccac2b535b8d939085c8694262971d30433704f7397ba774685e",
+      "sha256": "e38dec099185e63dc4a83f32f0ef506ef929dc876bd1b9577f888ec9b53781e5",
+      "adaptations": [
+        "Align explicit assertions with reviewed CLW unlimited slots, bounded 30s observation, readiness error and configured connector name; selected-pill fixture supplies the new empty-draft observation. Dedicated CLW tests cover foreign-draft cleanup.",
+        "Reviewed CLW overlay: Call-id based progress preserves original tool boundaries across listener reconnect, with adapter/broker regression and original result accounting.",
+        "Reviewed CLW overlay: CLW connector input contract regression coverage. CLW 2026-09-28: launcher-owned background editor uses existing native text insertion, exact connector row activation and verified draft clearing without dropped keyboard events; managed Chrome keyboard behavior preserved.",
+        "Reviewed CLW overlay: Use composer-owned public DOM transactions for model selection, exact connector menu activation, full prompt attachment, independent rollback, Send, acknowledgement and the exact bound assistant response. Ordinary and retained summary turns share the same model and effort selection, persisted range and lock checks, and family announcement verification; carry the original model family into retained compaction. The current mention portal is proved by its composer marker, the unique editor, exact inserted query, focus and unique row; ambiguous or changed owners never activate a connector. Keep Temporary Chat personalization proof and rollback. Avoid background Locator handle resolution without changing account, connector, request, prompt, model or effort. Genuine observation timeouts enter bounded same-page recovery, while missing and duplicate identities, actual availability failures, explicit cancellation and unknown submissions retain their guards. Never resend an unknown submission."
+      ]
+    },
+    {
+      "path": "tests/chatgpt-effort-browser.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "4038e4b5d60fdba5b3e0674454eb584750eafcdcffa047849121e71983bc4391",
+      "sha256": "e1e3e9b98bdc2d19455fbcf7eff1c77b1d7a0e988b3af14a212eb00ba6e8d074",
+      "adaptations": [
+        "Test-only Windows/Bun async matcher workaround: await browser I/O before the same error assertion; no production logic changed.",
+        "Reviewed CLW overlay: Use composer-owned public DOM transactions for model selection, exact connector menu activation, full prompt attachment, independent rollback, Send, acknowledgement and the exact bound assistant response. Ordinary and retained summary turns share the same model and effort selection, persisted range and lock checks, and family announcement verification; carry the original model family into retained compaction. The current mention portal is proved by its composer marker, the unique editor, exact inserted query, focus and unique row; ambiguous or changed owners never activate a connector. Keep Temporary Chat personalization proof and rollback. Avoid background Locator handle resolution without changing account, connector, request, prompt, model or effort. Genuine observation timeouts enter bounded same-page recovery, while missing and duplicate identities, actual availability failures, explicit cancellation and unknown submissions retain their guards. Never resend an unknown submission. Restore the existing 70s initial selection readiness budget for a newly mounted saved-chat composer using its same public DOM owner. Wait only for an absent effort control, recheck account failures and original editor/form identity, and immediately reject duplicates; pre-send verification does not wait or weaken model, effort, draft or Send guards. Wait for the exact post-navigation operational viewport before activating its owned model/effort picker; a mounted composer at zero viewport is not ready. Preserve Pro, account, same original page and no-Send failure boundaries. CLW Full access handles the unique configured MCP app confirmation through its public DOM, including Chinese alerts with a sibling approval form and keyboard hints. Prefer persistent approval when offered, retain one-shot fallback, abort and changed-card checks; manual timeout never denies a pending card. Resolve a first native MCP confirmation before submission acknowledgement or assistant DOM mounting can wait on that same approval."
+      ]
+    },
+    {
+      "path": "tests/chatgpt-limits-browser.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "166de31b125255d5e224bb1651aa41e1378b4b552f5f99c33613fcf7884be145",
+      "sha256": "166de31b125255d5e224bb1651aa41e1378b4b552f5f99c33613fcf7884be145",
+      "adaptations": []
+    },
+    {
+      "path": "tests/chatgpt-limits.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "4655f78ea7af401b6f25e03463d820c27511d78be1dc4c837639b84666a353a2",
+      "sha256": "269d2ba328ae651f8d365e70271a0b70a1574cd00c62b16f95e597e3979a89e3",
+      "adaptations": [
+        "Reviewed CLW overlay: Use composer-owned public DOM transactions for model selection, exact connector menu activation, full prompt attachment, independent rollback, Send, acknowledgement and the exact bound assistant response. Ordinary and retained summary turns share the same model and effort selection, persisted range and lock checks, and family announcement verification; carry the original model family into retained compaction. The current mention portal is proved by its composer marker, the unique editor, exact inserted query, focus and unique row; ambiguous or changed owners never activate a connector. Keep Temporary Chat personalization proof and rollback. Avoid background Locator handle resolution without changing account, connector, request, prompt, model or effort. Genuine observation timeouts enter bounded same-page recovery, while missing and duplicate identities, actual availability failures, explicit cancellation and unknown submissions retain their guards. Never resend an unknown submission."
+      ]
+    },
+    {
+      "path": "tests/chatgpt-model-selection.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "2f52698bf9b58df84f725f4e5b309d97d98a505e30cd363c2db5fa1cc8f2a000",
+      "sha256": "2f52698bf9b58df84f725f4e5b309d97d98a505e30cd363c2db5fa1cc8f2a000",
+      "adaptations": []
+    },
+    {
+      "path": "tests/chatgpt-session.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "8342f56a1e4b94d1f9fd07102005c5e269947e87fca03ba3965515780ccef0d9",
+      "sha256": "004a4e65ec3eb6973bf4c0a3d023d59b0dee9ed7705bdb9b208170228a4a95df",
+      "adaptations": [
+        "Reviewed CLW overlay: Use composer-owned public DOM transactions for model selection, exact connector menu activation, full prompt attachment, independent rollback, Send, acknowledgement and the exact bound assistant response. Ordinary and retained summary turns share the same model and effort selection, persisted range and lock checks, and family announcement verification; carry the original model family into retained compaction. The current mention portal is proved by its composer marker, the unique editor, exact inserted query, focus and unique row; ambiguous or changed owners never activate a connector. Keep Temporary Chat personalization proof and rollback. Avoid background Locator handle resolution without changing account, connector, request, prompt, model or effort. Genuine observation timeouts enter bounded same-page recovery, while missing and duplicate identities, actual availability failures, explicit cancellation and unknown submissions retain their guards. Never resend an unknown submission."
+      ]
+    },
+    {
+      "path": "tests/chatgpt-web-harness.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "558a52ebc515c205790ce30a7886899991e25c5c061edc6ce1be62bcc59c18f3",
+      "sha256": "cc13881264f3d177951f6f7a8b47c01b0cfd9a6b6f6d4a57449d7a7c11203267",
+      "adaptations": [
+        "Reviewed CLW overlay: Call-id based progress preserves original tool boundaries across listener reconnect, with adapter/broker regression and original result accounting.",
+        "Reviewed CLW overlay: Verify compact working prompts and the original native tool/task contract without repeated long fixed instructions."
+      ]
+    },
+    {
+      "path": "tests/chatgpt-web-markdown.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "8217d5b232dd3972e5ca1c326b5e1c800f14426bb6c4ad61070580ffbdcf2f1d",
+      "sha256": "8217d5b232dd3972e5ca1c326b5e1c800f14426bb6c4ad61070580ffbdcf2f1d",
+      "adaptations": []
+    },
+    {
+      "path": "tests/chatgpt-web-models.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "5744500af383d659a3df5eca98a2f97437636ac9e5052adbb7c3f32930213a63",
+      "sha256": "5744500af383d659a3df5eca98a2f97437636ac9e5052adbb7c3f32930213a63",
+      "adaptations": []
+    },
+    {
+      "path": "tests/chatgpt-web-usage.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "98f90a937d8a7a3bc19621583ac67a063f7fc2d19e423100d892cd243ada971f",
+      "sha256": "98f90a937d8a7a3bc19621583ac67a063f7fc2d19e423100d892cd243ada971f",
+      "adaptations": []
+    },
+    {
+      "path": "tests/cli.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "8116f35b96ef26cf51f677260666c682c1d97203990c1f9f40b9b4658b7f2064",
+      "sha256": "8116f35b96ef26cf51f677260666c682c1d97203990c1f9f40b9b4658b7f2064",
+      "adaptations": []
+    },
+    {
+      "path": "tests/clw-latex-preservation.test.ts",
+      "source_commit": null,
+      "source_sha256": null,
+      "sha256": "1cd9bce0f5a80c9ce45589acf0c25b923f10f9c235e496ba398ca0cb94871c69",
+      "adaptations": [
+        "Reviewed CLW overlay: CLW adaptation preserved from the active checkout and verified by hash"
+      ]
+    },
+    {
+      "path": "tests/clw-user-authorization.test.ts",
+      "source_commit": null,
+      "source_sha256": null,
+      "sha256": "4218eb7658a522946ad4041a3cdb66df6d2b473539cee78a22bbc2673c4a4934",
+      "adaptations": [
+        "Reviewed CLW overlay: Fresh user-selected consent reference: genuinely absent file is empty; malformed/unreadable existing policy retains error. No implicit consent or permission changes."
+      ]
+    },
+    {
+      "path": "tests/codex-integration.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "f9f14a81bb4388cf60807f1c9cac1470ac9dd26dbf6af4267a5d8685d2c6a87e",
+      "sha256": "f9f14a81bb4388cf60807f1c9cac1470ac9dd26dbf6af4267a5d8685d2c6a87e",
+      "adaptations": []
+    },
+    {
+      "path": "tests/codex-interrupt-hook.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "a6d78306be909c25d88cc4183e1bfaec58c3bfb0381175d55e40bd31c7c9a17e",
+      "sha256": "a6d78306be909c25d88cc4183e1bfaec58c3bfb0381175d55e40bd31c7c9a17e",
+      "adaptations": []
+    },
+    {
+      "path": "tests/compaction-browser-recovery.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "b66015ab8c9ebf5229b7e61eb2888e74df55e8741f00633f9f50e4d33c71ea25",
+      "sha256": "b66015ab8c9ebf5229b7e61eb2888e74df55e8741f00633f9f50e4d33c71ea25",
+      "adaptations": []
+    },
+    {
+      "path": "tests/compaction-v1.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "f5f4bac67d37a97a8cd99104d8c8480ea29148cd2cd9a8d0cd9834b55c57f2b9",
+      "sha256": "f5f4bac67d37a97a8cd99104d8c8480ea29148cd2cd9a8d0cd9834b55c57f2b9",
+      "adaptations": []
+    },
+    {
+      "path": "tests/composer-insert.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "b772b46b95c704524b199edb5968de8e561b8e6effa636e0ad264de910048d39",
+      "sha256": "b772b46b95c704524b199edb5968de8e561b8e6effa636e0ad264de910048d39",
+      "adaptations": []
+    },
+    {
+      "path": "tests/dev-chat.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "0db981ca93309a361a6e51149f5a12b87ea4c5e5860e95a7543a7ed03dc81cad",
+      "sha256": "0ec8cafedee7bc0d166114d632f70c1cd1e1f1f8bfca139edbd5cc13be1d2832",
+      "adaptations": [
+        "Cover lost owner_complete ACK replay, canonical result equivalence, conflicting result/call and revoked or expired tokens through the local broker socket."
+      ]
+    },
+    {
+      "path": "tests/dev-profile.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "628806c172bdc10ffb4ea2c5eacf055f52068ac9f0ceee688b09eab2011e88b6",
+      "sha256": "628806c172bdc10ffb4ea2c5eacf055f52068ac9f0ceee688b09eab2011e88b6",
+      "adaptations": []
+    },
+    {
+      "path": "tests/environment.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "e5279ed2b73cf5ea4943c100e70158bd60d907059a47efc1a7b6a4bfd5e91111",
+      "sha256": "e5279ed2b73cf5ea4943c100e70158bd60d907059a47efc1a7b6a4bfd5e91111",
+      "adaptations": []
+    },
+    {
+      "path": "tests/fixtures/chatgpt-activity-summaries.html",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "1cee4f88d70ed214656310defb925c0a16704ae673d36575a063660841f7c5fa",
+      "sha256": "1cee4f88d70ed214656310defb925c0a16704ae673d36575a063660841f7c5fa",
+      "adaptations": []
+    },
+    {
+      "path": "tests/fixtures/chatgpt-dil-smoke.html",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "848a24b7f7db7204bb0ddeb701e8b614d0929a0728e4cb9bc37fb7ae28d52388",
+      "sha256": "848a24b7f7db7204bb0ddeb701e8b614d0929a0728e4cb9bc37fb7ae28d52388",
+      "adaptations": []
+    },
+    {
+      "path": "tests/fixtures/chatgpt-power-activity.html",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "53df98a71534bfed9de809c36e0f647ea675305f12abb1f8a62f3b88134f04d2",
+      "sha256": "53df98a71534bfed9de809c36e0f647ea675305f12abb1f8a62f3b88134f04d2",
+      "adaptations": []
+    },
+    {
+      "path": "tests/fixtures/chatgpt-power-complete.html",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "00c91f92a88d0a49632af7de43f8f8bd5983f5137915632ef76543af8368bd22",
+      "sha256": "00c91f92a88d0a49632af7de43f8f8bd5983f5137915632ef76543af8368bd22",
+      "adaptations": []
+    },
+    {
+      "path": "tests/fixtures/chatgpt-power-streaming.html",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "fe5ef61ee163643b952f104d11447ffa923a8ea442e2a6375aac063ac92a6238",
+      "sha256": "fe5ef61ee163643b952f104d11447ffa923a8ea442e2a6375aac063ac92a6238",
+      "adaptations": []
+    },
+    {
+      "path": "tests/http-body.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "25f861514628a697f87279e37c8c668619164396dd1b193871ae8768ab41d640",
+      "sha256": "25f861514628a697f87279e37c8c668619164396dd1b193871ae8768ab41d640",
+      "adaptations": []
+    },
+    {
+      "path": "tests/launcher-attachment-browser.test.ts",
+      "source_commit": null,
+      "source_sha256": null,
+      "sha256": "dcb69c7e4e86ee1ff3c602ed5e75b7b0a6d2118d389330c712bbe1dfa28a6f02",
+      "adaptations": [
+        "Reviewed CLW overlay: Use composer-owned public DOM transactions for model selection, exact connector menu activation, full prompt attachment, independent rollback, Send, acknowledgement and the exact bound assistant response. Ordinary and retained summary turns share the same model and effort selection, persisted range and lock checks, and family announcement verification; carry the original model family into retained compaction. The current mention portal is proved by its composer marker, the unique editor, exact inserted query, focus and unique row; ambiguous or changed owners never activate a connector. Keep Temporary Chat personalization proof and rollback. Avoid background Locator handle resolution without changing account, connector, request, prompt, model or effort. Genuine observation timeouts enter bounded same-page recovery, while missing and duplicate identities, actual availability failures, explicit cancellation and unknown submissions retain their guards. Never resend an unknown submission. Use the real activeComposer readiness implementation in the attachment harness instead of substituting it with a stub; only the duplicate fixture bounds its existing readiness timeout. Existing connector, retained prompt and guarded attachment assertions remain intact."
+      ]
+    },
+    {
+      "path": "tests/launcher-browser-host.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "063b2c6b4af28f0b59375e50825bfb2bd5f8b3ec8d63559ea3e0a5a37ba59faa",
+      "sha256": "f35885de6ac4bd06da44a2217bdc55958ba5a7ca312a29e0928838fb3300e2a6",
+      "adaptations": [
+        "Reviewed CLW overlay: Fixed 6.1.2 backport. Preserve CLW receipt/EOF/error-frame behavior, diagnostic-only failed tabs and explicit account B partition. Upstream five-tab policy excluded; existing CLW resource-admission tests cover unbounded pages.",
+        "Reviewed CLW overlay: Use composer-owned public DOM transactions for model selection, exact connector menu activation, full prompt attachment, independent rollback, Send, acknowledgement and the exact bound assistant response. Ordinary and retained summary turns share the same model and effort selection, persisted range and lock checks, and family announcement verification; carry the original model family into retained compaction. The current mention portal is proved by its composer marker, the unique editor, exact inserted query, focus and unique row; ambiguous or changed owners never activate a connector. Keep Temporary Chat personalization proof and rollback. Avoid background Locator handle resolution without changing account, connector, request, prompt, model or effort. Genuine observation timeouts enter bounded same-page recovery, while missing and duplicate identities, actual availability failures, explicit cancellation and unknown submissions retain their guards. Never resend an unknown submission."
+      ]
+    },
+    {
+      "path": "tests/launcher-cdp-acquisition.test.ts",
+      "source_commit": null,
+      "source_sha256": null,
+      "sha256": "70dcb416e9c4f09a702538407dd335671f1b0773ddc6300404edb9083e35f791",
+      "adaptations": [
+        "Reviewed CLW overlay: Owned CDP acquisition regressions for a real five-second stall, transient handshake, same-owner heartbeat, denials, metadata, changed ownership, bounded attempts, deadline and cancellation."
+      ]
+    },
+    {
+      "path": "tests/launcher-composer-readiness-browser.test.ts",
+      "source_commit": null,
+      "source_sha256": null,
+      "sha256": "b227e07ada673cb6383165d5b817f5c6809f1132b79988a7ae3b81bc09cd1748",
+      "adaptations": [
+        "Reviewed CLW overlay: Exercise ui-state with zero or two composers and public alerts; preserve unique-editor guards for every mutation/readback operation; prove existing activeComposer waits for composer hydration before the first clear; abort and timeout leave the original draft and attachment state unchanged without Send or rollback."
+      ]
+    },
+    {
+      "path": "tests/launcher-helper-client.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "3945711c4d4699409cbef5032231afaa5f7cf910b59797e5ea68768cbab4bcdd",
+      "sha256": "3945711c4d4699409cbef5032231afaa5f7cf910b59797e5ea68768cbab4bcdd",
+      "adaptations": []
+    },
+    {
+      "path": "tests/launcher-localization.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "353081f682dce5b5c1b2a0ae0e1086f351c90f15ff9f12443a7a759609b682f6",
+      "sha256": "353081f682dce5b5c1b2a0ae0e1086f351c90f15ff9f12443a7a759609b682f6",
+      "adaptations": []
+    },
+    {
+      "path": "tests/mcp-observation.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "6a9f918d8dcba0cdd5f80437011fc4ce2e9b7832e09c7fb9c9178a24b3088762",
+      "sha256": "6a9f918d8dcba0cdd5f80437011fc4ce2e9b7832e09c7fb9c9178a24b3088762",
+      "adaptations": []
+    },
+    {
+      "path": "tests/model-catalog.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "6fe57b367f3a9f1c8059822264c8d148e1d5be30c9d87c0a4a708c0f8999394f",
+      "sha256": "6fe57b367f3a9f1c8059822264c8d148e1d5be30c9d87c0a4a708c0f8999394f",
+      "adaptations": []
+    },
+    {
+      "path": "tests/model-contract.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "2d5575446a01759fcf6030c43b44d253e449dea8609715a631fa77c897d30130",
+      "sha256": "2d5575446a01759fcf6030c43b44d253e449dea8609715a631fa77c897d30130",
+      "adaptations": []
+    },
+    {
+      "path": "tests/native-maintenance.test.ts",
+      "source_commit": null,
+      "source_sha256": null,
+      "sha256": "7f9750f66f0fab2d1af8ee194d001875c5e168b33736ae7dd32a05b4a2084c4c",
+      "adaptations": [
+        "Reviewed CLW overlay: Keep only the current caller fence resident; archive released/refused original owner/operation keys with stable exact reads and write-before-release. Historical maintenance cycles impose no lifetime count limit; failed archives retain the original fence/drain. Same-key tombstones remain durable and snapshots never load terminal history."
+      ]
+    },
+    {
+      "path": "tests/native-network.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "c1693f0c193457db0cd3dfe39ab04af7927c673b66d80365ae48449e2e16889d",
+      "sha256": "c1693f0c193457db0cd3dfe39ab04af7927c673b66d80365ae48449e2e16889d",
+      "adaptations": []
+    },
+    {
+      "path": "tests/native-passthrough.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "52f18db4cadae2c146116810b995f15a31c773c3160dec1aca6cd83e1b8298bb",
+      "sha256": "52f18db4cadae2c146116810b995f15a31c773c3160dec1aca6cd83e1b8298bb",
+      "adaptations": []
+    },
+    {
+      "path": "tests/native-tool-activity.test.ts",
+      "source_commit": null,
+      "source_sha256": null,
+      "sha256": "27201ca2ee92fcb1be562462a5dd2dccaa0fecd2032c009b4f313c870e1f6c77",
+      "adaptations": [
+        "Reviewed CLW overlay: CLW adaptation preserved from the active checkout and verified by hash"
+      ]
+    },
+    {
+      "path": "tests/owned-composer-cleanup.test.ts",
+      "source_commit": null,
+      "source_sha256": null,
+      "sha256": "e1a726311298bb95b5c87687037e443722dd569e3af9924f0dea2290c3f8d8f4",
+      "adaptations": [
+        "Reviewed CLW overlay: Use composer-owned public DOM transactions for model selection, exact connector menu activation, full prompt attachment, independent rollback, Send, acknowledgement and the exact bound assistant response. Ordinary and retained summary turns share the same model and effort selection, persisted range and lock checks, and family announcement verification; carry the original model family into retained compaction. The current mention portal is proved by its composer marker, the unique editor, exact inserted query, focus and unique row; ambiguous or changed owners never activate a connector. Keep Temporary Chat personalization proof and rollback. Avoid background Locator handle resolution without changing account, connector, request, prompt, model or effort. Genuine observation timeouts enter bounded same-page recovery, while missing and duplicate identities, actual availability failures, explicit cancellation and unknown submissions retain their guards. Never resend an unknown submission."
+      ]
+    },
+    {
+      "path": "tests/personalization-connector-preflight.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "f75a436c766a06a1441eeff58d4bf5784837d6ad67ae0848e36126aaa1410e7b",
+      "sha256": "f75a436c766a06a1441eeff58d4bf5784837d6ad67ae0848e36126aaa1410e7b",
+      "adaptations": []
+    },
+    {
+      "path": "tests/process-line-writer.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "cae3020ee9fc54b19a4c5387c06a310da6e11d06ce76c5a857db63f34f9db203",
+      "sha256": "cae3020ee9fc54b19a4c5387c06a310da6e11d06ce76c5a857db63f34f9db203",
+      "adaptations": []
+    },
+    {
+      "path": "tests/prompt-contract.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "813cc9cadcc2fa6d5fc3b0a79692b5f919ab05b51bfa72f376ffda2a393baa1f",
+      "sha256": "ade5fc15d6a005a8f345e4405a8c68c7202469433a5b55f89883574afbf1e4b5",
+      "adaptations": [
+        "Reviewed CLW overlay: User-authorized CLW task consent; preserve tool permissions and omit compaction",
+        "Reviewed CLW overlay: Verify the short shared working agreement, original native tool protocol, and distinct full versus incremental context behavior."
+      ]
+    },
+    {
+      "path": "tests/prompt-history-metadata.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "2d10b69ec9d7738e4f26764ec54bd2b0f2226db5cb91902fce5041426bd6e2e6",
+      "sha256": "2d10b69ec9d7738e4f26764ec54bd2b0f2226db5cb91902fce5041426bd6e2e6",
+      "adaptations": []
+    },
+    {
+      "path": "tests/responses-agent-message.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "e4d92bf38a2e259fe34f07ca9d37a69246142608892a4dc83933dacf4699e955",
+      "sha256": "e4d92bf38a2e259fe34f07ca9d37a69246142608892a4dc83933dacf4699e955",
+      "adaptations": []
+    },
+    {
+      "path": "tests/responses-lite-tools.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "e03c09f7aa6e91cf8895ae94f2d950f5fb8c70d998dbf73f076e02792edd81ac",
+      "sha256": "e03c09f7aa6e91cf8895ae94f2d950f5fb8c70d998dbf73f076e02792edd81ac",
+      "adaptations": []
+    },
+    {
+      "path": "tests/responses-text-controls.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "04458e2d3b921d5058952619867f8e24c9bd7c0cbd506d9c6cea18043e1c0547",
+      "sha256": "04458e2d3b921d5058952619867f8e24c9bd7c0cbd506d9c6cea18043e1c0547",
+      "adaptations": []
+    },
+    {
+      "path": "tests/retained-compaction.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "90eb118f9e4c9f326da55935b86616225829332f3a4d056c42da0449cf211eb8",
+      "sha256": "b03d7fd3dc9369055f32226aae93cc133ba3fabb525e0ea269838480b780d8ff",
+      "adaptations": [
+        "Test-only Windows/Bun async matcher workaround: await named-pipe I/O before the same two receipt assertions; no broker logic changed.",
+        "Reviewed CLW overlay: Preserve selected effort and original source/tool identity; independent retained checkpoint phase budget with a bounded Pro window. Prior call-id reconnect accounting retained.",
+        "Reviewed CLW overlay: Use composer-owned public DOM transactions for model selection, exact connector menu activation, full prompt attachment, independent rollback, Send, acknowledgement and the exact bound assistant response. Ordinary and retained summary turns share the same model and effort selection, persisted range and lock checks, and family announcement verification; carry the original model family into retained compaction. The current mention portal is proved by its composer marker, the unique editor, exact inserted query, focus and unique row; ambiguous or changed owners never activate a connector. Keep Temporary Chat personalization proof and rollback. Avoid background Locator handle resolution without changing account, connector, request, prompt, model or effort. Genuine observation timeouts enter bounded same-page recovery, while missing and duplicate identities, actual availability failures, explicit cancellation and unknown submissions retain their guards. Never resend an unknown submission."
+      ]
+    },
+    {
+      "path": "tests/retained-prompt-context.test.ts",
+      "source_commit": null,
+      "source_sha256": null,
+      "sha256": "c938021d287b7f20d9e132c419da670331a7718e39ca6254e61c00031ac492a3",
+      "adaptations": [
+        "Reviewed CLW overlay: CLW adaptation preserved from the active checkout and verified by hash"
+      ]
+    },
+    {
+      "path": "tests/rolling-checkpoint.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "8db02a774179d6cee4233ef188d4608188874def881363a2b958bd5c985b79ab",
+      "sha256": "8db02a774179d6cee4233ef188d4608188874def881363a2b958bd5c985b79ab",
+      "adaptations": []
+    },
+    {
+      "path": "tests/runtime-layout.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "d3a23efc2e560c8acf3887bbb0adbb8c0cc3d1ac68afacb0e7b20a43afdb6c80",
+      "sha256": "d3a23efc2e560c8acf3887bbb0adbb8c0cc3d1ac68afacb0e7b20a43afdb6c80",
+      "adaptations": []
+    },
+    {
+      "path": "tests/server-compaction.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "5b00cbaa11259e0f754abc73be19dae298706acde1b4aab540559ef874785f81",
+      "sha256": "5b00cbaa11259e0f754abc73be19dae298706acde1b4aab540559ef874785f81",
+      "adaptations": []
+    },
+    {
+      "path": "tests/server-lifecycle.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "35474ef5bb94a8c100288ab342448ee223f10f10267bd022512eda7ddca82d59",
+      "sha256": "35474ef5bb94a8c100288ab342448ee223f10f10267bd022512eda7ddca82d59",
+      "adaptations": []
+    },
+    {
+      "path": "tests/server-models.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "feb8d70f11e6d05e6cf3c92a22991acfc680f8f27b035f2bc3b9160be711e7e7",
+      "sha256": "feb8d70f11e6d05e6cf3c92a22991acfc680f8f27b035f2bc3b9160be711e7e7",
+      "adaptations": []
+    },
+    {
+      "path": "tests/server-native-tool-activity.test.ts",
+      "source_commit": null,
+      "source_sha256": null,
+      "sha256": "4b1536a673bd82e886b57c8b613ee778b9af93a46333924ed3ee7b431a51820b",
+      "adaptations": [
+        "Reviewed CLW overlay: CLW adaptation preserved from the active checkout and verified by hash"
+      ]
+    },
+    {
+      "path": "tests/server-subagents.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "ce7e181644c24eb95457df58652fe80f9d80573f160e102834f8b00ce4397604",
+      "sha256": "ce7e181644c24eb95457df58652fe80f9d80573f160e102834f8b00ce4397604",
+      "adaptations": []
+    },
+    {
+      "path": "tests/service-lifecycle.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "f971f04b9dfa8aa5e70cdae20e5f22f4913067571434d1ec4d7b79ed6cdfa40b",
+      "sha256": "f971f04b9dfa8aa5e70cdae20e5f22f4913067571434d1ec4d7b79ed6cdfa40b",
+      "adaptations": []
+    },
+    {
+      "path": "tests/setup-lifecycle.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "8895415a0fa0baf90a95f0986de00a620b1cb39fdfcaa30700620bc9d914f799",
+      "sha256": "8895415a0fa0baf90a95f0986de00a620b1cb39fdfcaa30700620bc9d914f799",
+      "adaptations": []
+    },
+    {
+      "path": "tests/skill-attachments.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "38b937bfa7caa97aa23d59df31de81305a3cf6eb82726b8c715984a21632c83b",
+      "sha256": "38b937bfa7caa97aa23d59df31de81305a3cf6eb82726b8c715984a21632c83b",
+      "adaptations": []
+    },
+    {
+      "path": "tests/subagent-environment-history.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "8040bcc478c45a4ba775b1818b1d4af58d2079faba1c3f29c6f709f2ab6c9344",
+      "sha256": "8040bcc478c45a4ba775b1818b1d4af58d2079faba1c3f29c6f709f2ab6c9344",
+      "adaptations": []
+    },
+    {
+      "path": "tests/token-estimate.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "ffa2b93a46e80d52cc7eb5549d1bd1710cd44bda7c486f68804816be3d297f88",
+      "sha256": "ffa2b93a46e80d52cc7eb5549d1bd1710cd44bda7c486f68804816be3d297f88",
+      "adaptations": []
+    },
+    {
+      "path": "tests/tool-boundary-reconnect.test.ts",
+      "source_commit": null,
+      "source_sha256": null,
+      "sha256": "e036c962efebf1199d0415b298eaf273eb32e668b95472ee9d71786c2963b0c7",
+      "adaptations": [
+        "Reviewed CLW overlay: Call-id based progress preserves original tool boundaries across listener reconnect, with adapter/broker regression and original result accounting."
+      ]
+    },
+    {
+      "path": "tests/tunnel-service.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "bd770edfdcb475881fe98ea25d3475e2e348a75be5acb1362cc6c8f983a4e58c",
+      "sha256": "bd770edfdcb475881fe98ea25d3475e2e348a75be5acb1362cc6c8f983a4e58c",
+      "adaptations": []
+    },
+    {
+      "path": "tests/tunnel.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "01696456deba76b968cfbba4a6f426b90bc8a5a1fe3fa565ee7358f64e385a0a",
+      "sha256": "01696456deba76b968cfbba4a6f426b90bc8a5a1fe3fa565ee7358f64e385a0a",
+      "adaptations": []
+    },
+    {
+      "path": "tests/turn-broker-atomic-completion-pause.test.ts",
+      "source_commit": null,
+      "source_sha256": null,
+      "sha256": "98b0a80344857478cf55b5139dc3c6beec164a5a6aab4a4939ea1b4f6ea82c63",
+      "adaptations": [
+        "Reviewed CLW overlay: CLW adaptation preserved from the active checkout and verified by hash"
+      ]
+    },
+    {
+      "path": "tests/turn-broker-durable-receipt.test.ts",
+      "source_commit": null,
+      "source_sha256": null,
+      "sha256": "d165b0ec6d9d9ffac5a016fb43cfe592b8bf88a4f2c7e08c210c3b6d7d9b36de",
+      "adaptations": [
+        "Reviewed CLW overlay: CLW adaptation preserved from the active checkout and verified by hash"
+      ]
+    },
+    {
+      "path": "tests/turn-broker-lifecycle.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "a886d32803a8f61e4405ea28ccc0e39194aee61a590ba9536cdf9323b3aa5f9c",
+      "sha256": "0b8f0df0a53d1e73e01fa95a3d479ef59cb507ef202320f4b2c8ed27f6992564",
+      "adaptations": [
+        "Reviewed CLW overlay: CLW adaptation preserved from the active checkout and verified by hash",
+        "Reviewed CLW overlay: Fixed 6.1.2 backport. Preserve CLW receipt/EOF/error-frame behavior, diagnostic-only failed tabs and explicit account B partition. Upstream five-tab policy excluded; existing CLW resource-admission tests cover unbounded pages."
+      ]
+    },
+    {
+      "path": "tests/zero-risk-adapter.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "1dbfa2127dea1ddacc571f53c754bcf530151b6fb493342fce999bff0eec055e",
+      "sha256": "4308b625d42b0041dc743dd81b6ba4b5dd53b9bb7c85cb2d3cbfab4ea9c47013",
+      "adaptations": [
+        "Reviewed CLW overlay: Verify completed-only fixed-context caching, failed-turn retention, and stable original native conversation identity."
+      ]
+    },
+    {
+      "path": "tests/zero-risk-mcp-lifecycle.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "ec3321ce50eb460b331545ea65fadd675d7b0afb8acad52bed36ff432c31dcb9",
+      "sha256": "f880a420581d51f949d880fa76ff4e12bccf7fb7feb5b60a3a18f98a96cb4f28",
+      "adaptations": [
+        "Assert a cached completion cannot bypass a still-allocated terminal Zero Risk turn."
+      ]
+    },
+    {
+      "path": "tests/zero-risk-prompt-contract.test.ts",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "3d14ef0882c7591a0675a41e3ab2f41f1c68b40417c80fc3e014d37df6f24443",
+      "sha256": "fa3650fc5ead1e796fac8f5a4b66e5fae324c8020e481ff2fce5327306b49d04",
+      "adaptations": [
+        "Reviewed CLW overlay: Separate manual safe request_id from automatic native turn_token tools; preserve MCP lifecycle metadata, compaction, permissions and original execution identity. Regression covers both contracts."
+      ]
+    },
+    {
+      "path": "tsconfig.json",
+      "source_commit": "a13cd09950969f43e3b7e25c71fa43efaf5446c5",
+      "source_sha256": "a7be042199d6e05c2441c7184ab6c85152cad6d8baed625963b6390d4a34b133",
+      "sha256": "a7be042199d6e05c2441c7184ab6c85152cad6d8baed625963b6390d4a34b133",
+      "adaptations": []
+    }
+  ]
+}

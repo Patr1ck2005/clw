@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "CLW Web Companion",
+  "version": "0.6.6",
+  "description": "监护明确启用的原网页对话（包括Pro），在明确失败后短接续；保留CLW登记任务接管，不读取Cookie或私有聊天API。",
+  "permissions": ["scripting", "storage", "alarms"],
+  "host_permissions": ["http://127.0.0.1/*", "https://chatgpt.com/*"],
+  "action": {"default_popup": "popup.html", "default_title": "CLW：监护当前原网页对话"},
+  "background": {"service_worker": "worker.js"},
+  "content_scripts": [{"matches": ["https://chatgpt.com/*"], "js": ["enrollment-page.js", "background-bridge.js"], "run_at": "document_idle", "all_frames": false}]
+}

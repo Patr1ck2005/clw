@@ -1,0 +1,8 @@
+{
+  "version": "0.0.12",
+  "archive_sha256": "2a2804933924e38a502d62b61f0266cb80d56d65744f4c29876b2bf9c1544356",
+  "binary_sha256": "6649169733686805ca16cccd91774594d0c017fd729c37ad4ce1cd18323d9ae8",
+  "url": "https://github.com/openai/tunnel-client/releases/download/v0.0.12/tunnel-client-v0.0.12-windows-amd64.zip",
+  "source": "WebCodex v0.4.1 pinned asset declaration and official OpenAI release",
+  "account_configured": false
+}

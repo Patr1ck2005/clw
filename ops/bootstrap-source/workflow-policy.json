@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "kind": "workflow_preferences_not_authorization",
+  "default_runtime_profile": "workspace",
+  "first_run_method": "upstream_desktop_local_full_runtime",
+  "manual_cli_profile_is_alternative": true,
+  "credential_entry": "user_local_ui_only",
+  "account_project_bindings": [],
+  "project_selection": "per_task_from_explicitly_authorized_projects",
+  "task_continuity": {
+    "preserve_complete_goal": true,
+    "time_based_task_splitting": false,
+    "time_based_turn_termination": false,
+    "checkpoint_triggers": ["meaningful_state_change", "explicit_user_request"],
+    "continue_after_checkpoint": true,
+    "recover_same_task_after_real_interruption": true
+  },
+  "runtime_setup_status": "not_initialized",
+  "account_connection_verified": false
+}
